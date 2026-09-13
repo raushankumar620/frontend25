@@ -19,34 +19,36 @@ export const AIDashboard: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
         <div>
-          <div className="flex items-center gap-2 text-indigo-500 text-xs font-bold uppercase tracking-wider mb-1">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-2 text-[#006736] text-xs sm:text-sm font-bold uppercase tracking-wider mb-1.5">
+            <Sparkles className="w-4 h-4 text-[#05A222]" />
             <span>Generative AI Hub</span>
           </div>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">
             WhatsApp AI Agents & Knowledge Base
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
             Deploy autonomous generative AI agents connected to your product catalogs and customer documentation.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            size="sm"
+            size="md"
             onClick={() => navigate(ROUTES.AI_KNOWLEDGE_BASE)}
-            leftIcon={<BookOpen className="w-3.5 h-3.5" />}
+            leftIcon={<BookOpen className="w-4 h-4" />}
+            className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
           >
             Manage Knowledge Base
           </Button>
           <Button
             variant="primary"
-            size="sm"
+            size="md"
             onClick={() => navigate(ROUTES.AI_AGENT)}
-            leftIcon={<Plus className="w-3.5 h-3.5" />}
+            leftIcon={<Plus className="w-4 h-4" />}
+            className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm"
           >
             Create AI Agent
           </Button>

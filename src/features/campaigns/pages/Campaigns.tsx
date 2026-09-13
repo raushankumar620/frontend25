@@ -94,28 +94,29 @@ export const Campaigns: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">
             WhatsApp Broadcast Campaigns
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
             Broadcast bulk personalized HSM template messages with high deliverability.
           </p>
         </div>
 
         <Button
           variant="primary"
-          size="sm"
+          size="md"
           onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
-          leftIcon={<Plus className="w-3.5 h-3.5" />}
+          leftIcon={<Plus className="w-4 h-4" />}
+          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm"
         >
           New Broadcast Campaign
         </Button>
       </div>
 
-      <div className="mb-4 max-w-sm">
-        <SearchBar value={query} onChange={setQuery} placeholder="Search campaigns..." />
+      <div className="mb-6 max-w-md">
+        <SearchBar value={query} onChange={setQuery} placeholder="Search campaigns by name or template..." />
       </div>
 
       <Table columns={columns} data={filtered} isLoading={isLoading} />

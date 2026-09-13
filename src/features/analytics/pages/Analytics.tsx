@@ -11,26 +11,26 @@ export const Analytics: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">
             Comprehensive WhatsApp Analytics
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
             Real-time delivery rates, conversation ROI, and agent response metrics.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg text-xs">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 bg-[#F6FAF8] border border-[#E2EAE6] p-1 rounded-xl text-sm font-semibold">
             {['7d', '30d', '90d'].map((r) => (
               <button
                 key={r}
                 onClick={() => setRange(r)}
-                className={`px-3 py-1 rounded-md font-medium transition-all ${
+                className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
                   range === r
-                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
-                    : 'text-slate-500'
+                    ? 'bg-white text-[#006736] shadow-xs border border-[#E2EAE6]'
+                    : 'text-[#5F7069] hover:text-[#14201C]'
                 }`}
               >
                 {r.toUpperCase()}
@@ -38,7 +38,7 @@ export const Analytics: React.FC = () => {
             ))}
           </div>
 
-          <Button variant="outline" size="sm" leftIcon={<Download className="w-3.5 h-3.5" />}>
+          <Button variant="outline" size="md" leftIcon={<Download className="w-4 h-4" />} className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl">
             Export PDF Report
           </Button>
         </div>

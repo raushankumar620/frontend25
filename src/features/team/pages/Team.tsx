@@ -22,11 +22,11 @@ export const Team: React.FC = () => {
     {
       header: 'Member',
       render: (m) => (
-        <div className="flex items-center gap-3">
-          <Avatar name={m.name} size="sm" status={m.status === 'active' ? 'online' : 'offline'} />
+        <div className="flex items-center gap-3.5">
+          <Avatar name={m.name} size="md" status={m.status === 'active' ? 'online' : 'offline'} />
           <div>
-            <div className="font-semibold text-slate-900 dark:text-white">{m.name}</div>
-            <div className="text-[11px] text-slate-400">{m.email}</div>
+            <div className="font-bold text-[#14201C] text-sm sm:text-base">{m.name}</div>
+            <div className="text-xs text-[#5F7069] mt-0.5">{m.email}</div>
           </div>
         </div>
       ),
@@ -34,7 +34,7 @@ export const Team: React.FC = () => {
     {
       header: 'Assigned Role',
       render: (m) => (
-        <span className="capitalize font-semibold text-slate-700 dark:text-slate-300 text-xs">
+        <span className="capitalize font-bold text-[#1F2A26] text-xs sm:text-sm">
           {m.role}
         </span>
       ),
@@ -42,14 +42,14 @@ export const Team: React.FC = () => {
     {
       header: 'Active Chats Assigned',
       render: (m) => (
-        <span className="font-bold text-emerald-500">{m.assignedChatsCount} chats</span>
+        <span className="font-extrabold text-[#05A222] text-sm">{m.assignedChatsCount} chats</span>
       ),
     },
     {
       header: 'Status',
       render: () => (
         <Badge variant="success" size="sm">
-          <CheckCircle2 className="w-3 h-3 mr-1" />
+          <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
           ACTIVE
         </Badge>
       ),
@@ -62,24 +62,25 @@ export const Team: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 mb-8">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Team & Live Agents</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">Team & Live Agents</h2>
+          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
             Invite agents and assign incoming WhatsApp conversations across teams.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            size="sm"
+            size="md"
             onClick={() => navigate(ROUTES.ROLES_PERMISSIONS)}
-            leftIcon={<Shield className="w-3.5 h-3.5" />}
+            leftIcon={<Shield className="w-4 h-4" />}
+            className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
           >
             Roles & Permissions
           </Button>
-          <Button variant="primary" size="sm" leftIcon={<UserPlus className="w-3.5 h-3.5" />}>
+          <Button variant="primary" size="md" leftIcon={<UserPlus className="w-4 h-4" />} className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm">
             Invite Member
           </Button>
         </div>

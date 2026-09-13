@@ -21,7 +21,7 @@ export const Inbox: React.FC = () => {
   const [showCustomerPanel] = useState(true);
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex overflow-hidden">
+    <div className="h-[calc(100vh-72px)] sm:h-[calc(100vh-80px)] flex overflow-hidden">
       {/* Left Conversations List */}
       <div className="w-full sm:w-80 lg:w-88 shrink-0 h-full">
         <ConversationList

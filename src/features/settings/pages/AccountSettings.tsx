@@ -20,26 +20,26 @@ export const AccountSettings: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="max-w-2xl mx-auto bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-6">
+      <div className="max-w-2xl mx-auto bg-white p-6 sm:p-8 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-7">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Account Settings</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Manage your personal profile and email preferences.</p>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">Account Settings</h2>
+          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">Manage your personal profile and email preferences.</p>
         </div>
 
-        <div className="flex items-center gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex items-center gap-5 pb-5 border-b border-[#E2EAE6]">
           <Avatar name={name} size="xl" status="online" />
           <div>
-            <Button variant="outline" size="sm">Change Avatar Photo</Button>
-            <p className="text-[10px] text-slate-400 mt-1">JPG, PNG or GIF. Max size 2MB.</p>
+            <Button variant="outline" size="md" className="text-sm font-semibold rounded-xl">Change Avatar Photo</Button>
+            <p className="text-xs text-[#8A9993] mt-1.5 font-medium">JPG, PNG or GIF. Max size 2MB.</p>
           </div>
         </div>
 
-        <form onSubmit={handleSave} className="space-y-4">
+        <form onSubmit={handleSave} className="space-y-5">
           <Input
             label="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            leftIcon={<User className="w-4 h-4" />}
+            leftIcon={<User className="w-4.5 h-4.5" />}
             required
           />
 
@@ -48,16 +48,16 @@ export const AccountSettings: React.FC = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            leftIcon={<Mail className="w-4 h-4" />}
+            leftIcon={<Mail className="w-4.5 h-4.5" />}
             required
           />
 
           <Button
             type="submit"
             size="lg"
-            className="w-full mt-4"
+            className="w-full mt-6 text-base font-bold rounded-xl py-3 shadow-sm"
             isLoading={isSaving}
-            leftIcon={<Save className="w-4 h-4" />}
+            leftIcon={<Save className="w-5 h-5" />}
           >
             Save Profile Changes
           </Button>

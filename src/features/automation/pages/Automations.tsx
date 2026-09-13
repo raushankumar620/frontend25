@@ -26,18 +26,18 @@ export const Automations: React.FC = () => {
       header: 'Automation Workflow',
       render: (w) => (
         <div>
-          <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <GitBranch className="w-3.5 h-3.5 text-emerald-500" />
+          <div className="font-bold text-[#14201C] flex items-center gap-2.5 text-sm sm:text-base">
+            <GitBranch className="w-4.5 h-4.5 text-[#05A222]" />
             <span>{w.name}</span>
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">{w.description}</div>
+          <div className="text-xs sm:text-sm text-[#5F7069] mt-1">{w.description}</div>
         </div>
       ),
     },
     {
       header: 'Steps Count',
       render: (w) => (
-        <span className="font-semibold text-slate-700 dark:text-slate-300">
+        <span className="font-semibold text-sm text-[#1F2A26]">
           {w.nodes.length} nodes
         </span>
       ),
@@ -46,8 +46,8 @@ export const Automations: React.FC = () => {
       header: 'Total Executions',
       render: (w) => (
         <div>
-          <div className="font-bold text-emerald-500">{w.executionsCount.toLocaleString()}</div>
-          <div className="text-[10px] text-slate-400">{w.triggersCount} triggers</div>
+          <div className="font-extrabold text-[#05A222] text-sm sm:text-base">{w.executionsCount.toLocaleString()}</div>
+          <div className="text-xs text-[#5F7069] font-medium">{w.triggersCount} triggers</div>
         </div>
       ),
     },
@@ -55,7 +55,7 @@ export const Automations: React.FC = () => {
       header: 'Status',
       render: (w) => (
         <Badge variant={w.isActive ? 'success' : 'neutral'} size="sm">
-          <CheckCircle2 className="w-3 h-3 mr-1" />
+          <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
           {w.isActive ? 'ACTIVE' : 'PAUSED'}
         </Badge>
       ),
@@ -67,7 +67,8 @@ export const Automations: React.FC = () => {
           size="sm"
           variant="outline"
           onClick={() => navigate(ROUTES.CREATE_AUTOMATION)}
-          leftIcon={<Play className="w-3 h-3" />}
+          leftIcon={<Play className="w-3.5 h-3.5" />}
+          className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
         >
           Edit Workflow
         </Button>
@@ -77,21 +78,22 @@ export const Automations: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">
             WhatsApp Bot Automations
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
             Visual trigger-action builder for auto-replies, keyword bots, and generative AI agents.
           </p>
         </div>
 
         <Button
           variant="primary"
-          size="sm"
+          size="md"
           onClick={() => navigate(ROUTES.CREATE_AUTOMATION)}
-          leftIcon={<Plus className="w-3.5 h-3.5" />}
+          leftIcon={<Plus className="w-4 h-4" />}
+          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm"
         >
           Create Automation
         </Button>

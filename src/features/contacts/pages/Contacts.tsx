@@ -35,23 +35,23 @@ export const Contacts: React.FC = () => {
     {
       header: 'Contact',
       render: (c) => (
-        <div className="flex items-center gap-3">
-          <Avatar name={c.name} size="sm" />
+        <div className="flex items-center gap-3.5">
+          <Avatar name={c.name} size="md" />
           <div>
-            <div className="font-semibold text-slate-900 dark:text-white">{c.name}</div>
-            <div className="text-[11px] text-slate-400">{c.email || 'No email registered'}</div>
+            <div className="font-bold text-[#14201C] text-sm sm:text-base">{c.name}</div>
+            <div className="text-xs text-[#5F7069] mt-0.5">{c.email || 'No email registered'}</div>
           </div>
         </div>
       ),
     },
     {
       header: 'WhatsApp Number',
-      render: (c) => <span className="font-mono text-slate-600 dark:text-slate-300">{c.phone}</span>,
+      render: (c) => <span className="font-mono text-sm font-semibold text-[#1F2A26]">{c.phone}</span>,
     },
     {
       header: 'Tags',
       render: (c) => (
-        <div className="flex gap-1 flex-wrap">
+        <div className="flex gap-1.5 flex-wrap">
           {c.tags.map((t, idx) => (
             <Badge key={idx} variant="neutral" size="sm">
               {t}
@@ -64,16 +64,16 @@ export const Contacts: React.FC = () => {
       header: 'Orders & LTV',
       render: (c) => (
         <div>
-          <div className="font-bold text-slate-800 dark:text-slate-200">
+          <div className="font-extrabold text-[#14201C] text-sm">
             ${c.totalSpent?.toLocaleString() ?? 0}
           </div>
-          <div className="text-[10px] text-slate-400">{c.totalOrders ?? 0} orders</div>
+          <div className="text-xs text-[#5F7069] font-medium">{c.totalOrders ?? 0} orders</div>
         </div>
       ),
     },
     {
       header: 'Last Active',
-      render: (c) => <span className="text-slate-400">{formatDateTime(c.lastActive)}</span>,
+      render: (c) => <span className="text-xs sm:text-sm text-[#5F7069] font-medium">{formatDateTime(c.lastActive)}</span>,
     },
     {
       header: 'Action',
@@ -82,7 +82,8 @@ export const Contacts: React.FC = () => {
           size="sm"
           variant="ghost"
           onClick={() => navigate(`/contacts/${c.id}`)}
-          leftIcon={<Eye className="w-3.5 h-3.5" />}
+          leftIcon={<Eye className="w-4 h-4" />}
+          className="text-sm font-semibold text-[#006736] hover:bg-[#F6FAF8]"
         >
           View
         </Button>
@@ -92,28 +93,28 @@ export const Contacts: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Contacts & Audience</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">Contacts & Audience</h2>
+          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
             Manage your customer database, segmentation tags, and WhatsApp opt-ins.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" leftIcon={<Upload className="w-3.5 h-3.5" />}>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" size="md" leftIcon={<Upload className="w-4 h-4" />} className="text-sm font-semibold rounded-xl">
             Import CSV
           </Button>
-          <Button variant="outline" size="sm" leftIcon={<Download className="w-3.5 h-3.5" />}>
+          <Button variant="outline" size="md" leftIcon={<Download className="w-4 h-4" />} className="text-sm font-semibold rounded-xl">
             Export
           </Button>
-          <Button variant="primary" size="sm" leftIcon={<Plus className="w-3.5 h-3.5" />}>
+          <Button variant="primary" size="md" leftIcon={<Plus className="w-4 h-4" />} className="text-sm font-bold rounded-xl shadow-sm">
             Add Contact
           </Button>
         </div>
       </div>
 
-      <div className="mb-4 max-w-sm">
+      <div className="mb-6 max-w-md">
         <SearchBar value={query} onChange={setQuery} placeholder="Search by name, phone or email..." />
       </div>
 

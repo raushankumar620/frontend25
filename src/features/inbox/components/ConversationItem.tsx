@@ -34,41 +34,41 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
         <div className="flex items-center justify-between mb-1">
           <h4
             className={clsx(
-              'text-xs font-semibold truncate',
-              isActive ? 'text-emerald-900 dark:text-emerald-200' : 'text-slate-900 dark:text-white'
+              'text-sm font-bold truncate',
+              isActive ? 'text-[#006736]' : 'text-[#14201C]'
             )}
           >
             {conversation.contactName}
           </h4>
-          <span className="text-[10px] text-slate-400 shrink-0">
+          <span className="text-xs text-[#8A9993] shrink-0 font-medium">
             {formatRelativeTime(conversation.updatedAt)}
           </span>
         </div>
 
-        <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 truncate">
+        <div className="flex items-center gap-1.5 text-xs sm:text-sm text-[#5F7069] truncate">
           {isOutbound && (
-            <span className="shrink-0 text-emerald-500">
+            <span className="shrink-0 text-[#05A222]">
               {conversation.lastMessage.status === 'read' ? (
-                <CheckCheck className="w-3.5 h-3.5" />
+                <CheckCheck className="w-4 h-4" />
               ) : (
-                <Check className="w-3.5 h-3.5" />
+                <Check className="w-4 h-4" />
               )}
             </span>
           )}
-          <span className="truncate text-xs">{conversation.lastMessage.content}</span>
+          <span className="truncate text-xs sm:text-sm font-medium">{conversation.lastMessage.content}</span>
         </div>
 
-        <div className="flex items-center gap-1.5 mt-2">
+        <div className="flex items-center gap-1.5 mt-2.5">
           {conversation.tags.slice(0, 2).map((tag, idx) => (
             <span
               key={idx}
-              className="text-[9px] font-medium px-1.5 py-0.2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded"
+              className="text-xs font-semibold px-2 py-0.5 bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0] rounded-md"
             >
               {tag}
             </span>
           ))}
           {conversation.unreadCount > 0 && (
-            <span className="ml-auto w-4 h-4 rounded-full bg-emerald-500 text-white text-[9px] font-bold flex items-center justify-center">
+            <span className="ml-auto w-5 h-5 rounded-full bg-[#05A222] text-white text-xs font-bold flex items-center justify-center">
               {conversation.unreadCount}
             </span>
           )}

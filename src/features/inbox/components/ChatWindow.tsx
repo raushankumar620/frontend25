@@ -28,50 +28,50 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   return (
     <div className="w-full h-full flex flex-col bg-slate-50 dark:bg-slate-950">
       {/* Chat Header */}
-      <div className="h-16 px-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between z-10 shrink-0">
-        <div className="flex items-center gap-3">
+      <div className="h-[72px] sm:h-20 px-5 bg-white border-b border-[#E2EAE6] flex items-center justify-between z-10 shrink-0">
+        <div className="flex items-center gap-3.5">
           <Avatar name={conversation.contactName} size="md" status="online" />
           <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+            <div className="flex items-center gap-2.5">
+              <h3 className="text-sm sm:text-base font-bold text-[#14201C]">
                 {conversation.contactName}
               </h3>
-              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.2 rounded-full font-medium border border-emerald-200 dark:border-emerald-800">
+              <span className="text-xs text-[#006736] bg-[#E9F9EE] px-2.5 py-0.5 rounded-full font-bold border border-[#C4EBD0]">
                 {conversation.channel}
               </span>
             </div>
-            <p className="text-[11px] text-slate-400">{conversation.contactPhone}</p>
+            <p className="text-xs sm:text-sm text-[#5F7069] mt-0.5 font-medium">{conversation.contactPhone}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowNotes(!showNotes)}
-            className={`p-2 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors ${
+            className={`p-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition-colors cursor-pointer ${
               showNotes
-                ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ? 'bg-[#FFF8E6] text-[#9A6B00] border border-[#FFE299]'
+                : 'text-[#5F7069] hover:bg-[#F6FAF8] hover:text-[#14201C]'
             }`}
           >
-            <StickyNote className="w-4 h-4" />
+            <StickyNote className="w-4.5 h-4.5" />
             <span className="hidden sm:inline">Notes ({notes.length})</span>
           </button>
 
           <button
-            className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="p-2.5 rounded-xl text-[#5F7069] hover:bg-[#F6FAF8] hover:text-[#05A222] transition-colors cursor-pointer"
             title="Mark as Resolved"
           >
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            <CheckCircle2 className="w-5 h-5 text-[#05A222]" />
           </button>
 
           <Dropdown
             trigger={
-              <button className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
-                <MoreVertical className="w-4 h-4" />
+              <button className="p-2.5 rounded-xl text-[#5F7069] hover:bg-[#F6FAF8] hover:text-[#14201C] transition-colors cursor-pointer">
+                <MoreVertical className="w-5 h-5" />
               </button>
             }
             items={[
-              { label: 'Assign to Team Member', icon: <UserCheck className="w-3.5 h-3.5" /> },
+              { label: 'Assign to Team Member', icon: <UserCheck className="w-4 h-4" /> },
               { label: 'Block & Report Spam', danger: true },
             ]}
           />
@@ -82,12 +82,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       {showNotes && <InternalNote notes={notes} onAddNote={onAddNote} />}
 
       {/* Meta API 24h Window Notice */}
-      <div className="bg-emerald-500/10 border-b border-emerald-500/20 px-4 py-1.5 flex items-center justify-between text-[11px] text-emerald-600 dark:text-emerald-400">
-        <div className="flex items-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5" />
+      <div className="bg-[#E9F9EE] border-b border-[#C4EBD0] px-5 py-2 flex items-center justify-between text-xs sm:text-sm text-[#006736] font-medium">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-[#05A222]" />
           <span>Meta 24h Customer Care Window: <strong>Open (Free Form Allowed)</strong></span>
         </div>
-        <span className="text-[10px] text-slate-400">Expires in 23h 48m</span>
+        <span className="text-xs text-[#5F7069]">Expires in 23h 48m</span>
       </div>
 
       {/* Messages Scroll Area */}

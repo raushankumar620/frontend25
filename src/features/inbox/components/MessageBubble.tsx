@@ -28,34 +28,34 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
 
       <div
         className={clsx(
-          'rounded-2xl px-4 py-2.5 text-xs shadow-xs relative leading-relaxed break-words',
+          'rounded-2xl px-5 py-3 text-sm sm:text-[15px] shadow-xs relative leading-relaxed break-words',
           isOutbound
-            ? 'bg-emerald-600 text-white rounded-br-xs'
-            : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700/60 rounded-bl-xs'
+            ? 'bg-[#05A222] text-white rounded-br-xs'
+            : 'bg-white text-[#1F2A26] border border-[#E2EAE6] rounded-bl-xs'
         )}
       >
         {message.mediaUrl && (
           <img
             src={message.mediaUrl}
             alt="media attachment"
-            className="rounded-lg mb-2 max-h-48 object-cover w-full"
+            className="rounded-xl mb-2.5 max-h-56 object-cover w-full"
           />
         )}
-        <p className="whitespace-pre-wrap">{message.content}</p>
+        <p className="whitespace-pre-wrap font-normal">{message.content}</p>
 
         <div
           className={clsx(
-            'flex items-center justify-end gap-1 mt-1 text-[10px]',
-            isOutbound ? 'text-emerald-200' : 'text-slate-400'
+            'flex items-center justify-end gap-1.5 mt-1.5 text-xs font-medium',
+            isOutbound ? 'text-emerald-100' : 'text-[#8A9993]'
           )}
         >
           <span>{formatTime(message.timestamp)}</span>
           {isOutbound && (
             <span>
               {message.status === 'read' ? (
-                <CheckCheck className="w-3.5 h-3.5 text-white" />
+                <CheckCheck className="w-4 h-4 text-white" />
               ) : (
-                <Check className="w-3.5 h-3.5" />
+                <Check className="w-4 h-4" />
               )}
             </span>
           )}
