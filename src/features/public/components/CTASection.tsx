@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { ArrowRight, ShieldCheck, Zap, Sparkles, MessageSquare, PhoneCall } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES, APP_NAME } from '../../../utils/constants';
+import { useAuthStore } from '../../../store/authStore';
 
 export const CTASection: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = React.useRef<HTMLElement>(null);
@@ -114,12 +116,20 @@ export const CTASection: React.FC = () => {
                 
                 {/* Enhanced Start 14-Day Free Trial Button */}
                 <button
-                  onClick={() => navigate(ROUTES.REGISTER)}
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      navigate(ROUTES.LOGIN);
+                    } else {
+                      navigate(ROUTES.DASHBOARD);
+                    }
+                  }}
                   className="relative group overflow-hidden rounded-xl bg-white hover:bg-[#F0FAF3] text-[#006736] font-extrabold text-xs sm:text-sm px-6 py-3 shadow-[0_10px_25px_rgba(0,0,0,0.3),0_0_20px_rgba(28,215,44,0.3)] hover:shadow-[0_12px_35px_rgba(0,0,0,0.4),0_0_28px_rgba(28,215,44,0.45)] border-2 border-white transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2.5 cursor-pointer"
                 >
                   <div className="absolute inset-0 w-1/2 h-full bg-linear-to-r from-transparent via-white/40 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-out pointer-events-none" />
                   
-                  <span className="tracking-tight">Start 14-Day Free Trial</span>
+                  <span className="tracking-tight">
+                    {isAuthenticated ? 'Go to App Dashboard' : 'Start 14-Day Free Trial'}
+                  </span>
                   
                   <div className="w-5 h-5 rounded-lg bg-[#E9F9EE] group-hover:bg-[#006736] group-hover:text-white flex items-center justify-center transition-colors text-[#006736] shadow-xs">
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />

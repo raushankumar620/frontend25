@@ -10,9 +10,11 @@ import {
 import { Button } from '../../../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
+import { useAuthStore } from '../../../store/authStore';
 
 export const WhatsAppAPISection: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
   const [copied, setCopied] = useState(false);
 
   const sampleCode = `// Send WhatsApp Template Message with WhatsAppMsg SDK
@@ -83,7 +85,13 @@ console.log('Message delivered via Meta Cloud API:', result.messageId);`;
               <Button
                 variant="primary"
                 size="md"
-                onClick={() => navigate(ROUTES.REGISTER)}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    navigate(ROUTES.LOGIN);
+                  } else {
+                    navigate(ROUTES.CONNECT_WHATSAPP);
+                  }
+                }}
                 rightIcon={<ArrowRight className="w-4 h-4" />}
                 className="bg-[#05A222] hover:bg-[#006736] text-white font-bold"
               >
@@ -92,7 +100,13 @@ console.log('Message delivered via Meta Cloud API:', result.messageId);`;
               <Button
                 variant="outline"
                 size="md"
-                onClick={() => navigate(ROUTES.DEVELOPERS_DOCS)}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    navigate(ROUTES.LOGIN);
+                  } else {
+                    navigate(ROUTES.DEVELOPERS_DOCS);
+                  }
+                }}
                 className="border-[#E2EAE6] text-[#14201C] font-semibold hover:bg-[#F6FAF8]"
               >
                 Explore API Docs

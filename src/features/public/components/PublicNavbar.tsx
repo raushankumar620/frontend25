@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Menu, X, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import { Menu, X, ArrowRight, ShieldCheck, Zap, LayoutDashboard, LogOut } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { ROUTES, APP_NAME } from '../../../utils/constants';
+import { useAuthStore } from '../../../store/authStore';
 
 export const PublicNavbar: React.FC = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated, logout, user } = useAuthStore();
 
   const navLinks = [
     { label: 'Features', path: ROUTES.PUBLIC_FEATURES },
@@ -53,23 +55,48 @@ export const PublicNavbar: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(ROUTES.LOGIN)}
-            className="text-[#14201C] hover:text-[#006736] hover:bg-[#F6FAF8] font-semibold"
-          >
-            Sign In
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => navigate(ROUTES.REGISTER)}
-            rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-            className="bg-[#05A222] hover:bg-[#006736] text-white shadow-md shadow-[#05A222]/20 font-semibold"
-          >
-            Start Free Trial
-          </Button>
+          {isAuthenticated ? (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(ROUTES.DASHBOARD)}
+                leftIcon={<LayoutDashboard className="w-4 h-4 text-[#05A222]" />}
+                className="border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] font-bold"
+              >
+                Go to Dashboard
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => logout()}
+                leftIcon={<LogOut className="w-3.5 h-3.5" />}
+                className="text-[#D64545] hover:bg-[#FDF2F2] font-semibold"
+              >
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(ROUTES.LOGIN)}
+                className="text-[#14201C] hover:text-[#006736] hover:bg-[#F6FAF8] font-semibold"
+              >
+                Sign In
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => navigate(ROUTES.REGISTER)}
+                rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                className="bg-[#05A222] hover:bg-[#006736] text-white shadow-md shadow-[#05A222]/20 font-semibold"
+              >
+                Start Free Trial
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile menu trigger */}
@@ -102,18 +129,60 @@ export const PublicNavbar: React.FC = () => {
             ))}
           </nav>
           <div className="pt-3 border-t border-[#E2EAE6] flex flex-col gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate(ROUTES.LOGIN)} className="w-full">
-              Sign In
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => navigate(ROUTES.REGISTER)}
-              leftIcon={<Zap className="w-3.5 h-3.5" />}
-              className="w-full bg-[#05A222] hover:bg-[#006736] text-white"
-            >
-              Start 14-Day Free Trial
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    setIsMobileOpen(false);
+                    navigate(ROUTES.DASHBOARD);
+                  }}
+                  leftIcon={<LayoutDashboard className="w-4 h-4" />}
+                  className="w-full bg-[#05A222] text-white"
+                >
+                  Dashboard ({user?.name?.split(' ')[0] || 'User'})
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsMobileOpen(false);
+                    logout();
+                  }}
+                  leftIcon={<LogOut className="w-3.5 h-3.5" />}
+                  className="w-full text-[#D64545] border-[#F8B4B4]"
+                >
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsMobileOpen(false);
+                    navigate(ROUTES.LOGIN);
+                  }}
+                  className="w-full"
+                >
+                  Sign In
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    setIsMobileOpen(false);
+                    navigate(ROUTES.REGISTER);
+                  }}
+                  leftIcon={<Zap className="w-3.5 h-3.5" />}
+                  className="w-full bg-[#05A222] hover:bg-[#006736] text-white"
+                >
+                  Start 14-Day Free Trial
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}

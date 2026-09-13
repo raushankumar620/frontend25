@@ -3,9 +3,11 @@ import { Check, Sparkles } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
+import { useAuthStore } from '../../../store/authStore';
 
 export const PricingSection: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
   const [annual, setAnnual] = useState(true);
 
   const plans = [
@@ -157,7 +159,15 @@ export const PricingSection: React.FC = () => {
                 <Button
                   variant={plan.popular ? 'primary' : 'outline'}
                   size="lg"
-                  onClick={() => navigate(plan.popular || plan.name === 'Starter' ? ROUTES.REGISTER : ROUTES.PUBLIC_CONTACT)}
+                  onClick={() => {
+                    if (plan.name === 'Enterprise') {
+                      navigate(ROUTES.PUBLIC_CONTACT);
+                    } else if (!isAuthenticated) {
+                      navigate(ROUTES.LOGIN);
+                    } else {
+                      navigate(ROUTES.BILLING_PLANS);
+                    }
+                  }}
                   className={`w-full font-bold ${
                     plan.popular
                       ? 'bg-[#05A222] hover:bg-[#006736] text-white shadow-md'

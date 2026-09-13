@@ -20,9 +20,11 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
 import { CTASection } from '../components/CTASection';
 import { SEO } from '../../../seo';
+import { useAuthStore } from '../../../store/authStore';
 
 export const Features: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'api' | 'ai' | 'automation' | 'inbox' | 'analytics' | 'security'>('api');
 
   const deepDives = {
@@ -215,7 +217,13 @@ const isValid = whatsAppMsg.security.verifySignature({
                 <Button
                   variant="primary"
                   size="md"
-                  onClick={() => navigate(ROUTES.REGISTER)}
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      navigate(ROUTES.LOGIN);
+                    } else {
+                      navigate(ROUTES.DASHBOARD);
+                    }
+                  }}
                   rightIcon={<ArrowRight className="w-4 h-4" />}
                   className="bg-[#05A222] hover:bg-[#006736] text-white font-bold"
                 >

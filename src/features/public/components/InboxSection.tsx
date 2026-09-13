@@ -8,9 +8,11 @@ import {
 import { Button } from '../../../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
+import { useAuthStore } from '../../../store/authStore';
 
 export const InboxSection: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <section className="py-20 bg-[#F6FAF8] border-b border-[#E2EAE6]">
@@ -127,7 +129,13 @@ export const InboxSection: React.FC = () => {
           <Button
             variant="primary"
             size="md"
-            onClick={() => navigate(ROUTES.INBOX)}
+            onClick={() => {
+              if (!isAuthenticated) {
+                navigate(ROUTES.LOGIN);
+              } else {
+                navigate(ROUTES.INBOX);
+              }
+            }}
             rightIcon={<ArrowRight className="w-4 h-4" />}
             className="bg-[#05A222] hover:bg-[#006736] text-white font-bold"
           >

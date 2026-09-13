@@ -14,30 +14,32 @@ export const Dashboard: React.FC = () => {
   return (
     <PageContainer>
       {/* Top Banner / Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
         <div>
-          <h2 className="text-2xl font-extrabold text-[#14201C] tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-3xl font-black text-[#14201C] tracking-tight">
             WhatsApp Business Overview
           </h2>
-          <p className="text-xs text-[#5F7069] mt-1">
+          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
             Monitor real-time delivery throughput, campaign ROI, and customer conversations.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            size="sm"
+            size="md"
             onClick={() => navigate(ROUTES.CREATE_TEMPLATE)}
-            leftIcon={<Plus className="w-3.5 h-3.5" />}
+            leftIcon={<Plus className="w-4 h-4" />}
+            className="text-sm font-semibold px-4 py-2.5 rounded-xl border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8]"
           >
             New Template
           </Button>
           <Button
             variant="primary"
-            size="sm"
+            size="md"
             onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
-            leftIcon={<Zap className="w-3.5 h-3.5" />}
+            leftIcon={<Zap className="w-4 h-4" />}
+            className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm"
           >
             Launch Broadcast
           </Button>

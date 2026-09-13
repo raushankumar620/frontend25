@@ -2,15 +2,20 @@ import { useState, useEffect } from 'react';
 import type { User } from '../types/auth';
 import { authService } from '../services/authService';
 
-let currentUser: User | null = {
-  id: 'usr_98129',
-  name: 'Sarah Jenkins',
-  email: 'sarah.j@acmeglobal.com',
-  role: 'admin',
-  organizationId: 'org_81723',
-  organizationName: 'Acme Global Ltd',
-  createdAt: '2025-01-15T10:00:00Z',
+const getInitialUser = (): User | null => {
+  try {
+    const raw = localStorage.getItem('chatflow_user');
+    const token = localStorage.getItem('chatflow_token');
+    if (raw && token) {
+      return JSON.parse(raw);
+    }
+  } catch {
+    return null;
+  }
+  return null;
 };
+
+let currentUser: User | null = getInitialUser();
 
 const listeners = new Set<(user: User | null) => void>();
 
@@ -37,6 +42,11 @@ export const authStore = {
     this.setUser(user);
     return user;
   },
+  async register(name: string, email: string, pass: string) {
+    const { user } = await authService.register(name, email, pass);
+    this.setUser(user);
+    return user;
+  },
   logout() {
     authService.logout();
     this.setUser(null);
@@ -56,6 +66,7 @@ export function useAuthStore() {
     user,
     isAuthenticated: !!user,
     login: authStore.login.bind(authStore),
+    register: authStore.register.bind(authStore),
     logout: authStore.logout.bind(authStore),
   };
 }

@@ -56,30 +56,30 @@ export const RecentActivity: React.FC = () => {
 
   return (
     <div className="bg-white border border-[#E2EAE6] rounded-2xl p-6 shadow-[0_8px_30px_rgba(1,59,35,0.04)]">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-5">
         <div>
-          <h4 className="text-sm font-bold text-[#14201C]">Live Activity Feed</h4>
-          <p className="text-xs text-[#5F7069] mt-0.5">
+          <h4 className="text-base sm:text-lg font-bold text-[#14201C]">Live Activity Feed</h4>
+          <p className="text-sm text-[#5F7069] mt-0.5">
             Real-time webhook and system notifications
           </p>
         </div>
-        <Badge variant="primary" size="sm" dot>Live</Badge>
+        <Badge variant="primary" size="md" dot>Live</Badge>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {mockActivities.map((act) => (
-          <div key={act.id} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-[#F6FAF8] transition-colors">
-            <div className="p-2 rounded-xl bg-[#F6FAF8] border border-[#E2EAE6] shrink-0">
+          <div key={act.id} className="flex items-start gap-3.5 p-3 rounded-xl hover:bg-[#F6FAF8] transition-colors">
+            <div className="p-2.5 rounded-xl bg-[#F6FAF8] border border-[#E2EAE6] shrink-0">
               {getIcon(act.type)}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-semibold text-[#1F2A26] truncate">
+                <span className="text-sm font-bold text-[#1F2A26] truncate">
                   {act.title}
                 </span>
-                <span className="text-[10px] text-[#8A9993] shrink-0">{act.timestamp}</span>
+                <span className="text-xs text-[#8A9993] shrink-0 font-medium">{act.timestamp}</span>
               </div>
-              <p className="text-xs text-[#5F7069] mt-0.5 truncate">{act.description}</p>
+              <p className="text-xs sm:text-sm text-[#5F7069] mt-1 line-clamp-2">{act.description}</p>
             </div>
           </div>
         ))}

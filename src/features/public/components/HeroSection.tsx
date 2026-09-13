@@ -12,9 +12,11 @@ import {
 } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { ROUTES, APP_NAME } from '../../../utils/constants';
+import { useAuthStore } from '../../../store/authStore';
 
 export const HeroSection: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
 
   // Typewriter effect state
   const rotatingWords = [
@@ -242,11 +244,17 @@ export const HeroSection: React.FC = () => {
               <Button
                 variant="primary"
                 size="lg"
-                onClick={() => navigate(ROUTES.REGISTER)}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    navigate(ROUTES.LOGIN);
+                  } else {
+                    navigate(ROUTES.DASHBOARD);
+                  }
+                }}
                 rightIcon={<ArrowRight className="w-4 h-4" />}
                 className="w-full sm:w-auto bg-[#05A222] hover:bg-[#006736] text-white shadow-lg shadow-[#05A222]/25 px-7 py-3.5 font-bold"
               >
-                Start Free Trial
+                {isAuthenticated ? 'Go to Dashboard' : 'Get Started & Login'}
               </Button>
 
               <Button
