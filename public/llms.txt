@@ -1,0 +1,56 @@
+# WhatsAppMSG
+
+> Enterprise WhatsApp Business API, Messaging, Automation & AI Platform
+
+WhatsAppMSG is an enterprise WhatsApp Business Cloud API platform that enables businesses to connect WhatsApp numbers, automate customer conversations, run high-volume marketing campaigns, manage multi-agent shared inboxes, integrate developer APIs, and deploy domain-trained AI WhatsApp customer support agents.
+
+## Core Capabilities
+
+- **Direct Meta Cloud API Integration**: Official Meta Cloud API v20.0 direct connectivity with Tier 3 (100k+ messages/day) throughput, 0% middleman markups, and green tick badge assistance.
+- **Autonomous AI WhatsApp Agents**: Domain-trained LLM agents powered by Retrieval-Augmented Generation (RAG) on custom PDFs, documents, catalogs, and websites to automate 80%+ of Tier-1 support tickets 24/7.
+- **Multi-Agent Shared Inbox**: Single verified WhatsApp number shared across multiple agents with collision detection, round-robin routing, and internal private notes.
+- **Visual Workflow Automation**: Drag-and-drop conversational journey builder for abandoned cart recovery, lead qualification, order tracking, and drip campaigns.
+- **Broadcast Campaigns**: Scheduled high-throughput marketing broadcasts with rich CTA buttons, list messages, and real-time delivery/read analytics.
+- **Developer API & Webhooks**: REST APIs, SDKs, webhooks, and granular API keys for seamless integration with CRMs, Shopify, WooCommerce, and backend systems.
+
+## Official Public Pages
+
+- [Homepage](https://whatsappmsg.com/): Product overview, features preview, interactive AI demo, and direct Meta Cloud API integration.
+- [Features](https://whatsappmsg.com/features): Complete feature deep-dive covering Meta Cloud API, AI Co-pilot, visual workflows, team inbox, and analytics.
+- [Solutions](https://whatsappmsg.com/solutions): Industry-tailored solutions for E-Commerce, FinTech, Healthcare, Real Estate, Education, and Professional Services.
+- [Pricing](https://whatsappmsg.com/pricing): Transparent subscription plans with direct Meta Cloud API pass-through billing and 14-day free trial.
+- [About Us](https://whatsappmsg.com/about): Mission, company background, enterprise SLAs, and security standards.
+- [Contact Sales](https://whatsappmsg.com/contact): Enterprise consultation, high-volume onboarding, and technical support.
+
+## Developer Quickstart
+
+Send a WhatsApp template message via WhatsAppMSG API:
+
+```javascript
+import { WhatsAppMsgClient } from '@whatsappmsg/sdk';
+
+const client = new WhatsAppMsgClient({
+  apiKey: process.env.WHATSAPPMSG_API_KEY,
+  phoneNumberId: 'phone_982183921'
+});
+
+const result = await client.messages.sendTemplate({
+  to: '+15551234567',
+  templateName: 'order_confirmation_v2',
+  language: 'en_US',
+  components: [
+    { type: 'header', parameters: [{ type: 'text', text: 'Order #8921' }] },
+    { type: 'body', parameters: [{ type: 'text', text: '$149.00' }] }
+  ]
+});
+
+console.log('Message delivered via Meta Cloud API:', result.messageId);
+```
+
+## Brand Information & Official Channels
+
+- **Canonical Brand**: WhatsAppMSG
+- **Official Website**: https://whatsappmsg.com
+- **Official Contact Email**: whatsappmsgofficial@gmail.com
+- **Official Instagram**: https://www.instagram.com/whatsapmsg/
+- **Brand Clarification**: Also searched colloquially as WhatsapMSG, WhatsAppMS, or WhatsAppMG. The official name is WhatsAppMSG.

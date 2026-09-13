@@ -16,6 +16,7 @@ import { Button } from '../../../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
 import { CTASection } from '../components/CTASection';
+import { SEO } from '../../../seo';
 
 export const Solutions: React.FC = () => {
   const navigate = useNavigate();
@@ -142,6 +143,7 @@ export const Solutions: React.FC = () => {
 
   return (
     <div className="bg-white py-16 sm:py-24 text-[#1F2A26]">
+      <SEO page="solutions" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -154,7 +156,7 @@ export const Solutions: React.FC = () => {
             Built to solve unique challenges across every industry
           </h1>
           <p className="text-sm sm:text-base text-[#5F7069]">
-            See how leading brands in your sector use WhatsAppMsg to automate sales, elevate customer retention, and streamline operations.
+            See how leading brands in your sector use WhatsAppMSG to automate sales, elevate customer retention, and streamline operations.
           </p>
         </div>
 

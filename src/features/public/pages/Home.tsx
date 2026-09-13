@@ -1,4 +1,5 @@
 import React from 'react';
+import { SEO } from '../../../seo';
 import { HeroSection } from '../components/HeroSection';
 import { LogoCloud } from '../components/LogoCloud';
 import { FeaturesSection } from '../components/FeaturesSection';
@@ -13,6 +14,7 @@ import { CTASection } from '../components/CTASection';
 export const Home: React.FC = () => {
   return (
     <div className="flex flex-col bg-white text-slate-900">
+      <SEO page="home" />
       <HeroSection />
       <LogoCloud />
       <FeaturesSection />

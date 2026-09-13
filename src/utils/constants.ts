@@ -1,4 +1,4 @@
-export const APP_NAME = 'WhatsAppMsg';
+export const APP_NAME = 'WhatsAppMSG';
 
 export const ROUTES = {
   // Public Marketing Website

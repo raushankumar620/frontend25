@@ -21,7 +21,7 @@ interface Message {
 const KNOWLEDGE_BASE: { keywords: string[]; answer: string; action?: { label: string; url: string; isInternal?: boolean } }[] = [
   {
     keywords: ['price', 'pricing', 'cost', 'plan', 'charge', 'rate', 'paisa'],
-    answer: '💰 WhatsAppMsg offers 3 flexible plans with ZERO Meta API markup:\n\n• Starter: $29/mo (Up to 10k msgs, 2 agents)\n• Pro: $79/mo (Up to 50k msgs, 5 agents, AI Bot)\n• Enterprise: $199/mo (Unlimited msgs, custom AI models, 24/7 dedicated SLA).\n\nYou also get a 14-Day Free Trial with no credit card required!',
+    answer: '💰 WhatsAppMSG offers 3 flexible plans with ZERO Meta API markup:\n\n• Starter: $29/mo (Up to 10k msgs, 2 agents)\n• Pro: $79/mo (Up to 50k msgs, 5 agents, AI Bot)\n• Enterprise: $199/mo (Unlimited msgs, custom AI models, 24/7 dedicated SLA).\n\nYou also get a 14-Day Free Trial with no credit card required!',
     action: { label: 'View Full Pricing', url: ROUTES.PUBLIC_PRICING, isInternal: true }
   },
   {
@@ -36,12 +36,12 @@ const KNOWLEDGE_BASE: { keywords: string[]; answer: string; action?: { label: st
   },
   {
     keywords: ['broadcast', 'campaign', 'bulk', 'marketing', 'mass', 'limit'],
-    answer: '📢 With WhatsAppMsg Broadcasts, you can schedule and send personalized rich campaigns (images, CTA buttons, quick replies) to tens of thousands of opted-in customers in seconds with built-in analytics and opt-out compliance.',
+    answer: '📢 With WhatsAppMSG Broadcasts, you can schedule and send personalized rich campaigns (images, CTA buttons, quick replies) to tens of thousands of opted-in customers in seconds with built-in analytics and opt-out compliance.',
     action: { label: 'Start Free Trial', url: ROUTES.REGISTER, isInternal: true }
   },
   {
     keywords: ['shopify', 'woocommerce', 'crm', 'webhook', 'integrate', 'integration', 'connect'],
-    answer: '🛒 WhatsAppMsg integrates with Shopify, WooCommerce, HubSpot, Salesforce, and custom CRMs via 1-click webhooks. Trigger automatic order confirmations, shipping tracking updates, and abandoned cart recovery sequences seamlessly.',
+    answer: '🛒 WhatsAppMSG integrates with Shopify, WooCommerce, HubSpot, Salesforce, and custom CRMs via 1-click webhooks. Trigger automatic order confirmations, shipping tracking updates, and abandoned cart recovery sequences seamlessly.',
     action: { label: 'View Integrations', url: ROUTES.PUBLIC_SOLUTIONS, isInternal: true }
   },
   {

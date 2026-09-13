@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Globe, Share2, Sparkles } from 'lucide-react';
+import { ShieldCheck, Globe, Share2 } from 'lucide-react';
 import { ROUTES, APP_NAME } from '../../../utils/constants';
 
 export const PublicFooter: React.FC = () => {
@@ -49,14 +49,14 @@ export const PublicFooter: React.FC = () => {
             </ul>
           </div>
 
-          {/* Company Links */}
+            {/* Company Links */}
           <div className="space-y-3">
             <h4 className="font-bold text-[#14201C] text-xs uppercase tracking-wider">Company</h4>
             <ul className="space-y-2">
               <li><Link to={ROUTES.PUBLIC_ABOUT} className="hover:text-[#006736] transition-colors">About Us</Link></li>
               <li><Link to={ROUTES.PUBLIC_CONTACT} className="hover:text-[#006736] transition-colors">Contact Sales</Link></li>
-              <li><a href="#" className="hover:text-[#006736] transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-[#006736] transition-colors">Terms of Service</a></li>
+              <li><a href="mailto:whatsappmsgofficial@gmail.com" className="hover:text-[#006736] transition-colors">whatsappmsgofficial@gmail.com</a></li>
+              <li><a href="https://www.instagram.com/whatsapmsg/" target="_blank" rel="noopener noreferrer" className="hover:text-[#006736] transition-colors">Official Instagram</a></li>
             </ul>
           </div>
         </div>
@@ -67,9 +67,19 @@ export const PublicFooter: React.FC = () => {
           </p>
 
           <div className="flex items-center gap-4 text-[#8A9993]">
-            <a href="#" aria-label="Global" className="hover:text-[#006736] transition-colors"><Globe className="w-4 h-4" /></a>
-            <a href="#" aria-label="Network" className="hover:text-[#006736] transition-colors"><Share2 className="w-4 h-4" /></a>
-            <a href="#" aria-label="Innovations" className="hover:text-[#006736] transition-colors"><Sparkles className="w-4 h-4" /></a>
+            <a 
+              href="https://www.instagram.com/whatsapmsg/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="WhatsAppMSG Official Instagram" 
+              className="hover:text-[#006736] transition-colors flex items-center gap-1 text-[11px]"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>@whatsapmsg</span>
+            </a>
+            <a href="mailto:whatsappmsgofficial@gmail.com" aria-label="WhatsAppMSG Official Support Email" className="hover:text-[#006736] transition-colors">
+              <Globe className="w-4 h-4" />
+            </a>
           </div>
         </div>
       </div>

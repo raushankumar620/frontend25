@@ -19,6 +19,7 @@ import { Button } from '../../../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
 import { CTASection } from '../components/CTASection';
+import { SEO } from '../../../seo';
 
 export const Features: React.FC = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ export const Features: React.FC = () => {
         'Interactive List, Quick-Reply, Call-To-Action, and Flow messages',
         'Automatic 24h messaging window detection and session recovery',
       ],
-      code: `// Send Meta Cloud API Template Message with WhatsAppMsg
+      code: `// Send Meta Cloud API Template Message with WhatsAppMSG
 const response = await whatsAppMsg.messages.sendTemplate({
   to: "+91 98765 43210",
   template: "order_confirmation_v2",
@@ -144,6 +145,7 @@ const isValid = whatsAppMsg.security.verifySignature({
 
   return (
     <div className="bg-white py-16 sm:py-24 text-[#1F2A26]">
+      <SEO page="features" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}

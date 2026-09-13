@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { 
   Mail, 
-  MapPin, 
   Send, 
   CheckCircle2, 
   MessageSquare, 
@@ -10,6 +9,7 @@ import {
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { APP_NAME } from '../../../utils/constants';
+import { SEO } from '../../../seo';
 
 export const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -35,6 +35,7 @@ export const Contact: React.FC = () => {
 
   return (
     <div className="bg-white py-16 sm:py-24 text-[#1F2A26]">
+      <SEO page="contact" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -47,7 +48,7 @@ export const Contact: React.FC = () => {
             Connect with our WhatsApp Enterprise Specialists
           </h1>
           <p className="text-sm sm:text-base text-[#5F7069]">
-            Have questions about custom high-volume pricing, Meta Cloud API onboarding, or bespoke AI workflows? We respond within 15 minutes.
+            Have questions about custom high-volume pricing, Meta Cloud API onboarding, or bespoke AI workflows? We respond promptly.
           </p>
         </div>
 
@@ -60,42 +61,34 @@ export const Contact: React.FC = () => {
               
               <div className="space-y-4">
                 <a 
-                  href="https://wa.me/15551234567" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                  href="mailto:whatsappmsgofficial@gmail.com"
                   className="flex items-start gap-4 p-4 rounded-2xl bg-[#E9F9EE] border border-[#C4EBD0] hover:border-[#05A222] transition-colors group cursor-pointer shadow-2xs"
                 >
                   <div className="w-10 h-10 rounded-xl bg-[#05A222] text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform font-bold shadow-xs">
-                    <MessageSquare className="w-5 h-5 fill-current" />
+                    <Mail className="w-5 h-5 fill-current" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-[#006736] uppercase tracking-wider">Chat on WhatsApp (Fastest)</div>
-                    <div className="text-sm font-semibold text-[#14201C] mt-0.5">+1 (555) 019-2834</div>
-                    <div className="text-[11px] text-[#5F7069]">Instant AI Bot + Live Agent Response</div>
+                    <div className="text-xs font-bold text-[#006736] uppercase tracking-wider">Official Email</div>
+                    <div className="text-sm font-semibold text-[#14201C] mt-0.5">whatsappmsgofficial@gmail.com</div>
+                    <div className="text-[11px] text-[#5F7069]">Direct support & enterprise inquiries</div>
                   </div>
                 </a>
 
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-[#E2EAE6] shadow-2xs">
-                  <div className="w-10 h-10 rounded-xl bg-[#F6FAF8] text-[#5F7069] flex items-center justify-center shrink-0 border border-[#E2EAE6]">
-                    <Mail className="w-5 h-5" />
+                <a 
+                  href="https://www.instagram.com/whatsapmsg/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-[#E2EAE6] hover:border-[#05A222] transition-colors group shadow-2xs"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-[#F6FAF8] text-[#05A222] flex items-center justify-center shrink-0 border border-[#E2EAE6] group-hover:scale-105 transition-transform">
+                    <MessageSquare className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-[#5F7069] uppercase tracking-wider">Enterprise Sales Email</div>
-                    <div className="text-sm font-semibold text-[#14201C] mt-0.5">sales@whatsappmsg.com</div>
-                    <div className="text-[11px] text-[#8A9993]">Response time: &lt; 15 mins (24/7)</div>
+                    <div className="text-xs font-bold text-[#5F7069] uppercase tracking-wider">Official Instagram</div>
+                    <div className="text-sm font-semibold text-[#14201C] mt-0.5">@whatsapmsg</div>
+                    <div className="text-[11px] text-[#8A9993]">Follow our verified product announcements</div>
                   </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-[#E2EAE6] shadow-2xs">
-                  <div className="w-10 h-10 rounded-xl bg-[#F6FAF8] text-[#5F7069] flex items-center justify-center shrink-0 border border-[#E2EAE6]">
-                    <MapPin className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-[#5F7069] uppercase tracking-wider">Global Headquarters</div>
-                    <div className="text-sm font-semibold text-[#14201C] mt-0.5">548 Market St, Suite 300</div>
-                    <div className="text-[11px] text-[#8A9993]">San Francisco, CA 94104</div>
-                  </div>
-                </div>
+                </a>
               </div>
             </div>
 

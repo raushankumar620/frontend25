@@ -68,7 +68,7 @@ export const HeroSection: React.FC = () => {
   const welcomeMsg: ChatItem = {
     id: 'welcome',
     sender: 'bot',
-    text: '👋 Hi Alex! Welcome to WhatsAppMsg. How can we help scale your business communication today?',
+    text: '👋 Hi Alex! Welcome to WhatsAppMSG. How can we help scale your business communication today?',
     time: '10:42 AM',
   };
 

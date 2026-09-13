@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { Compass, Home as HomeIcon, LayoutDashboard } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { ROUTES } from '../../../utils/constants';
+import { SEO } from '../../../seo';
 
 export const NotFound: React.FC = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center bg-white px-4 py-16 text-[#1F2A26]">
+      <SEO page="notFound" />
       <div className="max-w-md w-full text-center space-y-6">
         
         {/* Visual Badge */}

@@ -57,7 +57,7 @@ console.log('Message delivered via Meta Cloud API:', result.messageId);`;
             </h2>
 
             <p className="text-sm sm:text-base text-[#5F7069] leading-relaxed">
-              Eliminate third-party broker outages and hidden per-message markup fees. WhatsAppMsg connects your business directly to Meta's global data centers for maximum delivery speed and reliability.
+              Eliminate third-party broker outages and hidden per-message markup fees. WhatsAppMSG connects your business directly to Meta's global data centers for maximum delivery speed and reliability.
             </p>
 
             <div className="space-y-3 pt-2">

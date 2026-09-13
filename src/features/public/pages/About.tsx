@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { APP_NAME } from '../../../utils/constants';
 import { CTASection } from '../components/CTASection';
+import { SEO } from '../../../seo';
 
 export const About: React.FC = () => {
   const milestones = [
@@ -45,6 +46,7 @@ export const About: React.FC = () => {
 
   return (
     <div className="bg-white py-16 sm:py-24 text-[#1F2A26]">
+      <SEO page="about" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Hero */}

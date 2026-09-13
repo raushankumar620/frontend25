@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
 import { PricingSection } from '../components/PricingSection';
 import { CTASection } from '../components/CTASection';
+import { SEO } from '../../../seo';
 
 export const Pricing: React.FC = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ export const Pricing: React.FC = () => {
   const faqs = [
     {
       q: 'How does WhatsApp Cloud API billing work with Meta?',
-      a: 'WhatsAppMsg connects directly to your Meta Business Manager. Meta charges for conversation sessions (Marketing, Utility, Authentication, Service) directly to your credit card at official Meta rates with zero markup or hidden broker fees.',
+      a: 'WhatsAppMSG connects directly to your Meta Business Manager. Meta charges for conversation sessions (Marketing, Utility, Authentication, Service) directly to your credit card at official Meta rates with zero markup or hidden broker fees.',
     },
     {
       q: 'Can I keep my existing WhatsApp Business number?',
@@ -51,7 +52,7 @@ export const Pricing: React.FC = () => {
     },
     {
       q: 'Can multiple agents respond from the same WhatsApp number?',
-      a: 'Absolutely. WhatsAppMsg provides a shared multi-agent inbox with collision detection, round-robin chat assignment, and internal private notes so your whole support or sales team can collaborate efficiently.',
+      a: 'Absolutely. WhatsAppMSG provides a shared multi-agent inbox with collision detection, round-robin chat assignment, and internal private notes so your whole support or sales team can collaborate efficiently.',
     },
     {
       q: 'Is there a free trial and do you require a credit card?',
@@ -61,10 +62,15 @@ export const Pricing: React.FC = () => {
       q: 'Do you provide enterprise SLA and custom contracts?',
       a: 'Yes, for large-scale brands sending over 500,000 messages per month, we provide custom MSAs, BAA for HIPAA compliance, SOC 2 reports, and dedicated technical account managers.',
     },
+    {
+      q: 'Looking for WhatsAppMSG? (Official Brand Clarification)',
+      a: 'Looking for WhatsAppMSG? You may also see our brand written incorrectly as WhatsapMSG, WhatsAppMS, or WhatsAppMG when searching. The official product name is WhatsAppMSG.',
+    },
   ];
 
   return (
     <div className="bg-white py-12 sm:py-20 text-[#1F2A26]">
+      <SEO page="pricing" faqItems={faqs.map((f) => ({ question: f.q, answer: f.a }))} />
       {/* Top Banner */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <div className="text-center max-w-3xl mx-auto">

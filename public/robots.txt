@@ -1,0 +1,35 @@
+# WhatsAppMSG Robots.txt
+# https://whatsappmsg.com/robots.txt
+
+User-agent: *
+Allow: /
+Allow: /features
+Allow: /solutions
+Allow: /pricing
+Allow: /about
+Allow: /contact
+
+# Disallow private application, auth and admin routes
+Disallow: /app
+Disallow: /dashboard
+Disallow: /inbox
+Disallow: /contacts
+Disallow: /whatsapp
+Disallow: /templates
+Disallow: /campaigns
+Disallow: /automations
+Disallow: /ai
+Disallow: /analytics
+Disallow: /billing
+Disallow: /developers/api-keys
+Disallow: /developers/webhooks
+Disallow: /developers/logs
+Disallow: /team
+Disallow: /settings
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+
+# Sitemap
+Sitemap: https://whatsappmsg.com/sitemap.xml

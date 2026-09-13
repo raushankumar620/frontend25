@@ -54,7 +54,7 @@ export const CTASection: React.FC = () => {
               <div className="relative group max-w-[250px] sm:max-w-[300px] lg:max-w-[330px] transition-transform duration-300 hover:scale-105">
                 <img
                   src="/chatingchater.png"
-                  alt="WhatsAppMsg AI Mascot"
+                  alt="WhatsAppMSG AI Assistant"
                   className="w-full h-auto object-contain drop-shadow-[0_18px_35px_rgba(0,0,0,0.42)]"
                   loading="lazy"
                 />
