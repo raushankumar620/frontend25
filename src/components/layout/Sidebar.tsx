@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className="p-1.5 rounded-xl hover:bg-[#F6FAF8] transition-all cursor-pointer group flex items-center justify-center"
           >
             <img
-              src="/images/svgicon.png"
+              src="/images/whatsapplogoshort.png"
               alt={APP_NAME}
               className="h-8 w-8 object-contain transition-transform group-hover:scale-110"
             />

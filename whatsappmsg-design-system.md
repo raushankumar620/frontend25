@@ -251,7 +251,7 @@ The approved WhatsAppMSG logo uses:
 
 **Sidebar Logo Rules:**
 1. **Expanded Sidebar:** Display full `/images/logo.png` cleanly without duplicate brand text overlay.
-2. **Collapsed Sidebar:** Display icon `/images/svgicon.png` centered.
+2. **Collapsed Sidebar:** Display icon `/images/whatsapplogoshort.png` centered.
 3. Avoid placing the logo on dark/busy backgrounds.
 
 ---
@@ -398,7 +398,7 @@ Developers and AI assistants working on this codebase **must adhere to the follo
 
 4. **No Black/Dark Sidebar:**
    - Keep the sidebar clean and light (`bg-white` with `border-r border-[#E2EAE6]`).
-   - Use `svgicon.png` when collapsed and `logo.png` when expanded.
+   - Use `whatsapplogoshort.png` when collapsed and `logo.png` when expanded.
 
 5. **Clean Routing:**
    - All protected application views (including Developers API, Team, Settings, Billing, Templates, AI, etc.) must remain nested under `DashboardLayout` so the Main Sidebar & Header remain accessible.

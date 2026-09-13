@@ -27,10 +27,10 @@ export const siteConfig = {
   },
   assets: {
     logo: '/images/logo.png',
-    logoSquare: '/images/svgicon.png',
+    logoSquare: '/images/whatsapplogoshort.png',
     ogImage: '/images/seo/whatsappmsg-og.png',
     twitterImage: '/images/seo/whatsappmsg-twitter.png',
-    favicon: '/images/svgicon.png',
+    favicon: '/images/seo/favicon/favicon.ico',
   },
 } as const;
 

@@ -55,7 +55,7 @@ export const LogoCloud: React.FC = () => {
       <div className="relative w-full overflow-hidden">
         {/* Left gradient fade */}
         <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 sm:w-32 bg-linear-to-r from-white via-white/80 to-transparent z-10" />
-        
+
         {/* Right gradient fade */}
         <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-linear-to-l from-white via-white/80 to-transparent z-10" />
 
