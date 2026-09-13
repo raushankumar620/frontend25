@@ -26,30 +26,30 @@ export function Table<T extends { id?: string | number }>({
   className,
 }: TableProps<T>) {
   return (
-    <div className={clsx('w-full overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900', className)}>
+    <div className={clsx('w-full overflow-x-auto border border-[#E2EAE6] rounded-2xl bg-white shadow-[0_8px_30px_rgba(1,59,35,0.04)]', className)}>
       <table className="w-full text-left text-xs border-collapse">
-        <thead className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">
+        <thead className="bg-[#F6FAF8] border-b border-[#E2EAE6] text-[#5F7069] font-bold text-[11px] uppercase tracking-wider">
           <tr>
             {columns.map((col, idx) => (
-              <th key={idx} className={clsx('px-4 py-3', col.className)}>
+              <th key={idx} className={clsx('px-5 py-3.5', col.className)}>
                 {col.header}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-200">
+        <tbody className="divide-y divide-[#E2EAE6] text-[#1F2A26]">
           {isLoading ? (
             <tr>
-              <td colSpan={columns.length} className="px-4 py-8 text-center text-slate-400">
+              <td colSpan={columns.length} className="px-5 py-10 text-center text-[#8A9993]">
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-[#05A222] border-t-transparent rounded-full animate-spin" />
                   <span>Loading data...</span>
                 </div>
               </td>
             </tr>
           ) : data.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="px-4 py-8 text-center text-slate-400">
+              <td colSpan={columns.length} className="px-5 py-10 text-center text-[#8A9993]">
                 {emptyMessage}
               </td>
             </tr>
@@ -59,12 +59,12 @@ export function Table<T extends { id?: string | number }>({
                 key={row.id ?? rowIdx}
                 onClick={() => onRowClick && onRowClick(row)}
                 className={clsx(
-                  'hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors',
+                  'hover:bg-[#F6FAF8] transition-colors',
                   onRowClick && 'cursor-pointer'
                 )}
               >
                 {columns.map((col, colIdx) => (
-                  <td key={colIdx} className={clsx('px-4 py-3.5', col.className)}>
+                  <td key={colIdx} className={clsx('px-5 py-4', col.className)}>
                     {col.render
                       ? col.render(row, rowIdx)
                       : col.accessorKey

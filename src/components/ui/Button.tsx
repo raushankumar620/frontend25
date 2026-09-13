@@ -21,19 +21,19 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg active:scale-[0.98] cursor-pointer';
+  const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl active:scale-[0.98] cursor-pointer';
 
   const variantStyles = {
-    primary: 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm focus:ring-emerald-500 border border-emerald-600',
-    secondary: 'bg-slate-800 hover:bg-slate-900 text-white shadow-sm focus:ring-slate-700 border border-slate-800',
-    outline: 'bg-transparent border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus:ring-emerald-500',
-    ghost: 'bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 focus:ring-slate-500 border border-transparent',
-    danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-sm focus:ring-rose-500 border border-rose-600',
-    success: 'bg-teal-600 hover:bg-teal-700 text-white shadow-sm focus:ring-teal-500 border border-teal-600',
+    primary: 'bg-[#05A222] hover:bg-[#006736] text-white shadow-xs focus:ring-[#05A222] border border-[#05A222]',
+    secondary: 'bg-[#E9F9EE] hover:bg-[#D9F3E2] text-[#006736] font-semibold border border-[#C4EBD0] focus:ring-[#05A222]',
+    outline: 'bg-transparent border border-[#05A222] text-[#006736] hover:bg-[#F6FAF8] focus:ring-[#05A222]',
+    ghost: 'bg-transparent text-[#006736] hover:bg-[#F6FAF8] focus:ring-[#05A222] border border-transparent',
+    danger: 'bg-[#D64545] hover:bg-[#b73333] text-white shadow-xs focus:ring-[#D64545] border border-[#D64545]',
+    success: 'bg-[#039B56] hover:bg-[#006736] text-white shadow-xs focus:ring-[#039B56] border border-[#039B56]',
   };
 
   const sizeStyles = {
-    sm: 'text-xs px-2.5 py-1.5 gap-1.5',
+    sm: 'text-xs px-3 py-1.5 gap-1.5',
     md: 'text-sm px-4 py-2 gap-2',
     lg: 'text-base px-5 py-2.5 gap-2.5',
     icon: 'p-2 aspect-square',

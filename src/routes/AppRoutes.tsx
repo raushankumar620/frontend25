@@ -1,11 +1,21 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 // Layouts
+import { PublicLayout } from '../layouts/PublicLayout';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { AuthLayout } from '../layouts/AuthLayout';
 import { DeveloperLayout } from '../layouts/DeveloperLayout';
 import { ProtectedRoute } from './ProtectedRoute';
+
+// Public Pages
+import { Home } from '../features/public/pages/Home';
+import { Features } from '../features/public/pages/Features';
+import { Pricing } from '../features/public/pages/Pricing';
+import { Solutions } from '../features/public/pages/Solutions';
+import { About } from '../features/public/pages/About';
+import { Contact } from '../features/public/pages/Contact';
+import { NotFound } from '../features/public/pages/NotFound';
 
 // Auth Pages
 import { Login } from '../features/auth/pages/Login';
@@ -77,21 +87,22 @@ import { ROUTES } from '../utils/constants';
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
+      {/* Public Marketing Website */}
+      <Route element={<PublicLayout />}>
+        <Route path={ROUTES.HOME} element={<Home />} />
+        <Route path={ROUTES.PUBLIC_FEATURES} element={<Features />} />
+        <Route path={ROUTES.PUBLIC_PRICING} element={<Pricing />} />
+        <Route path={ROUTES.PUBLIC_SOLUTIONS} element={<Solutions />} />
+        <Route path={ROUTES.PUBLIC_ABOUT} element={<About />} />
+        <Route path={ROUTES.PUBLIC_CONTACT} element={<Contact />} />
+      </Route>
+
       {/* Auth Routes */}
       <Route element={<AuthLayout />}>
         <Route path={ROUTES.LOGIN} element={<Login />} />
         <Route path={ROUTES.REGISTER} element={<Register />} />
         <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
         <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
-      </Route>
-
-      {/* Developer Layout Routes */}
-      <Route element={<DeveloperLayout />}>
-        <Route path={ROUTES.DEVELOPERS_DASHBOARD} element={<DeveloperDashboard />} />
-        <Route path={ROUTES.DEVELOPERS_API_KEYS} element={<APIKeys />} />
-        <Route path={ROUTES.DEVELOPERS_WEBHOOKS} element={<Webhooks />} />
-        <Route path={ROUTES.DEVELOPERS_API_LOGS} element={<APILogs />} />
-        <Route path={ROUTES.DEVELOPERS_DOCS} element={<Documentation />} />
       </Route>
 
       {/* Protected Dashboard Layout Routes */}
@@ -127,6 +138,15 @@ export const AppRoutes: React.FC = () => {
           <Route path={ROUTES.BILLING} element={<Billing />} />
           <Route path={ROUTES.BILLING_PLANS} element={<Plans />} />
           <Route path={ROUTES.BILLING_INVOICES} element={<Invoices />} />
+
+          {/* Developer Section with Main Sidebar & Header */}
+          <Route element={<DeveloperLayout />}>
+            <Route path={ROUTES.DEVELOPERS_DASHBOARD} element={<DeveloperDashboard />} />
+            <Route path={ROUTES.DEVELOPERS_API_KEYS} element={<APIKeys />} />
+            <Route path={ROUTES.DEVELOPERS_WEBHOOKS} element={<Webhooks />} />
+            <Route path={ROUTES.DEVELOPERS_API_LOGS} element={<APILogs />} />
+            <Route path={ROUTES.DEVELOPERS_DOCS} element={<Documentation />} />
+          </Route>
           
           <Route path={ROUTES.TEAM} element={<Team />} />
           <Route path={ROUTES.ROLES_PERMISSIONS} element={<RolesPermissions />} />
@@ -137,8 +157,8 @@ export const AppRoutes: React.FC = () => {
         </Route>
       </Route>
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+      {/* Fallback 404 Route */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

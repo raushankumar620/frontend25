@@ -23,8 +23,10 @@ export const APIKeys: React.FC = () => {
     {
       header: 'Key Name & Environment',
       render: (k) => (
-        <div className="flex items-center gap-2 font-sans font-semibold text-white">
-          <Key className="w-4 h-4 text-emerald-400" />
+        <div className="flex items-center gap-2.5 font-semibold text-[#14201C]">
+          <div className="w-7 h-7 rounded-lg bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0">
+            <Key className="w-3.5 h-3.5" />
+          </div>
           <span>{k.name}</span>
         </div>
       ),
@@ -32,14 +34,14 @@ export const APIKeys: React.FC = () => {
     {
       header: 'API Secret Token',
       render: (k) => (
-        <span className="font-mono text-xs text-slate-300 bg-slate-950 px-2 py-1 rounded border border-slate-800">
+        <span className="font-mono text-xs text-[#14201C] bg-[#F6FAF8] px-2.5 py-1 rounded-lg border border-[#E2EAE6]">
           {k.secretMasked}
         </span>
       ),
     },
     {
       header: 'Last Used',
-      render: (k) => <span className="text-slate-400 font-sans">{k.lastUsedAt}</span>,
+      render: (k) => <span className="text-[#5F7069] text-xs">{k.lastUsedAt}</span>,
     },
     {
       header: 'Action',
@@ -48,7 +50,7 @@ export const APIKeys: React.FC = () => {
           size="sm"
           variant="outline"
           onClick={() => handleCopy(k.id, k.secretMasked)}
-          leftIcon={copiedId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+          leftIcon={copiedId === k.id ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
         >
           {copiedId === k.id ? 'Copied' : 'Copy Key'}
         </Button>
@@ -60,9 +62,9 @@ export const APIKeys: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white font-sans">API Access Keys</h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Use these tokens in the <code className="text-emerald-400 font-mono">Authorization: Bearer</code> header.
+          <h3 className="text-lg font-bold text-[#14201C]">API Access Keys</h3>
+          <p className="text-xs text-[#5F7069] mt-0.5">
+            Use these bearer tokens in your HTTP request headers: <code className="text-[#006736] font-mono bg-[#E9F9EE] px-1.5 py-0.5 rounded border border-[#C4EBD0]">Authorization: Bearer &lt;token&gt;</code>
           </p>
         </div>
 

@@ -1,1 +1,26 @@
 @import "tailwindcss";
+
+:root {
+  --color-deep-green: #013B23;
+  --color-dark-green: #006736;
+  --color-brand-green: #05A222;
+  --color-bright-green: #1CD72C;
+  --color-emerald: #039B56;
+  --color-teal-green: #07CF74;
+  --color-lime: #6AEB31;
+  --color-ink: #14201C;
+  --color-primary-text: #1F2A26;
+  --color-secondary-text: #5F7069;
+  --color-muted-text: #8A9993;
+  --color-border: #E2EAE6;
+  --color-surface: #F6FAF8;
+  --color-surface-green: #E9F9EE;
+  --color-border-green: #C4EBD0;
+  --brand-gradient: linear-gradient(135deg, #6AEB31 0%, #1CD72C 30%, #07CF74 70%, #039B56 100%);
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-primary-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}

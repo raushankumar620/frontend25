@@ -29,8 +29,8 @@ export const Register: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">Create your workspace</h2>
-        <p className="text-xs text-slate-400 mt-1">
+        <h2 className="text-2xl font-extrabold text-[#14201C] tracking-tight">Create your workspace</h2>
+        <p className="text-xs text-[#5F7069] mt-1">
           Get started with Meta Verified WhatsApp Cloud API in minutes.
         </p>
       </div>
@@ -87,9 +87,9 @@ export const Register: React.FC = () => {
         </Button>
       </form>
 
-      <div className="text-center text-xs text-slate-400">
+      <div className="text-center text-xs text-[#5F7069]">
         Already have an account?{' '}
-        <Link to={ROUTES.LOGIN} className="text-emerald-400 font-semibold hover:underline">
+        <Link to={ROUTES.LOGIN} className="text-[#05A222] font-semibold hover:underline">
           Sign In
         </Link>
       </div>

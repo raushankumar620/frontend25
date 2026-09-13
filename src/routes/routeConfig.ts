@@ -1,6 +1,14 @@
 import { ROUTES } from '../utils/constants';
 
 export const routeConfig = {
+  public: [
+    { path: ROUTES.HOME, label: 'Home' },
+    { path: ROUTES.PUBLIC_FEATURES, label: 'Features' },
+    { path: ROUTES.PUBLIC_PRICING, label: 'Pricing' },
+    { path: ROUTES.PUBLIC_SOLUTIONS, label: 'Solutions' },
+    { path: ROUTES.PUBLIC_ABOUT, label: 'About' },
+    { path: ROUTES.PUBLIC_CONTACT, label: 'Contact' },
+  ],
   auth: [
     { path: ROUTES.LOGIN, label: 'Login' },
     { path: ROUTES.REGISTER, label: 'Register' },

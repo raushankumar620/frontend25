@@ -11,8 +11,8 @@ export const DeveloperDashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white font-sans">Developer & API Center</h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <h3 className="text-lg font-bold text-[#14201C]">Developer Quick Navigation</h3>
+          <p className="text-xs text-[#5F7069] mt-0.5">
             Build custom WhatsApp CRM integrations, automated bots, and sync webhooks with your backend.
           </p>
         </div>
@@ -27,52 +27,66 @@ export const DeveloperDashboard: React.FC = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4.5">
         <div
           onClick={() => navigate(ROUTES.DEVELOPERS_API_KEYS)}
-          className="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-emerald-500 cursor-pointer transition-colors"
+          className="bg-white border border-[#E2EAE6] p-5 rounded-2xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] hover:shadow-[0_12px_36px_rgba(1,59,35,0.08)] hover:border-[#05A222]/50 cursor-pointer transition-all duration-200"
         >
-          <Key className="w-5 h-5 text-emerald-400 mb-2" />
-          <h4 className="text-sm font-bold text-white font-sans">API Keys</h4>
-          <p className="text-xs text-slate-400 mt-1">Manage bearer tokens for backend requests</p>
+          <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] mb-3">
+            <Key className="w-5 h-5" />
+          </div>
+          <h4 className="text-sm font-bold text-[#14201C]">API Keys</h4>
+          <p className="text-xs text-[#5F7069] mt-1">Manage bearer tokens for backend requests</p>
         </div>
 
         <div
           onClick={() => navigate(ROUTES.DEVELOPERS_WEBHOOKS)}
-          className="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-teal-500 cursor-pointer transition-colors"
+          className="bg-white border border-[#E2EAE6] p-5 rounded-2xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] hover:shadow-[0_12px_36px_rgba(1,59,35,0.08)] hover:border-[#05A222]/50 cursor-pointer transition-all duration-200"
         >
-          <Webhook className="w-5 h-5 text-teal-400 mb-2" />
-          <h4 className="text-sm font-bold text-white font-sans">Webhooks</h4>
-          <p className="text-xs text-slate-400 mt-1">Subscribe to incoming WhatsApp message events</p>
+          <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#039B56] mb-3">
+            <Webhook className="w-5 h-5" />
+          </div>
+          <h4 className="text-sm font-bold text-[#14201C]">Webhooks</h4>
+          <p className="text-xs text-[#5F7069] mt-1">Subscribe to incoming WhatsApp message events</p>
         </div>
 
         <div
           onClick={() => navigate(ROUTES.DEVELOPERS_API_LOGS)}
-          className="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-indigo-500 cursor-pointer transition-colors"
+          className="bg-white border border-[#E2EAE6] p-5 rounded-2xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] hover:shadow-[0_12px_36px_rgba(1,59,35,0.08)] hover:border-[#05A222]/50 cursor-pointer transition-all duration-200"
         >
-          <Terminal className="w-5 h-5 text-indigo-400 mb-2" />
-          <h4 className="text-sm font-bold text-white font-sans">Request Logs</h4>
-          <p className="text-xs text-slate-400 mt-1">Inspect live HTTP response codes and latencies</p>
+          <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#07CF74] mb-3">
+            <Terminal className="w-5 h-5" />
+          </div>
+          <h4 className="text-sm font-bold text-[#14201C]">Request Logs</h4>
+          <p className="text-xs text-[#5F7069] mt-1">Inspect live HTTP response codes and latencies</p>
         </div>
 
         <div
           onClick={() => navigate(ROUTES.DEVELOPERS_DOCS)}
-          className="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-purple-500 cursor-pointer transition-colors"
+          className="bg-white border border-[#E2EAE6] p-5 rounded-2xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] hover:shadow-[0_12px_36px_rgba(1,59,35,0.08)] hover:border-[#05A222]/50 cursor-pointer transition-all duration-200"
         >
-          <Code2 className="w-5 h-5 text-purple-400 mb-2" />
-          <h4 className="text-sm font-bold text-white font-sans">Code Snippets</h4>
-          <p className="text-xs text-slate-400 mt-1">Ready-to-use cURL, Node.js, and Python examples</p>
+          <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#006736] mb-3">
+            <Code2 className="w-5 h-5" />
+          </div>
+          <h4 className="text-sm font-bold text-[#14201C]">Code Snippets</h4>
+          <p className="text-xs text-[#5F7069] mt-1">Ready-to-use cURL, Node.js, and Python examples</p>
         </div>
       </div>
 
-      <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-3">
-        <h4 className="text-sm font-bold text-white font-sans">Quick Outbound Message Example (cURL)</h4>
-        <pre className="p-4 bg-slate-950 rounded-xl text-emerald-400 text-xs overflow-x-auto border border-slate-800">
-{`curl -X POST https://api.chatflow.io/v1/messages/send-template \\
+      {/* Outbound Message Example Card */}
+      <div className="bg-white p-6 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-bold text-[#14201C]">Quick Outbound Message Example (cURL)</h4>
+          <span className="text-xs font-semibold text-[#006736] bg-[#E9F9EE] px-2.5 py-1 rounded-md border border-[#C4EBD0]">
+            POST /v1/messages/send-template
+          </span>
+        </div>
+        <pre className="p-4 bg-[#14201C] rounded-xl text-[#1CD72C] text-xs font-mono overflow-x-auto border border-[#2B3A34] shadow-inner">
+{`curl -X POST https://api.whatsappmsg.com/v1/messages/send-template \\
   -H "Authorization: Bearer cf_live_98a7s6d••••••••••••••" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "to": "+15552345678",
+    "to": "+919876543210",
     "templateName": "order_status_update_v2",
     "variables": ["Alex", "98231", "FedEx", "Tomorrow"]
   }'`}

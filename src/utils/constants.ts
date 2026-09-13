@@ -1,14 +1,22 @@
-export const APP_NAME = 'ChatFlow Enterprise';
+export const APP_NAME = 'WhatsAppMsg';
 
 export const ROUTES = {
+  // Public Marketing Website
+  HOME: '/',
+  PUBLIC_FEATURES: '/features',
+  PUBLIC_PRICING: '/pricing',
+  PUBLIC_SOLUTIONS: '/solutions',
+  PUBLIC_ABOUT: '/about',
+  PUBLIC_CONTACT: '/contact',
+
   // Auth
   LOGIN: '/login',
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
 
-  // Core App
-  DASHBOARD: '/',
+  // Core App & Dashboard
+  DASHBOARD: '/app',
   INBOX: '/inbox',
   CONTACTS: '/contacts',
   CONTACT_DETAILS: '/contacts/:id',

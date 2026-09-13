@@ -35,14 +35,14 @@ export const Login: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">Welcome back</h2>
-        <p className="text-xs text-slate-400 mt-1">
-          Sign in to your WhatsApp Cloud API dashboard and inbox.
+        <h2 className="text-2xl font-extrabold text-[#14201C] tracking-tight">Welcome back</h2>
+        <p className="text-xs text-[#5F7069] mt-1">
+          Sign in to your WhatsApp Cloud API dashboard, automation rules, and inbox.
         </p>
       </div>
 
       {error && (
-        <div className="p-3 bg-rose-950/40 border border-rose-800 rounded-lg text-xs text-rose-400">
+        <div className="p-3 bg-[#FDF2F2] border border-[#F8B4B4] rounded-xl text-xs text-[#D64545] font-medium">
           {error}
         </div>
       )}
@@ -71,7 +71,7 @@ export const Login: React.FC = () => {
           <div className="flex justify-end mt-1.5">
             <Link
               to={ROUTES.FORGOT_PASSWORD}
-              className="text-xs text-emerald-400 hover:text-emerald-300 font-medium"
+              className="text-xs text-[#05A222] hover:text-[#006736] font-semibold"
             >
               Forgot password?
             </Link>
@@ -89,9 +89,9 @@ export const Login: React.FC = () => {
         </Button>
       </form>
 
-      <div className="text-center text-xs text-slate-400">
+      <div className="text-center text-xs text-[#5F7069]">
         Don&apos;t have an account?{' '}
-        <Link to={ROUTES.REGISTER} className="text-emerald-400 font-semibold hover:underline">
+        <Link to={ROUTES.REGISTER} className="text-[#05A222] font-semibold hover:underline">
           Create free account
         </Link>
       </div>

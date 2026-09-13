@@ -17,32 +17,32 @@ export const Badge: React.FC<BadgeProps> = ({
   className,
 }) => {
   const variantStyles = {
-    primary: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
-    success: 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-teal-200 dark:border-teal-800',
-    warning: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
-    danger: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800',
-    info: 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-800',
-    neutral: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+    primary: 'bg-[#E9F9EE] text-[#006736] border-[#C4EBD0]',
+    success: 'bg-[#E9F9EE] text-[#039B56] border-[#C4EBD0]',
+    warning: 'bg-[#FFF8E6] text-[#9A6B00] border-[#FFE299]',
+    danger: 'bg-[#FDF2F2] text-[#D64545] border-[#F8B4B4]',
+    info: 'bg-[#F0FDF4] text-[#07CF74] border-[#B9F5D5]',
+    neutral: 'bg-[#F6FAF8] text-[#5F7069] border-[#E2EAE6]',
   };
 
   const dotColors = {
-    primary: 'bg-emerald-500',
-    success: 'bg-teal-500',
-    warning: 'bg-amber-500',
-    danger: 'bg-rose-500',
-    info: 'bg-sky-500',
-    neutral: 'bg-slate-400',
+    primary: 'bg-[#05A222]',
+    success: 'bg-[#039B56]',
+    warning: 'bg-[#D99A00]',
+    danger: 'bg-[#D64545]',
+    info: 'bg-[#07CF74]',
+    neutral: 'bg-[#8A9993]',
   };
 
   const sizeStyles = {
-    sm: 'text-[10px] px-2 py-0.5 gap-1',
-    md: 'text-xs px-2.5 py-1 gap-1.5',
+    sm: 'text-[10px] px-2 py-0.5 gap-1 font-semibold',
+    md: 'text-xs px-2.5 py-1 gap-1.5 font-medium',
   };
 
   return (
     <span
       className={clsx(
-        'inline-flex items-center font-medium rounded-full border shrink-0',
+        'inline-flex items-center rounded-full border shrink-0',
         variantStyles[variant],
         sizeStyles[size],
         className

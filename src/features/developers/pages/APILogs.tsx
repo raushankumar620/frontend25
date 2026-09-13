@@ -19,31 +19,33 @@ export const APILogs: React.FC = () => {
       render: (l) => (
         <div className="flex items-center gap-2 font-mono text-xs">
           <span
-            className={`px-1.5 py-0.5 rounded font-bold text-[10px] ${
-              l.method === 'POST' ? 'bg-emerald-950 text-emerald-400' : 'bg-sky-950 text-sky-400'
+            className={`px-2 py-0.5 rounded-md font-bold text-[10px] border ${
+              l.method === 'POST'
+                ? 'bg-[#E9F9EE] text-[#006736] border-[#C4EBD0]'
+                : 'bg-[#F6FAF8] text-[#5F7069] border-[#E2EAE6]'
             }`}
           >
             {l.method}
           </span>
-          <span className="text-white">{l.endpoint}</span>
+          <span className="text-[#14201C] font-semibold">{l.endpoint}</span>
         </div>
       ),
     },
     {
       header: 'Status Code',
       render: (l) => (
-        <Badge variant={l.statusCode === 200 ? 'success' : 'danger'} size="sm">
+        <Badge variant={l.statusCode === 200 ? 'success' : 'danger'} size="sm" dot>
           {l.statusCode} OK
         </Badge>
       ),
     },
     {
       header: 'Latency',
-      render: (l) => <span className="font-mono text-slate-400">{l.latencyMs} ms</span>,
+      render: (l) => <span className="font-mono text-[#5F7069] text-xs">{l.latencyMs} ms</span>,
     },
     {
       header: 'Timestamp',
-      render: (l) => <span className="font-mono text-slate-400">{l.timestamp}</span>,
+      render: (l) => <span className="font-mono text-[#8A9993] text-xs">{l.timestamp}</span>,
     },
   ];
 
@@ -51,8 +53,8 @@ export const APILogs: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white font-sans">API Request Logs</h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <h3 className="text-lg font-bold text-[#14201C]">API Request Logs</h3>
+          <p className="text-xs text-[#5F7069] mt-0.5">
             Real-time telemetry and error tracing for outbound WhatsApp API calls.
           </p>
         </div>

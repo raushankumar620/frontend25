@@ -15,15 +15,20 @@ import {
   Settings,
   Users2,
   Sparkles,
+  PanelLeftClose,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { ROUTES, APP_NAME } from '../../utils/constants';
 
 export interface SidebarProps {
   collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  collapsed = false,
+  onToggleCollapse,
+}) => {
   const mainNavItems = [
     { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: LayoutDashboard },
     { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, badge: '5' },
@@ -46,23 +51,46 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
   return (
     <aside
       className={clsx(
-        'h-screen bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 transition-all duration-300 select-none z-30',
-        collapsed ? 'w-18' : 'w-64'
+        'h-screen bg-white text-[#1F2A26] flex flex-col shrink-0 border-r border-[#E2EAE6] transition-all duration-300 select-none z-30 shadow-[4px_0_24px_rgba(1,59,35,0.02)]',
+        collapsed ? 'w-20' : 'w-64'
       )}
     >
       {/* Brand Header */}
-      <div className="h-16 flex items-center px-5 gap-3 border-b border-slate-800">
-        <div className="w-9 h-9 rounded-xl bg-linear-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 shrink-0">
-          <MessageSquare className="w-5 h-5 fill-current" />
-        </div>
-        {!collapsed && (
-          <div className="flex flex-col overflow-hidden">
-            <span className="font-bold text-sm tracking-tight text-white truncate">{APP_NAME}</span>
-            <span className="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Meta Cloud API v20
-            </span>
-          </div>
+      <div className={clsx(
+        'h-16 flex items-center border-b border-[#E2EAE6]',
+        collapsed ? 'justify-center px-2' : 'justify-between px-4'
+      )}>
+        {collapsed ? (
+          <button
+            onClick={onToggleCollapse}
+            title="Expand sidebar"
+            className="p-1.5 rounded-xl hover:bg-[#F6FAF8] transition-all cursor-pointer group flex items-center justify-center"
+          >
+            <img
+              src="/images/svgicon.png"
+              alt={APP_NAME}
+              className="h-8 w-8 object-contain transition-transform group-hover:scale-110"
+            />
+          </button>
+        ) : (
+          <>
+            <div className="flex items-center min-w-0">
+              <img
+                src="/images/logo.png"
+                alt={APP_NAME}
+                className="h-8 w-auto max-w-[155px] object-contain shrink-0"
+              />
+            </div>
+            {onToggleCollapse && (
+              <button
+                onClick={onToggleCollapse}
+                title="Collapse sidebar"
+                className="p-1.5 rounded-lg text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8] transition-colors cursor-pointer shrink-0"
+              >
+                <PanelLeftClose className="w-5 h-5" />
+              </button>
+            )}
+          </>
         )}
       </div>
 
@@ -70,22 +98,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
         <div>
           {!collapsed && (
-            <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+            <p className="px-3 text-xs font-bold text-[#8A9993] uppercase tracking-wider mb-2.5">
               Communication & CRM
             </p>
           )}
-          <nav className="space-y-1">
+          <nav className="space-y-1.5">
             {mainNavItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 end={item.path === '/'}
+                title={collapsed ? item.label : undefined}
                 className={({ isActive }) =>
                   clsx(
-                    'flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all group relative',
+                    'flex items-center rounded-xl font-medium transition-all group relative cursor-pointer',
+                    collapsed ? 'justify-center py-2.5 px-2' : 'gap-3 px-3.5 py-2.5 text-sm',
                     isActive
-                      ? 'bg-emerald-600/15 text-emerald-400 font-semibold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                      ? 'bg-[#E9F9EE] text-[#006736] font-semibold shadow-xs'
+                      : 'text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8]'
                   )
                 }
               >
@@ -93,24 +123,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
                   <>
                     <item.icon
                       className={clsx(
-                        'w-4 h-4 shrink-0 transition-transform group-hover:scale-110',
-                        isActive ? 'text-emerald-400' : 'text-slate-400 group-hover:text-slate-200'
+                        'w-[18px] h-[18px] shrink-0 transition-transform group-hover:scale-110',
+                        isActive ? 'text-[#05A222]' : 'text-[#8A9993] group-hover:text-[#14201C]'
                       )}
                     />
-                    {!collapsed && <span className="truncate">{item.label}</span>}
+                    {!collapsed && <span className="truncate text-sm">{item.label}</span>}
                     {!collapsed && item.badge && (
-                      <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-400 font-bold">
+                      <span className="ml-auto px-2 py-0.5 rounded-full text-xs bg-[#E9F9EE] text-[#006736] font-bold border border-[#C4EBD0]">
                         {item.badge}
                       </span>
                     )}
                     {!collapsed && item.highlight && (
-                      <span className="ml-auto flex items-center gap-1 text-[9px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded-full">
-                        <Sparkles className="w-2.5 h-2.5" />
+                      <span className="ml-auto flex items-center gap-1 text-xs bg-[#E9F9EE] text-[#006736] font-semibold px-2 py-0.5 rounded-full border border-[#C4EBD0]">
+                        <Sparkles className="w-3 h-3 text-[#05A222]" />
                         AI
                       </span>
                     )}
+                    {collapsed && item.badge && (
+                      <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-[#05A222]" />
+                    )}
                     {isActive && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-emerald-500 rounded-r-full" />
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#05A222] rounded-r-full" />
                     )}
                   </>
                 )}
@@ -121,21 +154,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
 
         <div>
           {!collapsed && (
-            <p className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+            <p className="px-3 text-xs font-bold text-[#8A9993] uppercase tracking-wider mb-2.5">
               Platform & System
             </p>
           )}
-          <nav className="space-y-1">
+          <nav className="space-y-1.5">
             {adminNavItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
+                title={collapsed ? item.label : undefined}
                 className={({ isActive }) =>
                   clsx(
-                    'flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all group relative',
+                    'flex items-center rounded-xl font-medium transition-all group relative cursor-pointer',
+                    collapsed ? 'justify-center py-2.5 px-2' : 'gap-3 px-3.5 py-2.5 text-sm',
                     isActive
-                      ? 'bg-emerald-600/15 text-emerald-400 font-semibold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                      ? 'bg-[#E9F9EE] text-[#006736] font-semibold shadow-xs'
+                      : 'text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8]'
                   )
                 }
               >
@@ -143,13 +178,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
                   <>
                     <item.icon
                       className={clsx(
-                        'w-4 h-4 shrink-0 transition-transform group-hover:scale-110',
-                        isActive ? 'text-emerald-400' : 'text-slate-400 group-hover:text-slate-200'
+                        'w-[18px] h-[18px] shrink-0 transition-transform group-hover:scale-110',
+                        isActive ? 'text-[#05A222]' : 'text-[#8A9993] group-hover:text-[#14201C]'
                       )}
                     />
-                    {!collapsed && <span className="truncate">{item.label}</span>}
+                    {!collapsed && <span className="truncate text-sm">{item.label}</span>}
                     {isActive && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-emerald-500 rounded-r-full" />
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#05A222] rounded-r-full" />
                     )}
                   </>
                 )}
@@ -160,18 +195,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
       </div>
 
       {/* Account / Quick Status */}
-      <div className="p-3 border-t border-slate-800">
-        <div className="bg-slate-800/60 rounded-xl p-2.5 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0">
-            CF
+      <div className="p-3 border-t border-[#E2EAE6]">
+        {collapsed ? (
+          <div
+            title="Acme Global Ltd (Enterprise Tier)"
+            className="w-10 h-10 mx-auto rounded-xl bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0] flex items-center justify-center font-bold text-xs shrink-0 cursor-pointer hover:bg-[#D9F3E2] transition-colors"
+          >
+            WM
           </div>
-          {!collapsed && (
-            <div className="flex flex-col truncate">
-              <span className="text-xs font-semibold text-white truncate">Acme Global Ltd</span>
-              <span className="text-[10px] text-emerald-400">Enterprise Tier</span>
+        ) : (
+          <div className="bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl p-3 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0] flex items-center justify-center font-bold text-xs shrink-0">
+              WM
             </div>
-          )}
-        </div>
+            <div className="flex flex-col truncate">
+              <span className="text-sm font-semibold text-[#14201C] truncate">Acme Global Ltd</span>
+              <span className="text-xs text-[#05A222] font-medium">Enterprise Tier</span>
+            </div>
+          </div>
+        )}
       </div>
     </aside>
   );

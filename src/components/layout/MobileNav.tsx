@@ -13,7 +13,7 @@ export const MobileNav: React.FC = () => {
   ];
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center justify-around py-2 px-1 z-40">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#E2EAE6] flex items-center justify-around py-2 px-1 z-40 shadow-[0_-4px_16px_rgba(1,59,35,0.03)]">
       {items.map((item) => (
         <NavLink
           key={item.path}
@@ -22,8 +22,8 @@ export const MobileNav: React.FC = () => {
           className={({ isActive }) =>
             `flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[10px] font-medium transition-colors ${
               isActive
-                ? 'text-emerald-600 dark:text-emerald-400 font-bold'
-                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                ? 'text-[#05A222] font-bold'
+                : 'text-[#5F7069] hover:text-[#14201C]'
             }`
           }
         >

@@ -42,44 +42,44 @@ export const RecentActivity: React.FC = () => {
   const getIcon = (type: ActivityEvent['type']) => {
     switch (type) {
       case 'campaign_completed':
-        return <Send className="w-4 h-4 text-emerald-500" />;
+        return <Send className="w-4 h-4 text-[#05A222]" />;
       case 'template_approved':
-        return <CheckCircle className="w-4 h-4 text-teal-500" />;
+        return <CheckCircle className="w-4 h-4 text-[#039B56]" />;
       case 'bot_handoff':
-        return <AlertCircle className="w-4 h-4 text-amber-500" />;
+        return <AlertCircle className="w-4 h-4 text-[#D99A00]" />;
       case 'new_lead':
-        return <Bot className="w-4 h-4 text-indigo-500" />;
+        return <Bot className="w-4 h-4 text-[#07CF74]" />;
       default:
-        return <CheckCircle className="w-4 h-4 text-slate-400" />;
+        return <CheckCircle className="w-4 h-4 text-[#8A9993]" />;
     }
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
+    <div className="bg-white border border-[#E2EAE6] rounded-2xl p-6 shadow-[0_8px_30px_rgba(1,59,35,0.04)]">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h4 className="text-sm font-bold text-slate-900 dark:text-white">Live Activity Feed</h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <h4 className="text-sm font-bold text-[#14201C]">Live Activity Feed</h4>
+          <p className="text-xs text-[#5F7069] mt-0.5">
             Real-time webhook and system notifications
           </p>
         </div>
         <Badge variant="primary" size="sm" dot>Live</Badge>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-2">
         {mockActivities.map((act) => (
-          <div key={act.id} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-            <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 shrink-0">
+          <div key={act.id} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-[#F6FAF8] transition-colors">
+            <div className="p-2 rounded-xl bg-[#F6FAF8] border border-[#E2EAE6] shrink-0">
               {getIcon(act.type)}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
+                <span className="text-xs font-semibold text-[#1F2A26] truncate">
                   {act.title}
                 </span>
-                <span className="text-[10px] text-slate-400 shrink-0">{act.timestamp}</span>
+                <span className="text-[10px] text-[#8A9993] shrink-0">{act.timestamp}</span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{act.description}</p>
+              <p className="text-xs text-[#5F7069] mt-0.5 truncate">{act.description}</p>
             </div>
           </div>
         ))}

@@ -42,10 +42,10 @@ export const Avatar: React.FC<AvatarProps> = ({
   };
 
   const statusColors = {
-    online: 'bg-emerald-500',
-    offline: 'bg-slate-400',
-    busy: 'bg-rose-500',
-    away: 'bg-amber-500',
+    online: 'bg-[#05A222]',
+    offline: 'bg-[#8A9993]',
+    busy: 'bg-[#D64545]',
+    away: 'bg-[#D99A00]',
   };
 
   return (
@@ -59,7 +59,7 @@ export const Avatar: React.FC<AvatarProps> = ({
       ) : (
         <div
           className={clsx(
-            'rounded-full bg-linear-to-tr from-emerald-600 to-teal-500 text-white font-semibold flex items-center justify-center shadow-xs',
+            'rounded-full bg-linear-to-tr from-[#006736] to-[#05A222] text-white font-semibold flex items-center justify-center shadow-xs',
             sizeClasses[size]
           )}
         >
@@ -70,7 +70,7 @@ export const Avatar: React.FC<AvatarProps> = ({
       {status && (
         <span
           className={clsx(
-            'absolute bottom-0 right-0 rounded-full ring-white dark:ring-slate-900',
+            'absolute bottom-0 right-0 rounded-full ring-white',
             statusSizeClasses[size],
             statusColors[status]
           )}

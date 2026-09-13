@@ -16,10 +16,10 @@ export const Dashboard: React.FC = () => {
       {/* Top Banner / Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-2xl font-extrabold text-[#14201C] tracking-tight">
             WhatsApp Business Overview
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-[#5F7069] mt-1">
             Monitor real-time delivery throughput, campaign ROI, and customer conversations.
           </p>
         </div>
@@ -45,14 +45,14 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* KPI Stats Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5 mb-6">
         <StatsCard
           title="Total Messages (30d)"
           value="128,490"
           change="+24.2%"
           isPositive={true}
           description="vs prior month"
-          icon={<Send className="w-4 h-4 text-emerald-500" />}
+          icon={<Send className="w-4 h-4 text-[#05A222]" />}
           badge="Meta Tier 3"
         />
         <StatsCard
@@ -60,24 +60,24 @@ export const Dashboard: React.FC = () => {
           value="98.9%"
           change="+0.4%"
           isPositive={true}
-          description="Average latency 0.8s"
-          icon={<Smartphone className="w-4 h-4 text-teal-500" />}
+          description="Avg latency 0.8s"
+          icon={<Smartphone className="w-4 h-4 text-[#039B56]" />}
         />
         <StatsCard
           title="Total Reachable Leads"
           value="45,210"
           change="+1,420"
           isPositive={true}
-          description="Opted-in WhatsApp contacts"
-          icon={<Users className="w-4 h-4 text-indigo-500" />}
+          description="Opted-in contacts"
+          icon={<Users className="w-4 h-4 text-[#07CF74]" />}
         />
         <StatsCard
           title="Active Live Chats"
           value="34"
           change="-8m"
           isPositive={true}
-          description="Avg reply time 1.4 mins"
-          icon={<MessageSquare className="w-4 h-4 text-amber-500" />}
+          description="Avg reply time 1.4m"
+          icon={<MessageSquare className="w-4 h-4 text-[#006736]" />}
         />
       </div>
 

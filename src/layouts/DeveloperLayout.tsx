@@ -1,7 +1,8 @@
 import React from 'react';
-import { Outlet, NavLink, Link } from 'react-router-dom';
-import { Code2, Key, Webhook, Terminal, BookOpen, ArrowLeft } from 'lucide-react';
+import { Outlet, NavLink } from 'react-router-dom';
+import { Code2, Key, Webhook, Terminal, BookOpen, ShieldCheck } from 'lucide-react';
 import { ROUTES } from '../utils/constants';
+import { PageContainer } from '../components/layout/PageContainer';
 
 export const DeveloperLayout: React.FC = () => {
   const devNavItems = [
@@ -13,57 +14,52 @@ export const DeveloperLayout: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-mono text-xs">
-      {/* Dev Header */}
-      <header className="h-14 border-b border-slate-800 bg-slate-900/80 px-6 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link
-            to={ROUTES.DASHBOARD}
-            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors font-sans"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Dashboard</span>
-          </Link>
-          <div className="h-4 w-px bg-slate-800" />
-          <div className="flex items-center gap-2 font-bold font-sans text-sm text-emerald-400">
-            <Code2 className="w-4 h-4" />
-            <span>Developer Console</span>
+    <PageContainer>
+      <div className="space-y-6">
+        {/* Developer Header Banner */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-extrabold text-[#14201C] tracking-tight">
+                Developer API & Integrations
+              </h2>
+              <span className="hidden sm:inline-flex items-center gap-1 bg-[#E9F9EE] text-[#006736] text-xs font-semibold px-2.5 py-0.5 rounded-full border border-[#C4EBD0]">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#05A222]" />
+                API v1.4 Live
+              </span>
+            </div>
+            <p className="text-xs text-[#5F7069] mt-1">
+              Programmatic WhatsApp Cloud API credentials, webhook endpoints, and real-time request telemetry.
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded text-[10px]">
-            API v1.4.0
-          </span>
-          <span className="text-slate-400">Live Environment</span>
+        {/* Developer Sub-navigation Tabs */}
+        <div className="border-b border-[#E2EAE6] flex items-center gap-2 overflow-x-auto">
+          {devNavItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === ROUTES.DEVELOPERS_DASHBOARD}
+              className={({ isActive }) =>
+                `flex items-center gap-2 px-4 py-2.5 border-b-2 text-sm font-medium transition-all whitespace-nowrap cursor-pointer ${
+                  isActive
+                    ? 'border-[#05A222] text-[#006736] font-semibold bg-[#E9F9EE]/60 rounded-t-xl'
+                    : 'border-transparent text-[#5F7069] hover:text-[#14201C] hover:bg-white rounded-t-xl'
+                }`
+              }
+            >
+              <item.icon className="w-4 h-4" />
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
         </div>
-      </header>
 
-      {/* Dev Sub-navigation */}
-      <div className="border-b border-slate-800 bg-slate-900/40 px-6 flex items-center gap-2 font-sans overflow-x-auto">
-        {devNavItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.path === ROUTES.DEVELOPERS_DASHBOARD}
-            className={({ isActive }) =>
-              `flex items-center gap-2 px-3 py-2.5 border-b-2 text-xs font-medium transition-colors ${
-                isActive
-                  ? 'border-emerald-500 text-emerald-400'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`
-            }
-          >
-            <item.icon className="w-3.5 h-3.5" />
-            <span>{item.label}</span>
-          </NavLink>
-        ))}
+        {/* Developer Page Content */}
+        <div className="pt-2">
+          <Outlet />
+        </div>
       </div>
-
-      {/* Dev Body */}
-      <div className="flex-1 p-6 max-w-7xl w-full mx-auto font-sans">
-        <Outlet />
-      </div>
-    </div>
+    </PageContainer>
   );
 };

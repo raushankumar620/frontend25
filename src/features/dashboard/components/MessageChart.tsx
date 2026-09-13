@@ -16,36 +16,36 @@ export const MessageChart: React.FC = () => {
   const maxVal = 32000;
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
+    <div className="bg-white border border-[#E2EAE6] rounded-2xl p-6 shadow-[0_8px_30px_rgba(1,59,35,0.04)]">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
           <div className="flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-emerald-500" />
-            <h4 className="text-sm font-bold text-slate-900 dark:text-white">Message Volume & Engagement</h4>
+            <BarChart3 className="w-4 h-4 text-[#05A222]" />
+            <h4 className="text-sm font-bold text-[#14201C]">Message Volume & Engagement</h4>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-[#5F7069] mt-0.5">
             Hourly and daily throughput across all connected Meta numbers
           </p>
         </div>
 
         {/* Metric Switcher */}
-        <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs self-start sm:self-auto">
+        <div className="flex items-center gap-1 p-1 bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl text-xs self-start sm:self-auto">
           <button
             onClick={() => setMetric('sent')}
-            className={`px-3 py-1 rounded-md font-medium transition-all ${
+            className={`px-3 py-1 rounded-lg font-medium transition-all cursor-pointer ${
               metric === 'sent'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
-                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white text-[#006736] font-bold shadow-xs border border-[#E2EAE6]'
+                : 'text-[#5F7069] hover:text-[#14201C]'
             }`}
           >
             Outbound Sent
           </button>
           <button
             onClick={() => setMetric('read')}
-            className={`px-3 py-1 rounded-md font-medium transition-all ${
+            className={`px-3 py-1 rounded-lg font-medium transition-all cursor-pointer ${
               metric === 'read'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
-                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white text-[#006736] font-bold shadow-xs border border-[#E2EAE6]'
+                : 'text-[#5F7069] hover:text-[#14201C]'
             }`}
           >
             Read & Engaged
@@ -54,41 +54,43 @@ export const MessageChart: React.FC = () => {
       </div>
 
       {/* Visual Bar Chart */}
-      <div className="h-48 flex items-end justify-between gap-3 pt-6 px-2 border-b border-slate-100 dark:border-slate-800/80">
+      <div className="h-48 flex items-end justify-between gap-3 pt-6 px-2 border-b border-[#E2EAE6]">
         {chartData.map((item) => {
           const val = metric === 'sent' ? item.sent : item.read;
           const heightPercent = Math.round((val / maxVal) * 100);
           return (
             <div key={item.day} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group relative">
-              <div className="text-[10px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity absolute -top-5 font-medium">
+              <div className="text-[10px] bg-[#14201C] text-white px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity absolute -top-6 font-semibold pointer-events-none shadow-xs">
                 {(val / 1000).toFixed(1)}k
               </div>
               <div
-                style={{ height: `${heightPercent}%` }}
-                className={`w-full max-w-[36px] rounded-t-lg transition-all duration-300 ${
-                  metric === 'sent'
-                    ? 'bg-linear-to-t from-emerald-600 to-teal-400 group-hover:brightness-110'
-                    : 'bg-linear-to-t from-teal-600 to-emerald-300 group-hover:brightness-110'
-                }`}
+                style={{
+                  height: `${heightPercent}%`,
+                  background:
+                    metric === 'sent'
+                      ? 'linear-gradient(180deg, #1CD72C 0%, #05A222 60%, #006736 100%)'
+                      : 'linear-gradient(180deg, #07CF74 0%, #039B56 100%)',
+                }}
+                className="w-full max-w-[36px] rounded-t-lg transition-all duration-300 group-hover:brightness-110 shadow-xs"
               />
-              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{item.day}</span>
+              <span className="text-[11px] font-medium text-[#5F7069]">{item.day}</span>
             </div>
           );
         })}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1">
+      <div className="mt-4 flex flex-wrap items-center justify-between text-xs text-[#5F7069] pt-1">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-            <span>98.8% Meta API Delivery</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]" />
+            <span className="font-medium text-[#1F2A26]">98.8% Meta API Delivery</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-teal-400" />
-            <span>78.4% Read Rate</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#07CF74]" />
+            <span className="font-medium text-[#1F2A26]">78.4% Read Rate</span>
           </div>
         </div>
-        <span className="text-emerald-500 font-semibold">+18.4% vs last week</span>
+        <span className="text-[#05A222] font-bold">+18.4% vs last week</span>
       </div>
     </div>
   );

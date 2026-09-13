@@ -10,13 +10,13 @@ export interface PageContainerProps {
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
   className,
-  fullWidth = false,
+  fullWidth = true,
 }) => {
   return (
     <div
       className={clsx(
-        'w-full mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in duration-200',
-        fullWidth ? 'max-w-none' : 'max-w-7xl',
+        'w-full px-5 py-6 sm:px-6 lg:px-8 animate-in fade-in duration-200',
+        fullWidth ? 'max-w-none' : 'max-w-7xl mx-auto',
         className
       )}
     >

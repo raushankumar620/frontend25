@@ -24,13 +24,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={inputId} className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+        <label htmlFor={inputId} className="block text-xs font-semibold text-[#14201C] mb-1.5">
           {label}
         </label>
       )}
       <div className="relative flex items-center">
         {leftIcon && (
-          <div className="absolute left-3 text-slate-400 pointer-events-none flex items-center">
+          <div className="absolute left-3 text-[#8A9993] pointer-events-none flex items-center">
             {leftIcon}
           </div>
         )}
@@ -38,24 +38,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
           id={inputId}
           ref={ref}
           className={clsx(
-            'w-full rounded-lg border bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 transition-colors placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-1',
-            leftIcon ? 'pl-9' : 'pl-3',
-            rightIcon ? 'pr-9' : 'pr-3',
+            'w-full rounded-xl border bg-white text-[#1F2A26] text-sm px-3.5 py-2 transition-colors placeholder:text-[#8A9993] focus:outline-none focus:ring-2',
+            leftIcon ? 'pl-9' : 'pl-3.5',
+            rightIcon ? 'pr-9' : 'pr-3.5',
             error
-              ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-400/20'
-              : 'border-slate-300 dark:border-slate-700 focus:border-emerald-500 focus:ring-emerald-500/20',
+              ? 'border-[#D64545] focus:border-[#D64545] focus:ring-[#D64545]/20'
+              : 'border-[#E2EAE6] focus:border-[#05A222] focus:ring-[#05A222]/20',
             className
           )}
           {...props}
         />
         {rightIcon && (
-          <div className="absolute right-3 text-slate-400 flex items-center">
+          <div className="absolute right-3 text-[#8A9993] flex items-center">
             {rightIcon}
           </div>
         )}
       </div>
-      {error && <p className="mt-1 text-xs text-rose-500">{error}</p>}
-      {helperText && !error && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{helperText}</p>}
+      {error && <p className="mt-1 text-xs text-[#D64545]">{error}</p>}
+      {helperText && !error && <p className="mt-1 text-xs text-[#5F7069]">{helperText}</p>}
     </div>
   );
 });
