@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { PublicNavbar } from '../features/public/components/PublicNavbar';
 import { PublicFooter } from '../features/public/components/PublicFooter';
 import { FloatingChatBot } from '../features/public/components/FloatingChatBot';
+import { ScrollLeadModal } from '../features/public/components/ScrollLeadModal';
 
 export const PublicLayout: React.FC = () => {
   return (
@@ -13,6 +14,7 @@ export const PublicLayout: React.FC = () => {
       </main>
       <PublicFooter />
       <FloatingChatBot />
+      <ScrollLeadModal />
     </div>
   );
 };
