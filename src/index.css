@@ -73,10 +73,42 @@ body {
   }
 }
 
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.03);
+  }
+}
+
 .animate-fadeIn {
   animation: fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-scaleUp {
   animation: scale-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
 }

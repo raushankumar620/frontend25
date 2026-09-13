@@ -67,7 +67,7 @@ const SUGGESTED_QUESTIONS = [
 export const FloatingChatBot: React.FC = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [showCallout, setShowCallout] = useState(true);
+  const [showCallout, setShowCallout] = useState(false);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -80,6 +80,29 @@ export const FloatingChatBot: React.FC = () => {
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
+
+  // Periodic callout loop: appears every 2 seconds when chat is closed
+  useEffect(() => {
+    if (isOpen) {
+      setShowCallout(false);
+      return;
+    }
+
+    // Initial 2 second delay to show callout
+    const initialTimer = setTimeout(() => {
+      setShowCallout(true);
+    }, 2000);
+
+    // Re-trigger every 2 seconds
+    const interval = setInterval(() => {
+      setShowCallout(true);
+    }, 2000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, [isOpen]);
 
   // Auto-scroll
   useEffect(() => {

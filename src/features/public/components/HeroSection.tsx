@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ArrowRight, 
   Sparkles, 
-  Bot, 
   Send, 
   ShieldCheck, 
   CheckCheck, 
@@ -286,8 +285,12 @@ export const HeroSection: React.FC = () => {
               <div className="bg-[#006736] p-4 text-white flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
-                      <Bot className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center p-1 overflow-hidden shadow-xs">
+                      <img 
+                        src="/images/whatsapplogoshort.png" 
+                        alt="WhatsApp" 
+                        className="w-full h-full object-contain"
+                      />
                     </div>
                     <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#1CD72C] border-2 border-[#006736] rounded-full" />
                   </div>
