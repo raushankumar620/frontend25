@@ -30,22 +30,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggleCollapse,
 }) => {
   const mainNavItems = [
-    { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: LayoutDashboard },
-    { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, badge: '5' },
-    { label: 'Contacts', path: ROUTES.CONTACTS, icon: Users },
-    { label: 'WhatsApp', path: ROUTES.WHATSAPP_NUMBERS, icon: Smartphone },
-    { label: 'Templates', path: ROUTES.TEMPLATES, icon: FileText },
-    { label: 'Campaigns', path: ROUTES.CAMPAIGNS, icon: Send },
-    { label: 'Automations', path: ROUTES.AUTOMATIONS, icon: GitBranch },
-    { label: 'AI Agents', path: ROUTES.AI_DASHBOARD, icon: Bot, highlight: true },
-    { label: 'Analytics', path: ROUTES.ANALYTICS, icon: BarChart3 },
+    { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: LayoutDashboard, color: '#2563EB', bgColor: '#EFF6FF' },
+    { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, badge: '5', color: '#059669', bgColor: '#ECFDF5' },
+    { label: 'Contacts', path: ROUTES.CONTACTS, icon: Users, color: '#7C3AED', bgColor: '#F5F3FF' },
+    { label: 'WhatsApp', path: ROUTES.WHATSAPP_NUMBERS, icon: Smartphone, color: '#25D366', bgColor: '#E9F9EE' },
+    { label: 'Templates', path: ROUTES.TEMPLATES, icon: FileText, color: '#D97706', bgColor: '#FFFBEB' },
+    { label: 'Campaigns', path: ROUTES.CAMPAIGNS, icon: Send, color: '#E11D48', bgColor: '#FFF1F2' },
+    { label: 'Automations', path: ROUTES.AUTOMATIONS, icon: GitBranch, color: '#0891B2', bgColor: '#ECFEFF' },
+    { label: 'AI Agents', path: ROUTES.AI_DASHBOARD, icon: Bot, highlight: true, color: '#9333EA', bgColor: '#FAF5FF' },
+    { label: 'Analytics', path: ROUTES.ANALYTICS, icon: BarChart3, color: '#4F46E5', bgColor: '#EEF2FF' },
   ];
 
   const adminNavItems = [
-    { label: 'Developers API', path: ROUTES.DEVELOPERS_DASHBOARD, icon: Code2 },
-    { label: 'Team', path: ROUTES.TEAM, icon: Users2 },
-    { label: 'Billing', path: ROUTES.BILLING, icon: CreditCard },
-    { label: 'Settings', path: ROUTES.ACCOUNT_SETTINGS, icon: Settings },
+    { label: 'Developers API', path: ROUTES.DEVELOPERS_DASHBOARD, icon: Code2, color: '#0D9488', bgColor: '#F0FDFA' },
+    { label: 'Team', path: ROUTES.TEAM, icon: Users2, color: '#DB2777', bgColor: '#FDF2F8' },
+    { label: 'Billing', path: ROUTES.BILLING, icon: CreditCard, color: '#16A34A', bgColor: '#F0FDF4' },
+    { label: 'Settings', path: ROUTES.ACCOUNT_SETTINGS, icon: Settings, color: '#64748B', bgColor: '#F8FAFC' },
   ];
 
   return (
@@ -112,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className={({ isActive }) =>
                   clsx(
                     'flex items-center rounded-xl font-semibold transition-all group relative cursor-pointer',
-                    collapsed ? 'justify-center py-3 px-2' : 'gap-3.5 px-4 py-2.5 text-sm sm:text-base',
+                    collapsed ? 'justify-center py-2 px-1' : 'gap-3 px-3 py-2 text-sm sm:text-[15px]',
                     isActive
                       ? 'bg-[#E9F9EE] text-[#006736] font-bold shadow-xs'
                       : 'text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8]'
@@ -121,13 +121,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
               >
                 {({ isActive }) => (
                   <>
-                    <item.icon
+                    <div
                       className={clsx(
-                        'w-5 h-5 shrink-0 transition-transform group-hover:scale-110',
-                        isActive ? 'text-[#05A222]' : 'text-[#8A9993] group-hover:text-[#14201C]'
+                        'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200',
+                        isActive ? 'shadow-xs ring-1 ring-black/5' : 'group-hover:scale-105'
                       )}
-                    />
-                    {!collapsed && <span className="truncate text-sm sm:text-[15px]">{item.label}</span>}
+                      style={{
+                        backgroundColor: item.bgColor,
+                        color: item.color,
+                      }}
+                    >
+                      <item.icon
+                        className="w-4.5 h-4.5 shrink-0 transition-transform"
+                        fill={item.color}
+                        fillOpacity={0.2}
+                        strokeWidth={2.2}
+                      />
+                    </div>
+                    {!collapsed && <span className="truncate">{item.label}</span>}
                     {!collapsed && item.badge && (
                       <span className="ml-auto px-2.5 py-0.5 rounded-full text-xs bg-[#E9F9EE] text-[#006736] font-bold border border-[#C4EBD0]">
                         {item.badge}
@@ -140,7 +151,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       </span>
                     )}
                     {collapsed && item.badge && (
-                      <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-[#05A222]" />
+                      <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-[#05A222] ring-2 ring-white" />
                     )}
                     {isActive && (
                       <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-[#05A222] rounded-r-full" />
@@ -167,7 +178,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className={({ isActive }) =>
                   clsx(
                     'flex items-center rounded-xl font-semibold transition-all group relative cursor-pointer',
-                    collapsed ? 'justify-center py-3 px-2' : 'gap-3.5 px-4 py-2.5 text-sm sm:text-base',
+                    collapsed ? 'justify-center py-2 px-1' : 'gap-3 px-3 py-2 text-sm sm:text-[15px]',
                     isActive
                       ? 'bg-[#E9F9EE] text-[#006736] font-bold shadow-xs'
                       : 'text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8]'
@@ -176,13 +187,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
               >
                 {({ isActive }) => (
                   <>
-                    <item.icon
+                    <div
                       className={clsx(
-                        'w-5 h-5 shrink-0 transition-transform group-hover:scale-110',
-                        isActive ? 'text-[#05A222]' : 'text-[#8A9993] group-hover:text-[#14201C]'
+                        'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200',
+                        isActive ? 'shadow-xs ring-1 ring-black/5' : 'group-hover:scale-105'
                       )}
-                    />
-                    {!collapsed && <span className="truncate text-sm sm:text-[15px]">{item.label}</span>}
+                      style={{
+                        backgroundColor: item.bgColor,
+                        color: item.color,
+                      }}
+                    >
+                      <item.icon
+                        className="w-4.5 h-4.5 shrink-0 transition-transform"
+                        fill={item.color}
+                        fillOpacity={0.2}
+                        strokeWidth={2.2}
+                      />
+                    </div>
+                    {!collapsed && <span className="truncate">{item.label}</span>}
                     {isActive && (
                       <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-[#05A222] rounded-r-full" />
                     )}
