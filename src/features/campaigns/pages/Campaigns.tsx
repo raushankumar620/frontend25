@@ -104,7 +104,7 @@ export const Campaigns: React.FC = () => {
       case 'RUNNING':
         return (
           <Badge variant="primary" size="sm">
-            <Radio className="w-3.5 h-3.5 mr-1 animate-pulse text-emerald-500" />
+            <Radio className="w-3.5 h-3.5 mr-1 animate-pulse text-[#05A222]" />
             Running
           </Badge>
         );
@@ -143,28 +143,28 @@ export const Campaigns: React.FC = () => {
       header: 'Campaign & Template',
       render: (c) => (
         <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+          <div className="w-9 h-9 rounded-xl bg-[#E9F9EE] text-[#05A222] flex items-center justify-center shrink-0 mt-0.5">
             <Send className="w-4 h-4" />
           </div>
           <div>
-            <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <div className="font-black text-[#14201C] flex items-center gap-2 text-sm">
               <span>{c.name}</span>
             </div>
-            <div className="text-xs font-mono text-slate-400 mt-0.5">
-              Template: <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{c.templateName}</span>
+            <div className="text-xs font-mono text-[#5F7069] mt-0.5 font-medium">
+              Template: <span className="text-[#05A222] font-semibold">{c.templateName}</span>
             </div>
           </div>
         </div>
       ),
     },
     {
-      header: 'Audience',
+      header: 'Audience Reach',
       render: (c) => (
         <div>
-          <div className="font-bold text-slate-800 dark:text-slate-200 text-xs">
-            {c.totalRecipients.toLocaleString()} Recipients
+          <div className="font-bold text-[#14201C] text-xs">
+            {c.totalRecipients.toLocaleString()} Leads
           </div>
-          <div className="text-[11px] text-slate-400 truncate max-w-[160px]">
+          <div className="text-[11px] text-[#5F7069] truncate max-w-[160px] font-medium">
             {c.targetAudience}
           </div>
         </div>
@@ -179,17 +179,17 @@ export const Campaigns: React.FC = () => {
 
         return (
           <div className="w-44 space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] font-semibold">
-              <span className="text-slate-600 dark:text-slate-300">{sentPercent}% Sent</span>
-              <span className="text-emerald-600 dark:text-emerald-400">{c.sentCount}/{c.totalRecipients}</span>
+            <div className="flex items-center justify-between text-[11px] font-bold">
+              <span className="text-[#14201C]">{sentPercent}% Sent</span>
+              <span className="text-[#05A222]">{c.sentCount}/{c.totalRecipients}</span>
             </div>
-            <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-[#E2EAE6] rounded-full overflow-hidden">
               <div
-                className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                className="h-full bg-[#05A222] rounded-full transition-all duration-500"
                 style={{ width: `${sentPercent}%` }}
               />
             </div>
-            <div className="flex items-center gap-2 text-[10px] text-slate-400">
+            <div className="flex items-center gap-2 text-[10px] text-[#5F7069] font-semibold">
               <span>{delPercent}% Deliv.</span>
               <span>•</span>
               <span>{readPercent}% Read</span>
@@ -212,8 +212,8 @@ export const Campaigns: React.FC = () => {
               variant="outline"
               onClick={() => handleStart(c.id)}
               isLoading={actionLoadingId === c.id}
-              leftIcon={<Play className="w-3.5 h-3.5 text-emerald-500" />}
-              className="text-xs font-semibold px-2.5 py-1"
+              leftIcon={<Play className="w-3.5 h-3.5 text-[#05A222]" />}
+              className="text-xs font-semibold px-2.5 py-1 border-[#C4EBD0] text-[#006736] hover:bg-[#E9F9EE]"
             >
               Start
             </Button>
@@ -238,8 +238,8 @@ export const Campaigns: React.FC = () => {
               variant="outline"
               onClick={() => handleResume(c.id)}
               isLoading={actionLoadingId === c.id}
-              leftIcon={<Play className="w-3.5 h-3.5 text-emerald-500" />}
-              className="text-xs font-semibold px-2.5 py-1"
+              leftIcon={<Play className="w-3.5 h-3.5 text-[#05A222]" />}
+              className="text-xs font-semibold px-2.5 py-1 border-[#C4EBD0] text-[#006736] hover:bg-[#E9F9EE]"
             >
               Resume
             </Button>
@@ -249,8 +249,8 @@ export const Campaigns: React.FC = () => {
             size="sm"
             variant="ghost"
             onClick={() => navigate(`/campaigns/${c.id}`)}
-            leftIcon={<BarChart3 className="w-3.5 h-3.5 text-slate-500" />}
-            className="text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 px-2.5 py-1"
+            leftIcon={<BarChart3 className="w-3.5 h-3.5 text-[#5F7069]" />}
+            className="text-xs font-semibold text-[#006736] hover:bg-[#F6FAF8] px-2.5 py-1"
           >
             Analytics
           </Button>
@@ -263,11 +263,11 @@ export const Campaigns: React.FC = () => {
     <PageContainer>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] dark:text-white tracking-tight flex items-center gap-2.5">
-            <Send className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight flex items-center gap-2.5">
+            <Send className="w-7 h-7 text-[#05A222]" />
             WhatsApp Broadcast Campaigns
           </h2>
-          <p className="text-sm sm:text-base text-[#5F7069] dark:text-slate-400 mt-1 font-medium">
+          <p className="text-sm sm:text-base text-[#5F7069] mt-1 font-medium">
             Schedule and launch bulk personalized HSM template messages with high deliverability and analytics.
           </p>
         </div>
@@ -277,7 +277,7 @@ export const Campaigns: React.FC = () => {
           size="md"
           onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
           leftIcon={<Plus className="w-4 h-4" />}
-          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-xs bg-[#05A222] hover:bg-[#006736] text-white"
         >
           New Broadcast Campaign
         </Button>
@@ -296,8 +296,8 @@ export const Campaigns: React.FC = () => {
               onClick={() => setSelectedStatus(st)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 selectedStatus === st
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
+                  ? 'bg-[#05A222] text-white shadow-xs'
+                  : 'bg-white text-[#14201C] border border-[#E2EAE6] hover:bg-[#F6FAF8]'
               }`}
             >
               {st}

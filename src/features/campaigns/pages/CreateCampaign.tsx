@@ -11,7 +11,11 @@ import {
   Calendar,
   Zap,
   Tag,
-  AlertCircle
+  AlertCircle,
+  Smartphone,
+  Sparkles,
+  ShieldCheck,
+  ChevronRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
@@ -30,6 +34,11 @@ export const CreateCampaign: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [targetAll, setTargetAll] = useState(false);
   const [variableMappings, setVariableMappings] = useState<{ [paramIndex: string]: { sourceType: string; sourceField: string } }>({});
+  const [sampleVarValues, setSampleVarValues] = useState<{ [paramIndex: string]: string }>({
+    '1': 'Alex Johnson',
+    '2': '+1 (555) 234-5678',
+    '3': 'VIP-2026',
+  });
   const [scheduleDate, setScheduleDate] = useState('');
   const [autoLaunch, setAutoLaunch] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,14 +73,19 @@ export const CreateCampaign: React.FC = () => {
     if (selectedTemplate) {
       const matches: string[] = (selectedTemplate.body && selectedTemplate.body.match(/\{\{(\d+)\}\}/g)) || [];
       const newMappings: typeof variableMappings = {};
+      const newSamples: typeof sampleVarValues = { ...sampleVarValues };
       matches.forEach((m) => {
         const num = m.replace(/[{}]/g, '');
         newMappings[num] = {
           sourceType: 'contact_field',
           sourceField: num === '1' ? 'name' : 'phoneNumber',
         };
+        if (!newSamples[num]) {
+          newSamples[num] = num === '1' ? 'Alex Johnson' : `Value ${num}`;
+        }
       });
       setVariableMappings(newMappings);
+      setSampleVarValues(newSamples);
     }
   }, [selectedTemplate]);
 
@@ -120,338 +134,471 @@ export const CreateCampaign: React.FC = () => {
 
   const foundVars = Object.keys(variableMappings);
 
+  // Dynamic preview body with sample values
+  const previewBody = selectedTemplate
+    ? selectedTemplate.body.replace(/\{\{(\d+)\}\}/g, (_, num) => {
+        return sampleVarValues[num] || `[Variable {{${num}}}]`;
+      })
+    : '';
+
   return (
     <PageContainer>
+      {/* Back button */}
       <button
         onClick={() => navigate(ROUTES.CAMPAIGNS)}
-        className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white mb-6"
+        className="inline-flex items-center gap-2 text-xs font-bold text-[#5F7069] hover:text-[#14201C] transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Campaigns</span>
       </button>
 
       {errorMessage && (
-        <div className="mb-6 max-w-4xl mx-auto p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-sm flex items-center gap-3">
+        <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm font-semibold flex items-center gap-3 shadow-xs">
           <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-        {/* Stepper Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-5 mb-6">
-          <div>
-            <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-              Step {step} of 3
+      {/* Main Grid: Left Builder & Right Smartphone Preview */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Form / Stepper Card */}
+        <div className="lg:col-span-7 bg-white rounded-2xl border border-[#E2EAE6] p-5 sm:p-7 shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-6">
+          {/* Stepper Navigation */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2EAE6] pb-5">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#05A222] uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Step {step} of 3</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-[#14201C] tracking-tight mt-0.5">
+                {step === 1 && '1. Campaign Name & Audience'}
+                {step === 2 && '2. HSM Template & Variables'}
+                {step === 3 && '3. Schedule & Review'}
+              </h2>
             </div>
-            <h2 className="text-xl font-black text-slate-900 dark:text-white">
-              {step === 1 && '1. Campaign Name & Audience'}
-              {step === 2 && '2. WhatsApp Template & Variable Personalization'}
-              {step === 3 && '3. Schedule & Launch Broadcast'}
-            </h2>
+
+            {/* Stepper Pills */}
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              {[1, 2, 3].map((s) => (
+                <div
+                  key={s}
+                  onClick={() => s < step && setStep(s)}
+                  className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black transition-all cursor-pointer ${
+                    step === s
+                      ? 'bg-[#05A222] text-white shadow-xs'
+                      : step > s
+                      ? 'bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]'
+                      : 'bg-[#F6FAF8] text-[#8A9993] border border-[#E2EAE6]'
+                  }`}
+                >
+                  {s}
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {[1, 2, 3].map((s) => (
-              <div
-                key={s}
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  step === s
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : step > s
-                    ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-                }`}
-              >
-                {s}
+          {/* STEP 1: Campaign Name & Audience Targeting */}
+          {step === 1 && (
+            <div className="space-y-6">
+              <div>
+                <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider mb-2">
+                  Campaign Title
+                </label>
+                <Input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. VIP Summer Flash Sale 2026"
+                  required
+                />
+                <p className="text-[11px] text-[#5F7069] mt-1.5 font-medium">
+                  Internal campaign name used in your marketing reports & broadcast analytics.
+                </p>
               </div>
-            ))}
-          </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider mb-2">
+                  Target Audience Selection
+                </label>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                  <div
+                    onClick={() => {
+                      setTargetAll(true);
+                      setSelectedTags([]);
+                    }}
+                    className={`p-4 rounded-xl border-2 flex items-start justify-between cursor-pointer transition-all ${
+                      targetAll
+                        ? 'border-[#05A222] bg-[#E9F9EE] text-[#006736]'
+                        : 'border-[#E2EAE6] bg-white hover:bg-[#F6FAF8] text-[#14201C]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-[#05A222]/10 text-[#05A222] flex items-center justify-center shrink-0">
+                        <Users className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-black text-[#14201C]">All Opted-In Contacts</div>
+                        <div className="text-[11px] text-[#5F7069] font-medium">Broadcast to all subscribers</div>
+                      </div>
+                    </div>
+                    {targetAll && <CheckCircle2 className="w-5 h-5 text-[#05A222] shrink-0" />}
+                  </div>
+
+                  <div
+                    onClick={() => setTargetAll(false)}
+                    className={`p-4 rounded-xl border-2 flex items-start justify-between cursor-pointer transition-all ${
+                      !targetAll
+                        ? 'border-[#05A222] bg-[#E9F9EE] text-[#006736]'
+                        : 'border-[#E2EAE6] bg-white hover:bg-[#F6FAF8] text-[#14201C]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-[#07CF74]/10 text-[#006736] flex items-center justify-center shrink-0">
+                        <Tag className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-black text-[#14201C]">Targeted Audience Tags</div>
+                        <div className="text-[11px] text-[#5F7069] font-medium">Filter by specific segments</div>
+                      </div>
+                    </div>
+                    {!targetAll && <CheckCircle2 className="w-5 h-5 text-[#05A222] shrink-0" />}
+                  </div>
+                </div>
+
+                {!targetAll && (
+                  <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6] space-y-2.5">
+                    <div className="text-xs font-bold text-[#14201C]">
+                      Select Tags to include in this broadcast:
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {availableTags.map((tag) => (
+                        <button
+                          key={tag.name}
+                          type="button"
+                          onClick={() => toggleTag(tag.name)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                            selectedTags.includes(tag.name)
+                              ? 'bg-[#05A222] text-white shadow-xs'
+                              : 'bg-white text-[#14201C] border border-[#E2EAE6] hover:bg-[#E9F9EE]'
+                          }`}
+                        >
+                          <span>{tag.name}</span>
+                          <span className="text-[10px] opacity-75 font-semibold">({tag.count})</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <Button
+                className="w-full mt-6 bg-[#05A222] hover:bg-[#006736] text-white font-bold py-3 rounded-xl shadow-xs"
+                size="lg"
+                disabled={!name.trim() || (!targetAll && selectedTags.length === 0)}
+                onClick={() => setStep(2)}
+                rightIcon={<ChevronRight className="w-4 h-4" />}
+              >
+                Next: Select Template & Variables
+              </Button>
+            </div>
+          )}
+
+          {/* STEP 2: Template Selection & Variable Mapping */}
+          {step === 2 && (
+            <div className="space-y-6">
+              <div>
+                <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider mb-2">
+                  Choose Approved WhatsApp HSM Template
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
+                  {templates.map((tpl) => (
+                    <div
+                      key={tpl.id}
+                      onClick={() => setSelectedTemplate(tpl)}
+                      className={`p-3.5 rounded-xl border-2 flex items-start justify-between cursor-pointer transition-all ${
+                        selectedTemplate?.id === tpl.id
+                          ? 'border-[#05A222] bg-[#E9F9EE]'
+                          : 'border-[#E2EAE6] bg-white hover:bg-[#F6FAF8]'
+                      }`}
+                    >
+                      <div className="min-w-0 pr-2">
+                        <div className="font-bold text-xs font-mono text-[#14201C] flex items-center gap-1.5 truncate">
+                          <FileText className="w-3.5 h-3.5 text-[#05A222] shrink-0" />
+                          <span>{tpl.name}</span>
+                        </div>
+                        <div className="text-[11px] text-[#5F7069] mt-1 line-clamp-2 font-medium">
+                          {tpl.body}
+                        </div>
+                      </div>
+                      {selectedTemplate?.id === tpl.id && (
+                        <CheckCircle2 className="w-4 h-4 text-[#05A222] shrink-0 mt-0.5" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Variable Mappings Card */}
+              {selectedTemplate && foundVars.length > 0 && (
+                <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6] space-y-3">
+                  <div className="text-xs font-bold text-[#14201C] uppercase tracking-wider flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-[#05A222]" />
+                    <span>Personalize Variables for Each Recipient</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {foundVars.map((v) => (
+                      <div key={v} className="space-y-1">
+                        <label className="block text-[11px] font-bold font-mono text-[#14201C]">
+                          Variable &#123;&#123;{v}&#125;&#125;
+                        </label>
+                        <select
+                          value={variableMappings[v]?.sourceField || 'name'}
+                          onChange={(e) => {
+                            setVariableMappings({
+                              ...variableMappings,
+                              [v]: {
+                                sourceType: 'contact_field',
+                                sourceField: e.target.value,
+                              },
+                            });
+                          }}
+                          className="w-full text-xs p-2.5 rounded-xl border border-[#E2EAE6] bg-white text-[#14201C] font-semibold focus:border-[#05A222] focus:outline-none"
+                        >
+                          <option value="name">Contact Full Name (e.g. Alex)</option>
+                          <option value="phoneNumber">Contact Phone Number</option>
+                          <option value="email">Contact Email</option>
+                        </select>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 pt-2">
+                <Button variant="ghost" size="lg" onClick={() => setStep(1)} className="font-semibold text-[#5F7069]">
+                  Back
+                </Button>
+                <Button
+                  className="flex-1 bg-[#05A222] hover:bg-[#006736] text-white font-bold py-3 rounded-xl shadow-xs"
+                  size="lg"
+                  disabled={!selectedTemplate}
+                  onClick={() => setStep(3)}
+                  rightIcon={<ChevronRight className="w-4 h-4" />}
+                >
+                  Next: Review & Launch
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3: Review & Schedule Launch */}
+          {step === 3 && selectedTemplate && (
+            <div className="space-y-6">
+              {/* Review Summary */}
+              <div className="p-5 bg-[#F6FAF8] rounded-2xl border border-[#E2EAE6] space-y-3">
+                <h4 className="text-xs font-bold uppercase text-[#5F7069] tracking-wider">Broadcast Summary</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+                  <div>
+                    <span className="text-[#5F7069] block font-medium">Campaign Title:</span>
+                    <strong className="text-[#14201C] text-sm">{name}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[#5F7069] block font-medium">HSM Template:</span>
+                    <strong className="text-[#05A222] font-mono">{selectedTemplate.name}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[#5F7069] block font-medium">Audience Reach:</span>
+                    <strong className="text-[#14201C]">
+                      {targetAll ? 'All Opted-In Subscribers' : `Tags: ${selectedTags.join(', ')}`}
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="text-[#5F7069] block font-medium">Category:</span>
+                    <strong className="text-[#14201C] uppercase">{selectedTemplate.category}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Timing selection */}
+              <div className="space-y-3">
+                <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider">
+                  Broadcast Timing
+                </label>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div
+                    onClick={() => {
+                      setAutoLaunch(true);
+                      setScheduleDate('');
+                    }}
+                    className={`p-4 rounded-xl border-2 flex items-start justify-between cursor-pointer transition-all ${
+                      autoLaunch && !scheduleDate
+                        ? 'border-[#05A222] bg-[#E9F9EE] text-[#006736]'
+                        : 'border-[#E2EAE6] bg-white hover:bg-[#F6FAF8] text-[#14201C]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-[#05A222]/10 text-[#05A222] flex items-center justify-center shrink-0">
+                        <Zap className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-black text-[#14201C]">Launch Immediately</div>
+                        <div className="text-[11px] text-[#5F7069] font-medium">Dispatches right upon confirmation</div>
+                      </div>
+                    </div>
+                    {autoLaunch && !scheduleDate && <CheckCircle2 className="w-5 h-5 text-[#05A222] shrink-0" />}
+                  </div>
+
+                  <div
+                    onClick={() => setAutoLaunch(false)}
+                    className={`p-4 rounded-xl border-2 flex items-start justify-between cursor-pointer transition-all ${
+                      !autoLaunch || scheduleDate
+                        ? 'border-[#05A222] bg-[#E9F9EE] text-[#006736]'
+                        : 'border-[#E2EAE6] bg-white hover:bg-[#F6FAF8] text-[#14201C]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-[#07CF74]/10 text-[#006736] flex items-center justify-center shrink-0">
+                        <Calendar className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-black text-[#14201C]">Schedule for Later</div>
+                        <div className="text-[11px] text-[#5F7069] font-medium">Send at a designated time</div>
+                      </div>
+                    </div>
+                    {(!autoLaunch || scheduleDate) && <CheckCircle2 className="w-5 h-5 text-[#05A222] shrink-0" />}
+                  </div>
+                </div>
+
+                {(!autoLaunch || scheduleDate) && (
+                  <div className="pt-2">
+                    <Input
+                      type="datetime-local"
+                      label="Scheduled Date & Time"
+                      value={scheduleDate}
+                      onChange={(e) => setScheduleDate(e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3 pt-4">
+                <Button variant="ghost" size="lg" onClick={() => setStep(2)} className="font-semibold text-[#5F7069]">
+                  Back
+                </Button>
+                <Button
+                  className="flex-1 bg-[#05A222] hover:bg-[#006736] text-white font-bold py-3 rounded-xl shadow-xs"
+                  size="lg"
+                  isLoading={isSubmitting}
+                  leftIcon={<Send className="w-4 h-4" />}
+                  onClick={handleLaunch}
+                >
+                  {scheduleDate ? 'Schedule Broadcast Campaign' : 'Launch Broadcast Now'}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Step 1: Campaign Details & Audience Filter */}
-        {step === 1 && (
-          <div className="space-y-6">
-            <Input
-              label="Campaign Title"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. VIP Summer Mega Discount 2026"
-              required
-            />
+        {/* Right Side: Realistic WhatsApp Smartphone Mockup */}
+        <div className="lg:col-span-5 flex flex-col items-center sticky top-6">
+          <div className="text-xs font-bold text-[#5F7069] uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Smartphone className="w-4 h-4 text-[#05A222]" />
+            <span>Live WhatsApp Message Preview</span>
+          </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase">
-                Target Audience Selection
-              </label>
+          {/* Phone Chassis Container */}
+          <div className="w-full max-w-[340px] bg-[#14201C] rounded-[44px] p-3.5 shadow-[0_20px_60px_rgba(1,59,35,0.18)] border-4 border-[#1F2A26]">
+            {/* Speaker & Notch */}
+            <div className="w-24 h-4 bg-[#14201C] mx-auto rounded-b-xl mb-2 flex items-center justify-center">
+              <div className="w-10 h-1 bg-[#2D3A35] rounded-full" />
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                <div
-                  onClick={() => {
-                    setTargetAll(true);
-                    setSelectedTags([]);
-                  }}
-                  className={`p-4 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                    targetAll
-                      ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200'
-                      : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Users className="w-5 h-5 text-emerald-500" />
-                    <div>
-                      <div className="text-xs font-bold">All Opted-In Contacts</div>
-                      <div className="text-[11px] text-slate-400">Broadcast to entire subscriber base</div>
-                    </div>
-                  </div>
-                  {targetAll && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+            {/* Smartphone Inner Screen */}
+            <div className="bg-[#E5DDD5] rounded-[34px] p-3.5 min-h-[460px] flex flex-col justify-between overflow-hidden relative">
+              {/* WhatsApp App Header */}
+              <div className="bg-[#006736] text-white py-2 px-3 rounded-2xl flex items-center gap-2.5 shadow-sm">
+                <div className="w-8 h-8 rounded-full bg-[#05A222] flex items-center justify-center font-bold text-xs text-white shrink-0 shadow-xs">
+                  W
                 </div>
-
-                <div
-                  onClick={() => setTargetAll(false)}
-                  className={`p-4 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                    !targetAll
-                      ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200'
-                      : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Tag className="w-5 h-5 text-indigo-500" />
-                    <div>
-                      <div className="text-xs font-bold">Filter by Audience Tags</div>
-                      <div className="text-[11px] text-slate-400">Target specific customer segments</div>
-                    </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-black truncate flex items-center gap-1">
+                    <span>Acme Official Store</span>
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
                   </div>
-                  {!targetAll && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                  <div className="text-[10px] text-[#C4EBD0] font-medium">Verified WhatsApp Business</div>
                 </div>
               </div>
 
-              {!targetAll && (
-                <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
-                  <div className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                    Select Tags to include:
+              {/* Chat Bubble & Interactive Buttons */}
+              <div className="my-auto py-3 space-y-2">
+                {selectedTemplate ? (
+                  <div>
+                    <div className="bg-white rounded-2xl rounded-tl-xs p-3.5 shadow-sm space-y-1.5 text-xs text-[#14201C]">
+                      {selectedTemplate.header?.text && (
+                        <div className="font-bold text-[#006736] border-b border-[#E2EAE6] pb-1">
+                          {selectedTemplate.header.text}
+                        </div>
+                      )}
+                      <div className="whitespace-pre-wrap leading-relaxed font-sans text-xs text-[#1F2A26]">
+                        {previewBody}
+                      </div>
+                      {selectedTemplate.footer && (
+                        <div className="text-[10px] text-[#8A9993] pt-1 border-t border-[#F6FAF8]">
+                          {selectedTemplate.footer}
+                        </div>
+                      )}
+                      <div className="text-[9px] text-right text-[#8A9993] font-medium flex items-center justify-end gap-1">
+                        <span>12:45 PM</span>
+                        <CheckCircle2 className="w-3 h-3 text-[#05A222]" />
+                      </div>
+                    </div>
+
+                    {/* Buttons Preview */}
+                    {selectedTemplate.buttons && selectedTemplate.buttons.length > 0 && (
+                      <div className="mt-2 space-y-1.5">
+                        {selectedTemplate.buttons.map((btn, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-white py-2 px-3 text-center text-xs font-bold text-[#05A222] rounded-xl shadow-xs border border-[#C4EBD0] flex items-center justify-center gap-1.5"
+                          >
+                            <span>{btn.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {availableTags.map((tag) => (
-                      <button
-                        key={tag.name}
-                        type="button"
-                        onClick={() => toggleTag(tag.name)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                          selectedTags.includes(tag.name)
-                            ? 'bg-emerald-600 text-white shadow-xs'
-                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
-                        }`}
-                      >
-                        <span>{tag.name}</span>
-                        <span className="text-[10px] opacity-75">({tag.count})</span>
-                      </button>
+                ) : (
+                  <div className="p-6 bg-white/70 backdrop-blur-xs rounded-2xl text-center text-xs text-[#5F7069] font-medium border border-[#E2EAE6]">
+                    Select an approved HSM template on the left to see the live WhatsApp preview.
+                  </div>
+                )}
+              </div>
+
+              {/* Variable Value Editor (Quick test inside preview) */}
+              {selectedTemplate && foundVars.length > 0 && (
+                <div className="bg-white/90 backdrop-blur-xs rounded-2xl p-2.5 border border-[#E2EAE6] space-y-1.5 shadow-xs">
+                  <div className="text-[10px] font-bold text-[#5F7069] uppercase flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-[#05A222]" />
+                    <span>Test Preview Variables</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {foundVars.map((v) => (
+                      <input
+                        key={v}
+                        type="text"
+                        placeholder={`{{${v}}}`}
+                        value={sampleVarValues[v] || ''}
+                        onChange={(e) => setSampleVarValues({ ...sampleVarValues, [v]: e.target.value })}
+                        className="text-[10px] p-1.5 rounded-lg border border-[#E2EAE6] bg-white text-[#14201C] font-semibold"
+                      />
                     ))}
                   </div>
                 </div>
               )}
             </div>
-
-            <Button
-              className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
-              size="lg"
-              disabled={!name.trim() || (!targetAll && selectedTags.length === 0)}
-              onClick={() => setStep(2)}
-            >
-              Next: Select Template & Variables
-            </Button>
           </div>
-        )}
-
-        {/* Step 2: Template Selection & Variable Mapping */}
-        {step === 2 && (
-          <div className="space-y-6">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase">
-                Choose WhatsApp HSM Template
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
-                {templates.map((tpl) => (
-                  <div
-                    key={tpl.id}
-                    onClick={() => setSelectedTemplate(tpl)}
-                    className={`p-3.5 rounded-xl border flex items-start justify-between cursor-pointer transition-all ${
-                      selectedTemplate?.id === tpl.id
-                        ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/40'
-                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40'
-                    }`}
-                  >
-                    <div>
-                      <div className="font-bold text-xs font-mono text-slate-900 dark:text-white flex items-center gap-1.5">
-                        <FileText className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                        <span>{tpl.name}</span>
-                      </div>
-                      <div className="text-[11px] text-slate-400 mt-1 line-clamp-2">
-                        {tpl.body}
-                      </div>
-                    </div>
-                    {selectedTemplate?.id === tpl.id && (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Variable Mappings */}
-            {selectedTemplate && foundVars.length > 0 && (
-              <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
-                <div className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase">
-                  Personalize Variables for Recipients
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {foundVars.map((v) => (
-                    <div key={v} className="space-y-1">
-                      <label className="block text-[11px] font-bold font-mono text-slate-600 dark:text-slate-300">
-                        Variable &#123;&#123;{v}&#125;&#125;
-                      </label>
-                      <select
-                        value={variableMappings[v]?.sourceField || 'name'}
-                        onChange={(e) => {
-                          setVariableMappings({
-                            ...variableMappings,
-                            [v]: {
-                              sourceType: 'contact_field',
-                              sourceField: e.target.value,
-                            },
-                          });
-                        }}
-                        className="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-semibold"
-                      >
-                        <option value="name">Contact Full Name (e.g. Alice)</option>
-                        <option value="phoneNumber">Contact Phone Number</option>
-                        <option value="email">Contact Email</option>
-                      </select>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center gap-3 pt-2">
-              <Button variant="ghost" size="lg" onClick={() => setStep(1)}>
-                Back
-              </Button>
-              <Button
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
-                size="lg"
-                disabled={!selectedTemplate}
-                onClick={() => setStep(3)}
-              >
-                Next: Review & Launch
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: Schedule & Launch Review */}
-        {step === 3 && selectedTemplate && (
-          <div className="space-y-6">
-            {/* Review Summary */}
-            <div className="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
-              <h4 className="text-xs font-bold uppercase text-slate-400">Broadcast Summary</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div>
-                  <span className="text-slate-400 block">Campaign Name:</span>
-                  <strong className="text-slate-900 dark:text-white">{name}</strong>
-                </div>
-                <div>
-                  <span className="text-slate-400 block">HSM Template:</span>
-                  <strong className="text-emerald-600 dark:text-emerald-400 font-mono">{selectedTemplate.name}</strong>
-                </div>
-                <div>
-                  <span className="text-slate-400 block">Audience Targeting:</span>
-                  <strong className="text-slate-900 dark:text-white">
-                    {targetAll ? 'All Opted-In Contacts' : `Tags: ${selectedTags.join(', ')}`}
-                  </strong>
-                </div>
-                <div>
-                  <span className="text-slate-400 block">Template Category:</span>
-                  <strong className="text-slate-900 dark:text-white uppercase">{selectedTemplate.category}</strong>
-                </div>
-              </div>
-            </div>
-
-            {/* Launch Timing */}
-            <div className="space-y-3">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">
-                Broadcast Timing
-              </label>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div
-                  onClick={() => {
-                    setAutoLaunch(true);
-                    setScheduleDate('');
-                  }}
-                  className={`p-4 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                    autoLaunch && !scheduleDate
-                      ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200'
-                      : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Zap className="w-5 h-5 text-emerald-500" />
-                    <div>
-                      <div className="text-xs font-bold">Launch Immediately</div>
-                      <div className="text-[11px] text-slate-400">Start sending right after creation</div>
-                    </div>
-                  </div>
-                  {autoLaunch && !scheduleDate && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                </div>
-
-                <div
-                  onClick={() => setAutoLaunch(false)}
-                  className={`p-4 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                    !autoLaunch || scheduleDate
-                      ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200'
-                      : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-blue-500" />
-                    <div>
-                      <div className="text-xs font-bold">Schedule for Later</div>
-                      <div className="text-[11px] text-slate-400">Send at a designated future time</div>
-                    </div>
-                  </div>
-                  {(!autoLaunch || scheduleDate) && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                </div>
-              </div>
-
-              {(!autoLaunch || scheduleDate) && (
-                <div className="pt-2">
-                  <Input
-                    type="datetime-local"
-                    label="Scheduled Date & Time"
-                    value={scheduleDate}
-                    onChange={(e) => setScheduleDate(e.target.value)}
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-3 pt-4">
-              <Button variant="ghost" size="lg" onClick={() => setStep(2)}>
-                Back
-              </Button>
-              <Button
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
-                size="lg"
-                isLoading={isSubmitting}
-                leftIcon={<Send className="w-4 h-4" />}
-                onClick={handleLaunch}
-              >
-                {scheduleDate ? 'Schedule Broadcast Campaign' : 'Launch Campaign Now'}
-              </Button>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     </PageContainer>
   );
