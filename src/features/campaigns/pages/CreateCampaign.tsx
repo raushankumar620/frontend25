@@ -62,7 +62,7 @@ export const CreateCampaign: React.FC = () => {
   // Set default variable mappings when selectedTemplate changes
   useEffect(() => {
     if (selectedTemplate) {
-      const matches = (selectedTemplate.body && selectedTemplate.body.match(/\{\{(\d+)\}\}/g)) || [];
+      const matches: string[] = (selectedTemplate.body && selectedTemplate.body.match(/\{\{(\d+)\}\}/g)) || [];
       const newMappings: typeof variableMappings = {};
       matches.forEach((m) => {
         const num = m.replace(/[{}]/g, '');
