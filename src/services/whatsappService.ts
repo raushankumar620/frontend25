@@ -1,6 +1,7 @@
 import type { WhatsAppPhoneNumber, WhatsAppTemplate } from '../types/whatsapp';
 import type { Conversation } from '../types/message';
 import type { Contact } from '../types/contact';
+import { apiClient } from './apiClient';
 
 export const MOCK_NUMBERS: WhatsAppPhoneNumber[] = [
   {
@@ -12,7 +13,7 @@ export const MOCK_NUMBERS: WhatsAppPhoneNumber[] = [
     messagingLimit: '100,000 / 24h (Tier 3)',
     status: 'connected',
     wabaId: 'waba_99210928301',
-    webhookUrl: 'https://api.chatflow.io/v1/webhooks/whatsapp',
+    webhookUrl: 'http://localhost:5000/api/v1/webhooks/whatsapp',
     lastSyncAt: new Date().toISOString(),
   },
   {
@@ -24,7 +25,7 @@ export const MOCK_NUMBERS: WhatsAppPhoneNumber[] = [
     messagingLimit: '10,000 / 24h (Tier 2)',
     status: 'connected',
     wabaId: 'waba_99210928301',
-    webhookUrl: 'https://api.chatflow.io/v1/webhooks/whatsapp-eu',
+    webhookUrl: 'http://localhost:5000/api/v1/webhooks/whatsapp-eu',
     lastSyncAt: new Date().toISOString(),
   },
 ];
@@ -197,15 +198,32 @@ export const MOCK_CONTACTS: Contact[] = [
 
 export const whatsappService = {
   async getNumbers(): Promise<WhatsAppPhoneNumber[]> {
+    const res = await apiClient.get<WhatsAppPhoneNumber[]>('/whatsapp');
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      return res.data;
+    }
     return MOCK_NUMBERS;
   },
   async getTemplates(): Promise<WhatsAppTemplate[]> {
+    const res = await apiClient.get<WhatsAppTemplate[]>('/templates');
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      return res.data;
+    }
     return MOCK_TEMPLATES;
   },
   async getConversations(): Promise<Conversation[]> {
+    const res = await apiClient.get<Conversation[]>('/conversations');
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      return res.data;
+    }
     return MOCK_CONVERSATIONS;
   },
   async getContacts(): Promise<Contact[]> {
+    const res = await apiClient.get<Contact[]>('/contacts');
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      return res.data;
+    }
     return MOCK_CONTACTS;
   },
 };
+

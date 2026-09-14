@@ -1,6 +1,6 @@
 import type { ApiResponse } from '../types/api';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.chatflow.io/v1';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 class ApiClient {
   private getHeaders(): HeadersInit {
@@ -17,7 +17,8 @@ class ApiClient {
         method: 'GET',
         headers: this.getHeaders(),
       });
-      return await response.json();
+      const data = await response.json();
+      return data;
     } catch {
       return { success: false, data: {} as T, message: 'Network error or mock fallback' };
     }
@@ -30,7 +31,8 @@ class ApiClient {
         headers: this.getHeaders(),
         body: JSON.stringify(body),
       });
-      return await response.json();
+      const data = await response.json();
+      return data;
     } catch {
       return { success: false, data: {} as T, message: 'Network error or mock fallback' };
     }
@@ -43,7 +45,8 @@ class ApiClient {
         headers: this.getHeaders(),
         body: JSON.stringify(body),
       });
-      return await response.json();
+      const data = await response.json();
+      return data;
     } catch {
       return { success: false, data: {} as T, message: 'Network error or mock fallback' };
     }
@@ -55,7 +58,8 @@ class ApiClient {
         method: 'DELETE',
         headers: this.getHeaders(),
       });
-      return await response.json();
+      const data = await response.json();
+      return data;
     } catch {
       return { success: false, data: {} as T, message: 'Network error or mock fallback' };
     }
