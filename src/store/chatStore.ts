@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import type { Conversation, Message, InternalNote } from '../types/message';
 import { conversationService } from '../services/conversationService';
-import { MOCK_CONVERSATIONS } from '../services/whatsappService';
 
-let conversations: Conversation[] = [...MOCK_CONVERSATIONS];
+let conversations: Conversation[] = [];
 let messagesMap: Record<string, Message[]> = {};
 let notesMap: Record<string, InternalNote[]> = {};
 let activeConversationId: string | null = null;
@@ -34,11 +33,13 @@ export const chatStore = {
     notify();
     try {
       const res = await conversationService.listConversations(filter);
-      if (res && res.conversations && res.conversations.length > 0) {
+      if (res && Array.isArray(res.conversations)) {
         conversations = res.conversations;
         if (!activeConversationId && conversations.length > 0) {
           activeConversationId = conversations[0].id;
           chatStore.fetchMessagesAndNotes(conversations[0].id);
+        } else if (conversations.length === 0) {
+          activeConversationId = null;
         }
       }
     } catch (err) {

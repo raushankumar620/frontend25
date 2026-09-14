@@ -1,36 +1,7 @@
+import { teamService } from '../../services/teamService';
 import type { TeamMember, RolePermission } from './types';
 
-export const MOCK_TEAM: TeamMember[] = [
-  {
-    id: 'tm_1',
-    name: 'Sarah Jenkins',
-    email: 'sarah.j@acmeglobal.com',
-    role: 'admin',
-    status: 'active',
-    assignedChatsCount: 14,
-    lastActive: 'Just now',
-  },
-  {
-    id: 'tm_2',
-    name: 'Alex Rivera',
-    email: 'alex.r@acmeglobal.com',
-    role: 'agent',
-    status: 'active',
-    assignedChatsCount: 22,
-    lastActive: '15m ago',
-  },
-  {
-    id: 'tm_3',
-    name: 'Emily Zhao',
-    email: 'emily.zhao@acmeglobal.com',
-    role: 'manager',
-    status: 'active',
-    assignedChatsCount: 8,
-    lastActive: '1h ago',
-  },
-];
-
-export const MOCK_ROLES: RolePermission[] = [
+export const ROLES_LIST: RolePermission[] = [
   {
     role: 'Admin',
     description: 'Full workspace access including billing, API keys, and team invites.',
@@ -49,6 +20,22 @@ export const MOCK_ROLES: RolePermission[] = [
 ];
 
 export const teamApi = {
-  getTeam: async (): Promise<TeamMember[]> => MOCK_TEAM,
-  getRoles: async (): Promise<RolePermission[]> => MOCK_ROLES,
+  getTeam: async (): Promise<TeamMember[]> => {
+    try {
+      const data = await teamService.getTeamMembers();
+      return (data.members || []).map((m: any) => ({
+        id: m.id || m._id,
+        name: m.name || `${m.firstName || ''} ${m.lastName || ''}`.trim() || 'Team Member',
+        email: m.email,
+        role: (m.role || 'agent').toLowerCase(),
+        status: m.status?.toLowerCase() || 'active',
+        assignedChatsCount: m.assignedChatsCount || 0,
+        lastActive: m.lastActiveAt ? new Date(m.lastActiveAt).toLocaleTimeString() : 'Active',
+      }));
+    } catch (error) {
+      console.error('Failed to fetch team members from backend:', error);
+      return [];
+    }
+  },
+  getRoles: async (): Promise<RolePermission[]> => ROLES_LIST,
 };
