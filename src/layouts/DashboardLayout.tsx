@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../components/layout/Sidebar';
 import { Header } from '../components/layout/Header';
 import { MobileNav } from '../components/layout/MobileNav';
+import { useAuthStore } from '../store/authStore';
 
 export const DashboardLayout: React.FC = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { refreshProfile } = useAuthStore();
+
+  useEffect(() => {
+    refreshProfile();
+  }, []);
 
   return (
     <div className="flex h-screen bg-[#F6FAF8] text-[#1F2A26] overflow-hidden font-sans">
