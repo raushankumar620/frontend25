@@ -10,16 +10,46 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
 import { useAuthStore } from '../../../store/authStore';
 import { systemService, type HealthCheckData } from '../../../services/systemService';
+import { analyticsService } from '../../../services/analyticsService';
+import type { OverviewKPIs, MessageTimeseriesPoint } from '../../analytics/types';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, organization, refreshProfile } = useAuthStore();
   const [health, setHealth] = useState<HealthCheckData | null>(null);
+  const [overview, setOverview] = useState<OverviewKPIs | null>(null);
+  const [timeseries, setTimeseries] = useState<MessageTimeseriesPoint[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     refreshProfile();
-    systemService.getHealth().then(setHealth);
+    systemService.getHealth().then(setHealth).catch(() => {});
+
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
+        const [ovData, msgData] = await Promise.all([
+          analyticsService.getOverview().catch(() => null),
+          analyticsService.getMessageAnalytics().catch(() => ({ stats: null, timeseries: [] })),
+        ]);
+        if (ovData) setOverview(ovData);
+        if (msgData?.timeseries) setTimeseries(msgData.timeseries);
+      } catch (err) {
+        console.error('Failed to load dashboard metrics:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
   }, []);
+
+  const totalMsgFormatted = overview?.messages?.total ? overview.messages.total.toLocaleString() : '0';
+  const deliveryRateFormatted = overview?.messages?.deliveryRate !== undefined ? `${overview.messages.deliveryRate}%` : '0%';
+  const contactsFormatted = overview?.activeContacts !== undefined 
+    ? overview.activeContacts.toLocaleString() 
+    : '0';
+  const activeChatsFormatted = overview?.conversations?.open !== undefined ? overview.conversations.open.toLocaleString() : '0';
 
   return (
     <PageContainer>
@@ -95,35 +125,35 @@ export const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5 mb-6">
         <StatsCard
           title="Total Messages (30d)"
-          value="128,490"
-          change="+24.2%"
+          value={loading ? '...' : totalMsgFormatted}
+          change={overview?.messages?.total ? 'Live' : '0'}
           isPositive={true}
-          description="vs prior month"
+          description="Total processed messages"
           icon={<Send className="w-4 h-4 text-[#05A222]" />}
-          badge="Meta Tier 3"
+          badge="Meta Cloud API"
         />
         <StatsCard
           title="Delivery Success Rate"
-          value="98.9%"
-          change="+0.4%"
+          value={loading ? '...' : deliveryRateFormatted}
+          change={overview?.messages?.deliveryRate ? `${overview.messages.deliveryRate}%` : '0%'}
           isPositive={true}
-          description="Avg latency 0.8s"
+          description="Meta webhook confirmation"
           icon={<Smartphone className="w-4 h-4 text-[#039B56]" />}
         />
         <StatsCard
           title="Total Reachable Leads"
-          value="45,210"
-          change="+1,420"
+          value={loading ? '...' : contactsFormatted}
+          change="Opted-in"
           isPositive={true}
-          description="Opted-in contacts"
+          description="Subscribed CRM contacts"
           icon={<Users className="w-4 h-4 text-[#07CF74]" />}
         />
         <StatsCard
           title="Active Live Chats"
-          value="34"
-          change="-8m"
+          value={loading ? '...' : activeChatsFormatted}
+          change="Open"
           isPositive={true}
-          description="Avg reply time 1.4m"
+          description="Ongoing conversations"
           icon={<MessageSquare className="w-4 h-4 text-[#006736]" />}
         />
       </div>
@@ -131,7 +161,7 @@ export const Dashboard: React.FC = () => {
       {/* Main Charts & Activity Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <MessageChart />
+          <MessageChart timeseries={timeseries} overview={overview} loading={loading} />
         </div>
         <div className="lg:col-span-1">
           <RecentActivity />
