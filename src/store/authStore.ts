@@ -72,6 +72,13 @@ export const authStore = {
     notify();
     return user;
   },
+  async acceptInvite(payload: { token: string; password: string; firstName?: string; lastName?: string }) {
+    const { user, organization } = await authService.acceptInvite(payload);
+    currentUser = user;
+    currentOrg = organization;
+    notify();
+    return user;
+  },
   async refreshProfile() {
     try {
       const user = await authService.getCurrentUser();
@@ -125,6 +132,7 @@ export function useAuthStore() {
     isAuthenticated: !!user,
     login: authStore.login.bind(authStore),
     register: authStore.register.bind(authStore),
+    acceptInvite: authStore.acceptInvite.bind(authStore),
     refreshProfile: authStore.refreshProfile.bind(authStore),
     updateProfile: authStore.updateProfile.bind(authStore),
     updateOrganization: authStore.updateOrganization.bind(authStore),

@@ -196,32 +196,97 @@ export const MOCK_CONTACTS: Contact[] = [
   },
 ];
 
+export interface ConnectManualPayload {
+  wabaId: string;
+  name: string;
+  accessToken: string;
+  phoneNumberId?: string;
+  displayPhoneNumber?: string;
+  verifiedName?: string;
+  metaAppId?: string;
+}
+
 export const whatsappService = {
   async getNumbers(): Promise<WhatsAppPhoneNumber[]> {
-    const res = await apiClient.get<WhatsAppPhoneNumber[]>('/whatsapp');
-    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-      return res.data;
+    try {
+      const res = await apiClient.get<any[]>('/whatsapp/numbers');
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        return res.data.map((num) => ({
+          id: num._id || num.id,
+          phoneNumber: num.displayPhoneNumber,
+          displayPhoneNumber: num.displayPhoneNumber,
+          verifiedName: num.verifiedName || 'Verified WhatsApp Number',
+          qualityRating: num.qualityRating || 'GREEN',
+          messagingLimit: `${num.messagingTier?.replace('TIER_', '') || '1K'} msgs / 24h`,
+          status: num.status === 'CONNECTED' ? 'connected' : 'disconnected',
+          wabaId: num.accountId?.wabaId || 'waba_active',
+          webhookUrl: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1'}/webhooks/whatsapp`,
+          lastSyncAt: num.lastSyncedAt || new Date().toISOString(),
+          isDefault: !!num.isDefault,
+        }));
+      }
+    } catch {
+      // Fall back to mock numbers if offline
     }
     return MOCK_NUMBERS;
   },
-  async getTemplates(): Promise<WhatsAppTemplate[]> {
-    const res = await apiClient.get<WhatsAppTemplate[]>('/templates');
-    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+
+  async connectManual(payload: ConnectManualPayload): Promise<any> {
+    const res = await apiClient.post('/whatsapp/accounts/manual', payload);
+    if (res.success && res.data) {
       return res.data;
+    }
+    throw new Error(res.message || 'Failed to connect WhatsApp account');
+  },
+
+  async syncNumber(numberId: string): Promise<any> {
+    const res = await apiClient.post(`/whatsapp/numbers/${numberId}/sync`);
+    if (res.success && res.data) {
+      return res.data;
+    }
+    throw new Error(res.message || 'Failed to sync WhatsApp status');
+  },
+
+  async disconnectNumber(numberId: string): Promise<any> {
+    const res = await apiClient.delete(`/whatsapp/numbers/${numberId}`);
+    if (res.success) {
+      return res.data;
+    }
+    throw new Error(res.message || 'Failed to disconnect WhatsApp number');
+  },
+
+  async getTemplates(): Promise<WhatsAppTemplate[]> {
+    try {
+      const res = await apiClient.get<WhatsAppTemplate[]>('/templates');
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        return res.data;
+      }
+    } catch {
+      // Fall back
     }
     return MOCK_TEMPLATES;
   },
+
   async getConversations(): Promise<Conversation[]> {
-    const res = await apiClient.get<Conversation[]>('/conversations');
-    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-      return res.data;
+    try {
+      const res = await apiClient.get<Conversation[]>('/conversations');
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        return res.data;
+      }
+    } catch {
+      // Fall back
     }
     return MOCK_CONVERSATIONS;
   },
+
   async getContacts(): Promise<Contact[]> {
-    const res = await apiClient.get<Contact[]>('/contacts');
-    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-      return res.data;
+    try {
+      const res = await apiClient.get<Contact[]>('/contacts');
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        return res.data;
+      }
+    } catch {
+      // Fall back
     }
     return MOCK_CONTACTS;
   },

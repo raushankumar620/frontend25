@@ -228,7 +228,7 @@ export const Team: React.FC = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {invitations.map((inv) => (
-                <div key={inv.id || inv._id} className="p-4 rounded-xl border border-[#E2EAE6] bg-[#F6FAF8] flex items-center justify-between">
+                <div key={inv.id || inv._id} className="p-4 rounded-xl border border-[#E2EAE6] bg-[#F6FAF8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <div className="font-bold text-[#14201C] text-sm">{inv.name || inv.email}</div>
                     <div className="text-xs text-[#5F7069] mt-0.5">{inv.email}</div>
@@ -238,10 +238,15 @@ export const Team: React.FC = () => {
                     </div>
                   </div>
                   {inv.inviteToken && (
-                    <div className="text-right">
-                      <span className="text-[10px] font-mono bg-white px-2 py-1 rounded border border-[#E2EAE6] text-[#5F7069]">
-                        Token: {inv.inviteToken.substring(0, 8)}...
-                      </span>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`/accept-invite?token=${inv.inviteToken}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs font-bold bg-[#E9F9EE] text-[#006736] hover:bg-[#D9F3E2] px-3 py-1.5 rounded-lg border border-[#C4EBD0] transition-colors inline-flex items-center gap-1 cursor-pointer"
+                      >
+                        Set Password & Login
+                      </a>
                     </div>
                   )}
                 </div>

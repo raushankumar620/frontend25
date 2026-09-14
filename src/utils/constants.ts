@@ -14,6 +14,7 @@ export const ROUTES = {
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
+  ACCEPT_INVITE: '/accept-invite',
 
   // Core App & Dashboard
   DASHBOARD: '/app',

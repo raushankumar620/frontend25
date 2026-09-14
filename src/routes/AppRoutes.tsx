@@ -22,6 +22,7 @@ import { Login } from '../features/auth/pages/Login';
 import { Register } from '../features/auth/pages/Register';
 import { ForgotPassword } from '../features/auth/pages/ForgotPassword';
 import { ResetPassword } from '../features/auth/pages/ResetPassword';
+import { AcceptInvite } from '../features/auth/pages/AcceptInvite';
 
 // Dashboard
 import { Dashboard } from '../features/dashboard/pages/Dashboard';
@@ -103,6 +104,7 @@ export const AppRoutes: React.FC = () => {
         <Route path={ROUTES.REGISTER} element={<Register />} />
         <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
         <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
+        <Route path={ROUTES.ACCEPT_INVITE} element={<AcceptInvite />} />
       </Route>
 
       {/* Protected Dashboard Layout Routes */}
