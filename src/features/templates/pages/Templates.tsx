@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PageContainer } from '../../../components/layout/PageContainer';
 import { Table, type Column } from '../../../components/ui/Table';
 import { Button } from '../../../components/ui/Button';
 import { Badge } from '../../../components/ui/Badge';
 import { SearchBar } from '../../../components/common/SearchBar';
-import { Plus, Eye, FileText, CheckCircle2 } from 'lucide-react';
+import { Plus, Eye, FileText, CheckCircle2, Clock, AlertCircle, RefreshCw, Layers } from 'lucide-react';
 import type { WhatsAppTemplate } from '../types';
 import { templatesApi } from '../api';
 import { useNavigate } from 'react-router-dom';
@@ -14,55 +14,124 @@ export const Templates: React.FC = () => {
   const navigate = useNavigate();
   const [templates, setTemplates] = useState<WhatsAppTemplate[]>([]);
   const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
+
+  const fetchTemplates = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await templatesApi.getTemplates({
+        category: selectedCategory !== 'ALL' ? selectedCategory : undefined,
+        search: query.trim() || undefined,
+      });
+      setTemplates(data);
+    } catch (err: any) {
+      console.error('Error fetching templates:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedCategory, query]);
 
   useEffect(() => {
-    templatesApi.getTemplates().then((data) => {
-      setTemplates(data);
-      setIsLoading(false);
-    });
-  }, []);
+    fetchTemplates();
+  }, [fetchTemplates]);
 
-  const filtered = templates.filter(
-    (t) =>
+  const handleSync = async () => {
+    setIsSyncing(true);
+    setSyncFeedback(null);
+    try {
+      const res = await templatesApi.syncTemplates();
+      setSyncFeedback(`Successfully synced ${res.syncedCount} templates from Meta WABA!`);
+      await fetchTemplates();
+    } catch (err: any) {
+      setSyncFeedback(err.message || 'Sync failed. Check WABA connection.');
+    } finally {
+      setIsSyncing(false);
+      setTimeout(() => setSyncFeedback(null), 5000);
+    }
+  };
+
+  const filtered = templates.filter((t) => {
+    const matchesQuery =
       t.name.toLowerCase().includes(query.toLowerCase()) ||
-      t.body.toLowerCase().includes(query.toLowerCase()) ||
-      t.category.toLowerCase().includes(query.toLowerCase())
-  );
+      (t.body && t.body.toLowerCase().includes(query.toLowerCase())) ||
+      t.category.toLowerCase().includes(query.toLowerCase());
+    const matchesCategory = selectedCategory === 'ALL' || t.category === selectedCategory;
+    return matchesQuery && matchesCategory;
+  });
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'APPROVED':
+        return (
+          <Badge variant="success" size="sm">
+            <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+            Approved
+          </Badge>
+        );
+      case 'PENDING':
+        return (
+          <Badge variant="warning" size="sm">
+            <Clock className="w-3.5 h-3.5 mr-1" />
+            Pending Meta
+          </Badge>
+        );
+      case 'REJECTED':
+        return (
+          <Badge variant="danger" size="sm">
+            <AlertCircle className="w-3.5 h-3.5 mr-1" />
+            Rejected
+          </Badge>
+        );
+      default:
+        return (
+          <Badge variant="neutral" size="sm">
+            {status}
+          </Badge>
+        );
+    }
+  };
 
   const columns: Column<WhatsAppTemplate>[] = [
     {
       header: 'Template Name',
       render: (t) => (
         <div className="flex items-center gap-3">
-          <FileText className="w-5 h-5 text-[#05A222] shrink-0" />
-          <span className="font-bold text-[#14201C] font-mono text-sm">{t.name}</span>
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <FileText className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="font-bold text-[#14201C] dark:text-slate-100 font-mono text-sm block">
+              {t.name}
+            </span>
+            <span className="text-xs text-[#5F7069] dark:text-slate-400 font-medium truncate max-w-[280px] block">
+              {t.body?.slice(0, 60)}{t.body && t.body.length > 60 ? '...' : ''}
+            </span>
+          </div>
         </div>
       ),
     },
     {
       header: 'Category',
       render: (t) => (
-        <span className="text-xs sm:text-sm font-bold text-[#5F7069] uppercase">
+        <span className="text-xs font-bold text-[#5F7069] dark:text-slate-300 uppercase px-2.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
           {t.category}
         </span>
       ),
     },
     {
       header: 'Language',
-      render: (t) => <span className="font-mono text-sm text-[#5F7069] font-medium">{t.language}</span>,
+      render: (t) => (
+        <span className="font-mono text-xs text-[#5F7069] dark:text-slate-300 font-semibold">
+          {t.language}
+        </span>
+      ),
     },
     {
       header: 'Meta Status',
-      render: (t) => (
-        <Badge
-          variant={t.status === 'APPROVED' ? 'success' : t.status === 'PENDING' ? 'warning' : 'danger'}
-          size="sm"
-        >
-          <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-          {t.status}
-        </Badge>
-      ),
+      render: (t) => getStatusBadge(t.status),
     },
     {
       header: 'Actions',
@@ -72,7 +141,7 @@ export const Templates: React.FC = () => {
           variant="ghost"
           onClick={() => navigate(`/templates/${t.id}`)}
           leftIcon={<Eye className="w-4 h-4" />}
-          className="text-sm font-semibold text-[#006736] hover:bg-[#F6FAF8]"
+          className="text-xs font-semibold text-[#006736] dark:text-emerald-400 hover:bg-[#F6FAF8] dark:hover:bg-slate-800"
         >
           View & Test
         </Button>
@@ -82,29 +151,73 @@ export const Templates: React.FC = () => {
 
   return (
     <PageContainer>
+      {/* Header section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] dark:text-white tracking-tight flex items-center gap-2.5">
+            <Layers className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
             WhatsApp Message Templates
           </h2>
-          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
-            Meta-approved HSM message templates for initiating outbound marketing, utility, and auth messages.
+          <p className="text-sm sm:text-base text-[#5F7069] dark:text-slate-400 mt-1 font-medium">
+            Meta-approved HSM message templates for initiating outbound marketing, utility, and OTP auth messages.
           </p>
         </div>
 
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => navigate(ROUTES.CREATE_TEMPLATE)}
-          leftIcon={<Plus className="w-4 h-4" />}
-          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm"
-        >
-          Create New Template
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="md"
+            onClick={handleSync}
+            isLoading={isSyncing}
+            leftIcon={<RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />}
+            className="text-sm font-semibold rounded-xl"
+          >
+            Sync with Meta
+          </Button>
+
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => navigate(ROUTES.CREATE_TEMPLATE)}
+            leftIcon={<Plus className="w-4 h-4" />}
+            className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
+            Create New Template
+          </Button>
+        </div>
       </div>
 
-      <div className="mb-6 max-w-md">
-        <SearchBar value={query} onChange={setQuery} placeholder="Search templates by name, body, category..." />
+      {/* Sync feedback notification */}
+      {syncFeedback && (
+        <div className="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-semibold flex items-center justify-between">
+          <span>{syncFeedback}</span>
+          <button onClick={() => setSyncFeedback(null)} className="text-emerald-600 hover:underline">
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Filter and Search Bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
+        <div className="max-w-md w-full">
+          <SearchBar value={query} onChange={setQuery} placeholder="Search templates by name, body, category..." />
+        </div>
+
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          {(['ALL', 'MARKETING', 'UTILITY', 'AUTHENTICATION'] as const).map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                selectedCategory === cat
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
       <Table columns={columns} data={filtered} isLoading={isLoading} />
