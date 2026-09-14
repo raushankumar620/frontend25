@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import { ROUTES, APP_NAME } from '../../utils/constants';
+import { useAuthStore } from '../../store/authStore';
 
 export interface SidebarProps {
   collapsed?: boolean;
@@ -29,6 +30,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   collapsed = false,
   onToggleCollapse,
 }) => {
+  const { user, organization } = useAuthStore();
+
   const mainNavItems = [
     { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: LayoutDashboard, color: '#2563EB', bgColor: '#EFF6FF' },
     { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, badge: '5', color: '#059669', bgColor: '#ECFDF5' },
@@ -47,6 +50,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: 'Billing', path: ROUTES.BILLING, icon: CreditCard, color: '#16A34A', bgColor: '#F0FDF4' },
     { label: 'Settings', path: ROUTES.ACCOUNT_SETTINGS, icon: Settings, color: '#64748B', bgColor: '#F8FAFC' },
   ];
+
+  const orgName = organization?.name || user?.organizationName || 'WhatsApp Workspace';
+  const orgInitials = orgName
+    .split(' ')
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase() || 'WM';
+  const orgPlan = organization?.plan ? `${organization.plan.replace('_', ' ')}` : 'FREE TRIAL';
 
   return (
     <aside
@@ -220,19 +232,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-3.5 border-t border-[#E2EAE6]">
         {collapsed ? (
           <div
-            title="Acme Global Ltd (Enterprise Tier)"
-            className="w-11 h-11 mx-auto rounded-xl bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0] flex items-center justify-center font-bold text-sm shrink-0 cursor-pointer hover:bg-[#D9F3E2] transition-colors"
+            title={`${orgName} (${orgPlan})`}
+            className="w-11 h-11 mx-auto rounded-xl bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0] flex items-center justify-center font-bold text-xs shrink-0 cursor-pointer hover:bg-[#D9F3E2] transition-colors"
           >
-            WM
+            {orgInitials}
           </div>
         ) : (
           <div className="bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl p-3.5 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0] flex items-center justify-center font-bold text-sm shrink-0">
-              WM
+            <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0] flex items-center justify-center font-bold text-xs shrink-0">
+              {orgInitials}
             </div>
             <div className="flex flex-col truncate">
-              <span className="text-sm font-bold text-[#14201C] truncate">Acme Global Ltd</span>
-              <span className="text-xs text-[#05A222] font-semibold">Enterprise Tier</span>
+              <span className="text-sm font-bold text-[#14201C] truncate">{orgName}</span>
+              <span className="text-[11px] text-[#05A222] font-semibold uppercase">{orgPlan}</span>
             </div>
           </div>
         )}

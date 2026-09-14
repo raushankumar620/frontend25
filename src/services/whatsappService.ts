@@ -13,7 +13,7 @@ export const MOCK_NUMBERS: WhatsAppPhoneNumber[] = [
     messagingLimit: '100,000 / 24h (Tier 3)',
     status: 'connected',
     wabaId: 'waba_99210928301',
-    webhookUrl: 'http://localhost:5000/api/v1/webhooks/whatsapp',
+    webhookUrl: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1'}/webhooks/whatsapp`,
     lastSyncAt: new Date().toISOString(),
   },
   {
@@ -25,7 +25,7 @@ export const MOCK_NUMBERS: WhatsAppPhoneNumber[] = [
     messagingLimit: '10,000 / 24h (Tier 2)',
     status: 'connected',
     wabaId: 'waba_99210928301',
-    webhookUrl: 'http://localhost:5000/api/v1/webhooks/whatsapp-eu',
+    webhookUrl: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1'}/webhooks/whatsapp-eu`,
     lastSyncAt: new Date().toISOString(),
   },
 ];

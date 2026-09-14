@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { User as UserIcon, Mail, Lock, Building, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { User as UserIcon, Mail, Lock, Building, Phone, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore';
 import { ROUTES } from '../../../utils/constants';
 
 export const Register: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login } = useAuthStore();
+  const { register } = useAuthStore();
+  
   const [name, setName] = useState('');
   const [email, setEmail] = useState(searchParams.get('email') || '');
   const [company, setCompany] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,12 +24,32 @@ export const Register: React.FC = () => {
       setError('Please fill in all required fields');
       return;
     }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
     setIsLoading(true);
+    setError('');
+
     try {
-      await login(email, password);
+      const parts = name.trim().split(' ');
+      const firstName = parts[0] || 'Admin';
+      const lastName = parts.slice(1).join(' ') || '';
+
+      await register({
+        email,
+        password,
+        firstName,
+        lastName,
+        name,
+        phone,
+        organizationName: company || `${firstName}'s Organization`,
+      });
+
       navigate(ROUTES.DASHBOARD);
-    } catch {
-      setError('Failed to create account. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Failed to create account. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +66,7 @@ export const Register: React.FC = () => {
         />
         <div className="text-center pt-1">
           <h2 className="text-2xl sm:text-[26px] font-black text-[#102319] tracking-tight font-display">
-            Create Account
+            Create Business Account
           </h2>
           <p className="text-xs text-[#527063] mt-1">
             Get started with Meta Cloud API & WhatsApp automation in minutes.
@@ -53,8 +75,9 @@ export const Register: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-3 bg-[#FDF2F2] border border-[#F8B4B4] rounded-xl text-xs text-[#D64545] font-medium text-center">
-          {error}
+        <div className="p-3.5 bg-[#FDF2F2] border border-[#F8B4B4] rounded-2xl text-xs text-[#D64545] font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-[#D64545]" />
+          <span>{error}</span>
         </div>
       )}
 
@@ -67,9 +90,9 @@ export const Register: React.FC = () => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Full Name"
+            placeholder="Full Name (e.g. Rahul Sharma)"
             required
-            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-4 py-3 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs"
+            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-4 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
           />
         </div>
 
@@ -81,9 +104,9 @@ export const Register: React.FC = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Work Email"
+            placeholder="Work Email (e.g. owner@mybusiness.com)"
             required
-            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-4 py-3 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs"
+            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-4 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
           />
         </div>
 
@@ -95,8 +118,21 @@ export const Register: React.FC = () => {
             type="text"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
-            placeholder="Company / Brand Name"
-            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-4 py-3 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs"
+            placeholder="Organization / Company Name"
+            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-4 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
+          />
+        </div>
+
+        <div className="relative flex items-center">
+          <div className="absolute left-3.5 text-[#739284] pointer-events-none flex items-center">
+            <Phone className="w-4 h-4" />
+          </div>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Phone Number (optional)"
+            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-4 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
           />
         </div>
 
@@ -108,14 +144,14 @@ export const Register: React.FC = () => {
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password (minimum 8 characters)"
+            placeholder="Password (minimum 6 characters)"
             required
-            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-11 py-3 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs"
+            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-11 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3.5 text-[#739284] hover:text-[#14201C] transition-colors p-1"
+            className="absolute right-3.5 text-[#739284] hover:text-[#14201C] transition-colors p-1 cursor-pointer"
           >
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>

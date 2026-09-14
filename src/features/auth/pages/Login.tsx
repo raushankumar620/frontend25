@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Eye, EyeOff, Check } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Eye, EyeOff, Check, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore';
 import { ROUTES } from '../../../utils/constants';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
-  const [email, setEmail] = useState('sarah.j@acmeglobal.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,8 +25,8 @@ export const Login: React.FC = () => {
       setError('');
       await login(email, password);
       navigate(ROUTES.DASHBOARD);
-    } catch {
-      setError('Invalid email or password. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Invalid email or password. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -41,11 +41,16 @@ export const Login: React.FC = () => {
           alt="WhatsAppMsg"
           className="h-10 sm:h-12 w-auto object-contain drop-shadow-sm"
         />
+        <div className="text-center pt-2">
+          <h2 className="text-2xl font-black text-[#14201C] tracking-tight">Welcome Back</h2>
+          <p className="text-xs text-[#5F7069] mt-1">Log in to manage your WhatsApp Business automation.</p>
+        </div>
       </div>
 
       {error && (
-        <div className="p-3.5 bg-[#FDF2F2] border border-[#F8B4B4] rounded-2xl text-xs sm:text-sm text-[#D64545] font-medium text-center">
-          {error}
+        <div className="p-3.5 bg-[#FDF2F2] border border-[#F8B4B4] rounded-2xl text-xs sm:text-sm text-[#D64545] font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-[#D64545]" />
+          <span>{error}</span>
         </div>
       )}
 
@@ -82,7 +87,7 @@ export const Login: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 text-[#739284] hover:text-[#14201C] transition-colors p-1"
+            className="absolute right-4 text-[#739284] hover:text-[#14201C] transition-colors p-1 cursor-pointer"
             aria-label={showPassword ? 'Hide password' : 'Show password'}
           >
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}

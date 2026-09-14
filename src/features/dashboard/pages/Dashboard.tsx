@@ -1,18 +1,63 @@
-import React from 'react';
-import { Send, Users, Smartphone, MessageSquare, Plus, Zap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Send, Users, Smartphone, MessageSquare, Plus, Zap, Activity, CheckCircle2, ArrowRight } from 'lucide-react';
 import { PageContainer } from '../../../components/layout/PageContainer';
 import { StatsCard } from '../components/StatsCard';
 import { MessageChart } from '../components/MessageChart';
 import { RecentActivity } from '../components/RecentActivity';
 import { Button } from '../../../components/ui/Button';
+import { Badge } from '../../../components/ui/Badge';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
+import { useAuthStore } from '../../../store/authStore';
+import { systemService, type HealthCheckData } from '../../../services/systemService';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user, organization, refreshProfile } = useAuthStore();
+  const [health, setHealth] = useState<HealthCheckData | null>(null);
+
+  useEffect(() => {
+    refreshProfile();
+    systemService.getHealth().then(setHealth);
+  }, []);
 
   return (
     <PageContainer>
+      {/* Real-time System Connectivity Banner */}
+      <div className="mb-6 p-4.5 rounded-2xl bg-gradient-to-r from-[#E9F9EE] via-[#F6FAF8] to-white border border-[#C4EBD0] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-white border border-[#C4EBD0] text-[#05A222] flex items-center justify-center shadow-xs">
+            <Activity className="w-5 h-5 animate-pulse" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-[#14201C] text-sm sm:text-base">
+                {organization?.name || user?.organizationName || 'WhatsApp Workspace'}
+              </span>
+              <Badge variant="success" size="sm">
+                <CheckCircle2 className="w-3 h-3 mr-1" />
+                {health?.status === 'UP' ? 'LIVE & READY' : 'ONLINE'}
+              </Badge>
+            </div>
+            <p className="text-xs text-[#5F7069] mt-0.5">
+              Tenant ID: <span className="font-mono font-semibold text-[#14201C]">{String(organization?.id || organization?._id || user?.organizationId || 'org_active').substring(0, 12)}...</span> • Meta API v20.0
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(ROUTES.WHATSAPP_NUMBERS)}
+            rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+            className="text-xs font-bold border-[#C4EBD0] text-[#006736] hover:bg-white rounded-xl"
+          >
+            Connect WhatsApp Number
+          </Button>
+        </div>
+      </div>
+
       {/* Top Banner / Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
         <div>
@@ -30,7 +75,7 @@ export const Dashboard: React.FC = () => {
             size="md"
             onClick={() => navigate(ROUTES.CREATE_TEMPLATE)}
             leftIcon={<Plus className="w-4 h-4" />}
-            className="text-sm font-semibold px-4 py-2.5 rounded-xl border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8]"
+            className="text-sm font-semibold px-4 py-2.5 rounded-xl border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] cursor-pointer"
           >
             New Template
           </Button>
@@ -39,7 +84,7 @@ export const Dashboard: React.FC = () => {
             size="md"
             onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
             leftIcon={<Zap className="w-4 h-4" />}
-            className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm"
+            className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm cursor-pointer"
           >
             Launch Broadcast
           </Button>

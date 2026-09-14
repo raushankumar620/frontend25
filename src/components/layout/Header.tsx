@@ -4,6 +4,7 @@ import { Avatar } from '../ui/Avatar';
 import { Dropdown } from '../ui/Dropdown';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
+import { useAuthStore } from '../../store/authStore';
 
 export interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -17,13 +18,22 @@ export const Header: React.FC<HeaderProps> = ({
   subtitle,
 }) => {
   const navigate = useNavigate();
+  const { user, organization, logout } = useAuthStore();
+
+  const handleSignOut = () => {
+    logout();
+    navigate(ROUTES.LOGIN);
+  };
 
   const userDropdownItems = [
     { label: 'Profile & Account', onClick: () => navigate(ROUTES.ACCOUNT_SETTINGS) },
-    { label: 'Business Settings', onClick: () => navigate(ROUTES.BUSINESS_PROFILE) },
-    { label: 'API Keys', onClick: () => navigate(ROUTES.DEVELOPERS_API_KEYS) },
-    { label: 'Sign Out', danger: true, onClick: () => navigate(ROUTES.LOGIN) },
+    { label: 'Organization Settings', onClick: () => navigate(ROUTES.BUSINESS_PROFILE) },
+    { label: 'Developer API Keys', onClick: () => navigate(ROUTES.DEVELOPERS_API_KEYS) },
+    { label: 'Sign Out', danger: true, onClick: handleSignOut },
   ];
+
+  const displayName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.name || user?.email?.split('@')[0] || 'Admin User';
+  const displayRole = user?.role ? user.role.replace('_', ' ') : 'ORG ADMIN';
 
   return (
     <header className="h-[72px] sm:h-20 bg-white border-b border-[#E2EAE6] px-5 sm:px-8 flex items-center justify-between z-20 shrink-0 shadow-xs">
@@ -48,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
             <input
               type="text"
               placeholder="Search contacts, messages, templates (Ctrl + K)..."
-              className="w-80 lg:w-96 bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#1F2A26] placeholder-[#8A9993] focus:outline-none focus:ring-2 focus:ring-[#05A222]/20 focus:border-[#05A222] transition-colors"
+              className="w-80 lg:w-96 bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#1F2A26] placeholder-[#8A9993] focus:outline-none focus:ring-2 focus:ring-[#05A222]/20 focus:border-[#05A222] transition-colors font-medium"
             />
           </div>
         )}
@@ -56,9 +66,9 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right: Status badge, Notification, User menu */}
       <div className="flex items-center gap-3.5">
-        <div className="hidden sm:flex items-center gap-2 bg-[#E9F9EE] text-[#006736] px-3.5 py-1.5 rounded-full text-sm font-semibold border border-[#C4EBD0]">
+        <div className="hidden sm:flex items-center gap-2 bg-[#E9F9EE] text-[#006736] px-3.5 py-1.5 rounded-full text-xs font-bold border border-[#C4EBD0]">
           <ShieldCheck className="w-4 h-4 text-[#05A222]" />
-          <span>Meta Tier 3 Active</span>
+          <span>{organization?.plan ? `${organization.plan} Tier` : 'Meta Tier 3 Active'}</span>
         </div>
 
         <button
@@ -79,10 +89,15 @@ export const Header: React.FC<HeaderProps> = ({
         <Dropdown
           trigger={
             <div className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-[#F6FAF8] transition-colors cursor-pointer">
-              <Avatar name="Sarah Jenkins" size="md" status="online" />
+              <Avatar
+                name={displayName}
+                src={user?.avatarUrl || user?.avatar}
+                size="md"
+                status="online"
+              />
               <div className="hidden md:flex flex-col text-left">
-                <span className="text-sm font-bold text-[#14201C]">Sarah Jenkins</span>
-                <span className="text-xs text-[#5F7069] font-medium">Owner</span>
+                <span className="text-sm font-bold text-[#14201C] truncate max-w-[140px]">{displayName}</span>
+                <span className="text-[11px] text-[#05A222] font-semibold uppercase">{displayRole}</span>
               </div>
             </div>
           }
