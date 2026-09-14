@@ -1,59 +1,101 @@
+import { campaignService, type CreateCampaignPayload } from '../../services/campaignService';
 import type { Campaign } from './types';
 
 export const MOCK_CAMPAIGNS: Campaign[] = [
   {
     id: 'cmp_1',
-    name: 'Spring VIP Exclusive 40% OFF',
+    name: 'Black Friday VIP Early Access Blast',
     templateId: 'tpl_2',
     templateName: 'black_friday_vip_early_access',
-    targetAudience: 'VIP Tagged Contacts (14,280)',
-    totalRecipients: 14280,
-    sentCount: 14280,
-    deliveredCount: 14120,
-    readCount: 11890,
-    repliedCount: 2310,
+    targetAudience: 'VIP & High LTV Customers (1,240)',
+    totalRecipients: 1240,
+    sentCount: 1240,
+    deliveredCount: 1198,
+    readCount: 942,
+    repliedCount: 312,
     status: 'completed',
-    completedAt: '2025-02-12T18:00:00Z',
-    createdAt: '2025-02-12T08:00:00Z',
+    completedAt: '2025-02-12T10:00:00Z',
+    createdAt: '2025-02-12T09:00:00Z',
   },
   {
     id: 'cmp_2',
-    name: 'Product Update & Feature Announcement',
+    name: 'Product Update - AI Copilot V2 Announcement',
     templateId: 'tpl_1',
     templateName: 'order_status_update_v2',
-    targetAudience: 'All Active Users (30,500)',
-    totalRecipients: 30500,
-    sentCount: 18200,
-    deliveredCount: 17990,
-    readCount: 13400,
-    repliedCount: 940,
+    targetAudience: 'Active SaaS Users (850)',
+    totalRecipients: 850,
+    sentCount: 850,
+    deliveredCount: 820,
+    readCount: 610,
+    repliedCount: 84,
+    status: 'completed',
+    completedAt: '2025-02-10T14:00:00Z',
+    createdAt: '2025-02-10T11:00:00Z',
+  },
+  {
+    id: 'cmp_3',
+    name: 'Weekend Flash Promo 20% Off',
+    templateId: 'tpl_2',
+    templateName: 'black_friday_vip_early_access',
+    targetAudience: 'Leads & Inbound Inquiries (2,500)',
+    totalRecipients: 2500,
+    sentCount: 1450,
+    deliveredCount: 1390,
+    readCount: 850,
+    repliedCount: 120,
     status: 'running',
-    createdAt: '2025-02-14T10:00:00Z',
+    createdAt: '2025-02-14T08:30:00Z',
   },
 ];
 
 export const campaignsApi = {
-  getCampaigns: async (): Promise<Campaign[]> => {
+  getCampaigns: async (params?: { status?: string; search?: string }): Promise<Campaign[]> => {
+    try {
+      const res = await campaignService.getCampaigns(params);
+      if (res.campaigns.length > 0) {
+        return res.campaigns;
+      }
+    } catch {
+      // Fallback to mock data if offline
+    }
     return MOCK_CAMPAIGNS;
   },
+
   getCampaignById: async (id: string): Promise<Campaign | undefined> => {
+    try {
+      const campaign = await campaignService.getCampaignById(id);
+      if (campaign) return campaign;
+    } catch {
+      // Fallback
+    }
     return MOCK_CAMPAIGNS.find((c) => c.id === id);
   },
-  createCampaign: async (data: Partial<Campaign>): Promise<Campaign> => {
-    await new Promise((res) => setTimeout(res, 600));
-    return {
-      id: 'cmp_' + Date.now(),
-      name: data.name || 'New Campaign',
-      templateId: data.templateId || 'tpl_1',
-      templateName: data.templateName || 'Template',
-      targetAudience: data.targetAudience || 'Selected Segment',
-      totalRecipients: data.totalRecipients || 1000,
-      sentCount: 0,
-      deliveredCount: 0,
-      readCount: 0,
-      repliedCount: 0,
-      status: 'scheduled',
-      createdAt: new Date().toISOString(),
-    };
+
+  createCampaign: async (payload: CreateCampaignPayload): Promise<Campaign> => {
+    return campaignService.createCampaign(payload);
+  },
+
+  startCampaign: async (id: string): Promise<Campaign> => {
+    return campaignService.startCampaign(id);
+  },
+
+  pauseCampaign: async (id: string): Promise<Campaign> => {
+    return campaignService.pauseCampaign(id);
+  },
+
+  resumeCampaign: async (id: string): Promise<Campaign> => {
+    return campaignService.resumeCampaign(id);
+  },
+
+  cancelCampaign: async (id: string): Promise<Campaign> => {
+    return campaignService.cancelCampaign(id);
+  },
+
+  deleteCampaign: async (id: string): Promise<boolean> => {
+    return campaignService.deleteCampaign(id);
+  },
+
+  getCampaignRecipients: async (id: string, params?: { status?: string; search?: string; page?: number; limit?: number }) => {
+    return campaignService.getCampaignRecipients(id, params);
   },
 };
