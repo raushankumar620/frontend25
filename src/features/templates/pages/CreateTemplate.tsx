@@ -2,7 +2,19 @@ import React, { useState } from 'react';
 import { PageContainer } from '../../../components/layout/PageContainer';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import { ArrowLeft, Smartphone, Plus, Trash2, Send, AlertCircle, Info, Sparkles } from 'lucide-react';
+import {
+  ArrowLeft,
+  Smartphone,
+  Plus,
+  Trash2,
+  Send,
+  AlertCircle,
+  Info,
+  Sparkles,
+  ShieldCheck,
+  CheckCircle2,
+  Layers
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
 import { templatesApi } from '../api';
@@ -20,7 +32,7 @@ export const CreateTemplate: React.FC = () => {
     { type: 'QUICK_REPLY', text: 'Track Order' },
   ]);
   const [sampleVars, setSampleVars] = useState<{ [key: string]: string }>({
-    '1': 'Alex',
+    '1': 'Alex Johnson',
     '2': 'ORD-98231',
     '3': 'Friday afternoon',
   });
@@ -38,7 +50,6 @@ export const CreateTemplate: React.FC = () => {
   };
 
   const insertVariable = () => {
-    // Detect next variable index
     const matches: string[] = body.match(/\{\{(\d+)\}\}/g) || [];
     const maxIdx = matches.reduce<number>((max, m) => {
       const num = parseInt(m.replace(/[{}]/g, ''), 10);
@@ -46,7 +57,7 @@ export const CreateTemplate: React.FC = () => {
     }, 0);
     const nextIdx = maxIdx + 1;
     setBody((prev) => `${prev} {{${nextIdx}}}`);
-    setSampleVars((prev) => ({ ...prev, [String(nextIdx)]: `Sample ${nextIdx}` }));
+    setSampleVars((prev) => ({ ...prev, [String(nextIdx)]: `Value ${nextIdx}` }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,48 +99,59 @@ export const CreateTemplate: React.FC = () => {
 
   return (
     <PageContainer>
+      {/* Back button */}
       <button
         onClick={() => navigate(ROUTES.TEMPLATES)}
-        className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white mb-6"
+        className="inline-flex items-center gap-2 text-xs font-bold text-[#5F7069] hover:text-[#14201C] transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Templates</span>
       </button>
 
       {errorMessage && (
-        <div className="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:rose-300 text-sm flex items-center gap-3">
+        <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm font-semibold flex items-center gap-3 shadow-xs">
           <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Builder Form */}
-        <div className="lg:col-span-7 bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-6 shadow-xs">
-          <div>
-            <h2 className="text-xl font-black text-slate-900 dark:text-white">Create WhatsApp Template</h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Submit your HSM template to Meta WhatsApp Cloud API for automated compliance checks and instant approval.
+        {/* Left Builder Form Card */}
+        <div className="lg:col-span-7 bg-white p-5 sm:p-7 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-6">
+          <div className="border-b border-[#E2EAE6] pb-4">
+            <div className="flex items-center gap-2 text-xs font-bold text-[#05A222] uppercase tracking-wider mb-1">
+              <Layers className="w-4 h-4" />
+              <span>WhatsApp HSM Builder</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-[#14201C] tracking-tight">
+              Create WhatsApp Template
+            </h2>
+            <p className="text-xs sm:text-sm text-[#5F7069] mt-1 font-medium">
+              Submit your HSM message template to Meta WhatsApp Cloud API for automated compliance checks and instant approval.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Template Name */}
             <div>
+              <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider mb-1.5">
+                Template Name (Internal Identifier)
+              </label>
               <Input
-                label="Template Name"
                 value={name}
                 onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '_'))}
                 placeholder="e.g. order_shipment_notification_v1"
                 required
               />
-              <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-                <Info className="w-3 h-3" /> Meta requires lowercase alphanumeric and underscore characters only.
+              <p className="text-[11px] text-[#5F7069] mt-1.5 font-medium flex items-center gap-1">
+                <Info className="w-3.5 h-3.5 text-[#05A222]" /> Meta requires lowercase alphanumeric and underscore characters only.
               </p>
             </div>
 
+            {/* Category & Language Selection */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase">
+                <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider mb-1.5">
                   Category
                 </label>
                 <div className="grid grid-cols-3 gap-1.5">
@@ -138,10 +160,10 @@ export const CreateTemplate: React.FC = () => {
                       key={cat}
                       type="button"
                       onClick={() => setCategory(cat)}
-                      className={`py-2 px-1 text-center rounded-xl text-xs font-bold border transition-all ${
+                      className={`py-2 px-1 text-center rounded-xl text-xs font-black border transition-all ${
                         category === cat
-                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-300 shadow-xs'
-                          : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                          ? 'border-[#05A222] bg-[#E9F9EE] text-[#006736] shadow-xs'
+                          : 'border-[#E2EAE6] bg-white text-[#14201C] hover:bg-[#F6FAF8]'
                       }`}
                     >
                       {cat.slice(0, 4)}
@@ -151,13 +173,13 @@ export const CreateTemplate: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase">
+                <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider mb-1.5">
                   Language
                 </label>
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs p-2.5 font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full rounded-xl border border-[#E2EAE6] bg-white text-[#14201C] text-xs p-2.5 font-bold focus:border-[#05A222] focus:outline-none"
                 >
                   <option value="en_US">English (US) - en_US</option>
                   <option value="en_GB">English (UK) - en_GB</option>
@@ -172,8 +194,8 @@ export const CreateTemplate: React.FC = () => {
             </div>
 
             {/* Header Configuration */}
-            <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase">
+            <div className="border-t border-[#E2EAE6] pt-4">
+              <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider mb-2">
                 Header Type (Optional)
               </label>
               <div className="flex gap-2 mb-3">
@@ -182,10 +204,10 @@ export const CreateTemplate: React.FC = () => {
                     key={type}
                     type="button"
                     onClick={() => setHeaderType(type)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all ${
                       headerType === type
-                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-300'
-                        : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
+                        ? 'border-[#05A222] bg-[#E9F9EE] text-[#006736]'
+                        : 'border-[#E2EAE6] bg-white text-[#14201C] hover:bg-[#F6FAF8]'
                     }`}
                   >
                     {type}
@@ -203,36 +225,38 @@ export const CreateTemplate: React.FC = () => {
               )}
             </div>
 
-            {/* Body */}
-            <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">
+            {/* Message Body */}
+            <div className="border-t border-[#E2EAE6] pt-4">
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider">
                   Message Body
                 </label>
                 <button
                   type="button"
                   onClick={insertVariable}
-                  className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-1 rounded-lg"
+                  className="text-xs font-bold text-[#006736] hover:text-[#05A222] flex items-center gap-1.5 bg-[#E9F9EE] border border-[#C4EBD0] px-2.5 py-1 rounded-xl transition-colors shadow-xs"
                 >
-                  <Sparkles className="w-3.5 h-3.5" /> + Add Variable
+                  <Sparkles className="w-3.5 h-3.5 text-[#05A222]" /> + Add Variable
                 </button>
               </div>
               <textarea
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 rows={5}
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs p-3.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-sans leading-relaxed"
+                className="w-full rounded-xl border border-[#E2EAE6] bg-white text-[#14201C] text-xs p-3.5 focus:border-[#05A222] focus:outline-none font-sans leading-relaxed shadow-xs"
                 required
               />
-              <p className="text-[11px] text-slate-400 mt-1">
-                Insert variables like <code className="text-emerald-600 dark:text-emerald-400 font-mono">&#123;&#123;1&#125;&#125;</code>, <code className="text-emerald-600 dark:text-emerald-400 font-mono">&#123;&#123;2&#125;&#125;</code> for personalization.
+              <p className="text-[11px] text-[#5F7069] mt-1.5 font-medium">
+                Insert dynamic variables like <code className="text-[#006736] bg-[#E9F9EE] px-1 py-0.5 rounded-md font-mono font-bold">&#123;&#123;1&#125;&#125;</code>, <code className="text-[#006736] bg-[#E9F9EE] px-1 py-0.5 rounded-md font-mono font-bold">&#123;&#123;2&#125;&#125;</code> for personalization.
               </p>
             </div>
 
             {/* Footer */}
-            <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
+            <div className="border-t border-[#E2EAE6] pt-4">
+              <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider mb-1.5">
+                Footer Note (Optional)
+              </label>
               <Input
-                label="Footer Note (Optional)"
                 value={footer}
                 onChange={(e) => setFooter(e.target.value)}
                 placeholder="e.g. Reply STOP to opt out"
@@ -241,24 +265,24 @@ export const CreateTemplate: React.FC = () => {
             </div>
 
             {/* Interactive Buttons Config */}
-            <div className="border-t border-slate-100 dark:border-slate-800 pt-4 space-y-3">
+            <div className="border-t border-[#E2EAE6] pt-4 space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">
-                  Interactive Buttons ({buttons.length}/3)
+                <label className="text-xs font-bold text-[#14201C] uppercase tracking-wider">
+                  Interactive Action Buttons ({buttons.length}/3)
                 </label>
                 {buttons.length < 3 && (
                   <button
                     type="button"
                     onClick={handleAddButton}
-                    className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold"
+                    className="text-xs text-[#006736] hover:text-[#05A222] flex items-center gap-1 font-bold transition-colors"
                   >
-                    <Plus className="w-3.5 h-3.5" /> Add Button
+                    <Plus className="w-3.5 h-3.5 text-[#05A222]" /> Add Button
                   </button>
                 )}
               </div>
 
               {buttons.map((btn, idx) => (
-                <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                <div key={idx} className="p-3.5 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6] space-y-2.5">
                   <div className="flex items-center gap-2">
                     <select
                       value={btn.type}
@@ -267,7 +291,7 @@ export const CreateTemplate: React.FC = () => {
                         next[idx].type = e.target.value as any;
                         setButtons(next);
                       }}
-                      className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs p-2 font-semibold"
+                      className="rounded-xl border border-[#E2EAE6] bg-white text-[#14201C] text-xs p-2 font-bold focus:border-[#05A222] focus:outline-none"
                     >
                       <option value="QUICK_REPLY">Quick Reply</option>
                       <option value="URL">Visit Website</option>
@@ -283,14 +307,14 @@ export const CreateTemplate: React.FC = () => {
                         setButtons(next);
                       }}
                       placeholder="Button Label"
-                      className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs p-2"
+                      className="flex-1 rounded-xl border border-[#E2EAE6] bg-white text-[#14201C] text-xs p-2 font-semibold focus:border-[#05A222] focus:outline-none"
                       required
                     />
 
                     <button
                       type="button"
                       onClick={() => handleRemoveButton(idx)}
-                      className="p-2 text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-950/50 rounded-lg transition-colors"
+                      className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -306,7 +330,7 @@ export const CreateTemplate: React.FC = () => {
                         setButtons(next);
                       }}
                       placeholder="https://example.com/track"
-                      className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs p-2"
+                      className="w-full rounded-xl border border-[#E2EAE6] bg-white text-[#14201C] text-xs p-2 focus:border-[#05A222] focus:outline-none"
                       required
                     />
                   )}
@@ -321,7 +345,7 @@ export const CreateTemplate: React.FC = () => {
                         setButtons(next);
                       }}
                       placeholder="+15551234567"
-                      className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs p-2"
+                      className="w-full rounded-xl border border-[#E2EAE6] bg-white text-[#14201C] text-xs p-2 focus:border-[#05A222] focus:outline-none"
                       required
                     />
                   )}
@@ -332,76 +356,89 @@ export const CreateTemplate: React.FC = () => {
             <Button
               type="submit"
               size="lg"
-              className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md"
+              className="w-full mt-6 bg-[#05A222] hover:bg-[#006736] text-white font-bold py-3.5 rounded-xl shadow-xs"
               isLoading={isSubmitting}
               leftIcon={<Send className="w-4 h-4" />}
             >
-              Submit Template to Meta
+              Submit Template to Meta for Instant Approval
             </Button>
           </form>
         </div>
 
-        {/* Right Live WhatsApp Smartphone Preview */}
+        {/* Right Smartphone Device Mockup */}
         <div className="lg:col-span-5 flex flex-col items-center sticky top-6">
-          <div className="text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <Smartphone className="w-4 h-4 text-emerald-500" />
-            Live WhatsApp Message Preview
+          <div className="text-xs font-bold text-[#5F7069] uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Smartphone className="w-4 h-4 text-[#05A222]" />
+            <span>Live WhatsApp Rendering Preview</span>
           </div>
 
-          <div className="w-full max-w-[340px] bg-slate-900 rounded-[38px] p-3 shadow-2xl border-4 border-slate-700">
-            {/* Phone Screen */}
-            <div className="bg-[#e5ddd5] dark:bg-[#0b141a] rounded-[30px] p-4 min-h-[480px] flex flex-col justify-between text-slate-900 dark:text-slate-100">
-              {/* Top Chat Bar */}
-              <div className="bg-white/80 dark:bg-[#202c33]/90 backdrop-blur-xs py-2 px-3 rounded-xl flex items-center gap-2 mb-3 shadow-xs">
-                <div className="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs font-bold">
+          {/* Smartphone Chassis */}
+          <div className="w-full max-w-[340px] bg-[#14201C] rounded-[44px] p-3.5 shadow-[0_20px_60px_rgba(1,59,35,0.18)] border-4 border-[#1F2A26]">
+            {/* Top Speaker & Camera Island */}
+            <div className="w-24 h-4 bg-[#14201C] mx-auto rounded-b-xl mb-2 flex items-center justify-center">
+              <div className="w-10 h-1 bg-[#2D3A35] rounded-full" />
+            </div>
+
+            {/* Smartphone Screen */}
+            <div className="bg-[#E5DDD5] rounded-[34px] p-3.5 min-h-[460px] flex flex-col justify-between overflow-hidden relative">
+              {/* WhatsApp App Bar */}
+              <div className="bg-[#006736] text-white py-2 px-3 rounded-2xl flex items-center gap-2.5 shadow-sm">
+                <div className="w-8 h-8 rounded-full bg-[#05A222] flex items-center justify-center font-bold text-xs text-white shrink-0 shadow-xs">
                   W
                 </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-900 dark:text-white">WhatsApp Business</div>
-                  <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Official Business Account</div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-black truncate flex items-center gap-1">
+                    <span>Acme Official Store</span>
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
+                  </div>
+                  <div className="text-[10px] text-[#C4EBD0] font-medium">Verified WhatsApp Business</div>
                 </div>
               </div>
 
-              {/* Message bubble & buttons */}
-              <div>
-                <div className="bg-white dark:bg-[#202c33] rounded-2xl rounded-tl-xs p-3.5 shadow-md space-y-2 text-xs">
+              {/* Message Bubble Preview */}
+              <div className="my-auto py-3 space-y-2">
+                <div className="bg-white rounded-2xl rounded-tl-xs p-3.5 shadow-sm space-y-1.5 text-xs text-[#14201C]">
                   {headerType === 'TEXT' && headerText && (
-                    <div className="font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-1.5">
+                    <div className="font-bold text-[#006736] border-b border-[#E2EAE6] pb-1">
                       {headerText}
                     </div>
                   )}
-                  <div className="text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
+                  <div className="text-[#1F2A26] whitespace-pre-wrap leading-relaxed font-sans text-xs">
                     {previewBody}
                   </div>
                   {footer && (
-                    <div className="text-[10px] text-slate-400 pt-1 border-t border-slate-50 dark:border-slate-800/60">
+                    <div className="text-[10px] text-[#8A9993] pt-1 border-t border-[#F6FAF8]">
                       {footer}
                     </div>
                   )}
-                  <div className="text-[9px] text-right text-slate-400 font-medium">12:30 PM</div>
+                  <div className="text-[9px] text-right text-[#8A9993] font-medium flex items-center justify-end gap-1">
+                    <span>12:45 PM</span>
+                    <CheckCircle2 className="w-3 h-3 text-[#05A222]" />
+                  </div>
                 </div>
 
                 {/* Interactive Action Buttons Preview */}
                 {buttons.length > 0 && (
-                  <div className="mt-2 space-y-1.5">
+                  <div className="space-y-1.5">
                     {buttons.map((btn, idx) => (
                       <div
                         key={idx}
-                        className="bg-white dark:bg-[#202c33] py-2 text-center text-xs font-bold text-[#00a884] rounded-xl shadow-xs border border-emerald-50 dark:border-emerald-950"
+                        className="bg-white py-2 px-3 text-center text-xs font-bold text-[#05A222] rounded-xl shadow-xs border border-[#C4EBD0] flex items-center justify-center gap-1.5"
                       >
-                        {btn.text || 'Button Action'}
+                        <span>{btn.text || 'Button Action'}</span>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Variable test controls below preview */}
+              {/* Variable test inputs in preview */}
               {foundVars.length > 0 && (
-                <div className="mt-4 p-2.5 bg-white/70 dark:bg-slate-900/80 backdrop-blur-xs rounded-xl border border-slate-200 dark:border-slate-800 space-y-1.5">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">
-                    Test Variable Values:
-                  </span>
+                <div className="bg-white/90 backdrop-blur-xs rounded-2xl p-2.5 border border-[#E2EAE6] space-y-1.5 shadow-xs">
+                  <div className="text-[10px] font-bold text-[#5F7069] uppercase flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-[#05A222]" />
+                    <span>Test Variable Values</span>
+                  </div>
                   <div className="grid grid-cols-2 gap-1.5">
                     {foundVars.map((v) => (
                       <input
@@ -410,7 +447,7 @@ export const CreateTemplate: React.FC = () => {
                         placeholder={`{{${v}}}`}
                         value={sampleVars[v] || ''}
                         onChange={(e) => setSampleVars({ ...sampleVars, [v]: e.target.value })}
-                        className="text-[11px] p-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                        className="text-[10px] p-1.5 rounded-lg border border-[#E2EAE6] bg-white text-[#14201C] font-semibold"
                       />
                     ))}
                   </div>

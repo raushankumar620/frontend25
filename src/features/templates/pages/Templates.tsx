@@ -99,14 +99,14 @@ export const Templates: React.FC = () => {
       header: 'Template Name',
       render: (t) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-[#E9F9EE] text-[#05A222] flex items-center justify-center shrink-0">
             <FileText className="w-4 h-4" />
           </div>
           <div>
-            <span className="font-bold text-[#14201C] dark:text-slate-100 font-mono text-sm block">
+            <span className="font-bold text-[#14201C] font-mono text-sm block">
               {t.name}
             </span>
-            <span className="text-xs text-[#5F7069] dark:text-slate-400 font-medium truncate max-w-[280px] block">
+            <span className="text-xs text-[#5F7069] font-medium truncate max-w-[280px] block">
               {t.body?.slice(0, 60)}{t.body && t.body.length > 60 ? '...' : ''}
             </span>
           </div>
@@ -116,7 +116,7 @@ export const Templates: React.FC = () => {
     {
       header: 'Category',
       render: (t) => (
-        <span className="text-xs font-bold text-[#5F7069] dark:text-slate-300 uppercase px-2.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <span className="text-xs font-bold text-[#006736] uppercase px-2.5 py-1 bg-[#E9F9EE] border border-[#C4EBD0] rounded-lg">
           {t.category}
         </span>
       ),
@@ -124,7 +124,7 @@ export const Templates: React.FC = () => {
     {
       header: 'Language',
       render: (t) => (
-        <span className="font-mono text-xs text-[#5F7069] dark:text-slate-300 font-semibold">
+        <span className="font-mono text-xs text-[#5F7069] font-bold">
           {t.language}
         </span>
       ),
@@ -141,7 +141,7 @@ export const Templates: React.FC = () => {
           variant="ghost"
           onClick={() => navigate(`/templates/${t.id}`)}
           leftIcon={<Eye className="w-4 h-4" />}
-          className="text-xs font-semibold text-[#006736] dark:text-emerald-400 hover:bg-[#F6FAF8] dark:hover:bg-slate-800"
+          className="text-xs font-bold text-[#006736] hover:bg-[#E9F9EE]"
         >
           View & Test
         </Button>
@@ -154,11 +154,11 @@ export const Templates: React.FC = () => {
       {/* Header section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] dark:text-white tracking-tight flex items-center gap-2.5">
-            <Layers className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight flex items-center gap-2.5">
+            <Layers className="w-7 h-7 text-[#05A222]" />
             WhatsApp Message Templates
           </h2>
-          <p className="text-sm sm:text-base text-[#5F7069] dark:text-slate-400 mt-1 font-medium">
+          <p className="text-sm sm:text-base text-[#5F7069] mt-1 font-medium">
             Meta-approved HSM message templates for initiating outbound marketing, utility, and OTP auth messages.
           </p>
         </div>
@@ -170,7 +170,7 @@ export const Templates: React.FC = () => {
             onClick={handleSync}
             isLoading={isSyncing}
             leftIcon={<RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />}
-            className="text-sm font-semibold rounded-xl"
+            className="text-xs sm:text-sm font-bold rounded-xl border-[#C4EBD0] text-[#006736] hover:bg-[#E9F9EE]"
           >
             Sync with Meta
           </Button>
@@ -180,7 +180,7 @@ export const Templates: React.FC = () => {
             size="md"
             onClick={() => navigate(ROUTES.CREATE_TEMPLATE)}
             leftIcon={<Plus className="w-4 h-4" />}
-            className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="text-xs sm:text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-xs bg-[#05A222] hover:bg-[#006736] text-white"
           >
             Create New Template
           </Button>
@@ -189,9 +189,9 @@ export const Templates: React.FC = () => {
 
       {/* Sync feedback notification */}
       {syncFeedback && (
-        <div className="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-semibold flex items-center justify-between">
+        <div className="mb-6 p-4 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] text-[#006736] text-xs font-bold flex items-center justify-between shadow-xs">
           <span>{syncFeedback}</span>
-          <button onClick={() => setSyncFeedback(null)} className="text-emerald-600 hover:underline">
+          <button onClick={() => setSyncFeedback(null)} className="text-[#05A222] hover:underline font-bold">
             Dismiss
           </button>
         </div>
@@ -208,10 +208,10 @@ export const Templates: React.FC = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 selectedCategory === cat
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
+                  ? 'bg-[#05A222] text-white shadow-xs'
+                  : 'bg-white text-[#14201C] border border-[#E2EAE6] hover:bg-[#F6FAF8]'
               }`}
             >
               {cat}
