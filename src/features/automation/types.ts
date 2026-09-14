@@ -112,12 +112,34 @@ export interface AutomationLog {
   createdAt: string;
 }
 
-export type NodeType = 'trigger' | 'action' | 'condition' | 'delay' | 'ai_agent';
+export type NodeType =
+  | 'trigger'
+  | 'ai_agent'
+  | 'send_message'
+  | 'condition'
+  | 'add_tag'
+  | 'assign_agent'
+  | 'delay'
+  | 'webhook'
+  | 'action';
 
 export interface WorkflowNode {
   id: string;
   type: NodeType;
   title: string;
+  subtitle?: string;
   data?: any;
+  status?: 'IDLE' | 'EXECUTING' | 'SUCCESS' | 'FAILED';
+  x?: number;
+  y?: number;
 }
+
+export interface WorkflowConnection {
+  id: string;
+  fromNodeId: string;
+  toNodeId: string;
+  sourceHandle?: 'default' | 'true' | 'false';
+  label?: string;
+}
+
 

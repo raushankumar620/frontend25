@@ -57,6 +57,8 @@ import { CreateAutomation } from '../features/automation/pages/CreateAutomation'
 import { AIDashboard } from '../features/ai/pages/AIDashboard';
 import { AIAgent } from '../features/ai/pages/AIAgent';
 import { KnowledgeBase } from '../features/ai/pages/KnowledgeBase';
+import { AITools } from '../features/ai/pages/AITools';
+import { AIHandoff } from '../features/ai/pages/AIHandoff';
 import { AISettings } from '../features/ai/pages/AISettings';
 
 // Analytics
@@ -133,6 +135,8 @@ export const AppRoutes: React.FC = () => {
           <Route path={ROUTES.AI_DASHBOARD} element={<AIDashboard />} />
           <Route path={ROUTES.AI_AGENT} element={<AIAgent />} />
           <Route path={ROUTES.AI_KNOWLEDGE_BASE} element={<KnowledgeBase />} />
+          <Route path={ROUTES.AI_TOOLS} element={<AITools />} />
+          <Route path={ROUTES.AI_HANDOFF} element={<AIHandoff />} />
           <Route path={ROUTES.AI_SETTINGS} element={<AISettings />} />
           
           <Route path={ROUTES.ANALYTICS} element={<Analytics />} />

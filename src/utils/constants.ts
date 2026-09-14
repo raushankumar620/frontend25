@@ -45,6 +45,8 @@ export const ROUTES = {
   AI_DASHBOARD: '/ai',
   AI_AGENT: '/ai/agent',
   AI_KNOWLEDGE_BASE: '/ai/knowledge-base',
+  AI_TOOLS: '/ai/tools',
+  AI_HANDOFF: '/ai/handoff',
   AI_SETTINGS: '/ai/settings',
   
   // Analytics
