@@ -35,7 +35,7 @@ export const TemplateDetails: React.FC = () => {
         if (data) {
           setTemplate(data);
           // Pre-populate sample variable defaults
-          const matches = data.body.match(/\{\{(\d+)\}\}/g) || [];
+          const matches: string[] = (data.body && data.body.match(/\{\{(\d+)\}\}/g)) || [];
           const initial: { [key: string]: string } = {};
           matches.forEach((m) => {
             const num = m.replace(/[{}]/g, '');
