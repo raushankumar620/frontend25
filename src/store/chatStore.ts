@@ -1,59 +1,14 @@
 import { useState, useEffect } from 'react';
 import type { Conversation, Message, InternalNote } from '../types/message';
+import { conversationService } from '../services/conversationService';
 import { MOCK_CONVERSATIONS } from '../services/whatsappService';
 
-const initialMessages: Record<string, Message[]> = {
-  conv_1: [
-    {
-      id: 'msg_101',
-      conversationId: 'conv_1',
-      senderId: 'cnt_101',
-      senderType: 'contact',
-      content: 'Hi there! We are interested in your enterprise WhatsApp plan.',
-      type: 'text',
-      status: 'read',
-      timestamp: new Date(Date.now() - 3600 * 1000).toISOString(),
-    },
-    {
-      id: 'msg_102',
-      conversationId: 'conv_1',
-      senderId: 'usr_1',
-      senderType: 'user',
-      content: 'Hello David! Welcome to ChatFlow. We offer custom volume discounts and dedicated account managers.',
-      type: 'text',
-      status: 'read',
-      timestamp: new Date(Date.now() - 3000 * 1000).toISOString(),
-    },
-    {
-      id: 'msg_103',
-      conversationId: 'conv_1',
-      senderId: 'cnt_101',
-      senderType: 'contact',
-      content: 'Could you tell me if you support custom SSO integrations for our team of 500?',
-      type: 'text',
-      status: 'delivered',
-      timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    },
-  ],
-};
-
-const initialNotes: Record<string, InternalNote[]> = {
-  conv_1: [
-    {
-      id: 'nt_1',
-      conversationId: 'conv_1',
-      authorId: 'usr_1',
-      authorName: 'Sarah Jenkins',
-      content: 'Customer is looking to close before end of Q1. High probability lead ($30k ARR).',
-      createdAt: new Date(Date.now() - 2500 * 1000).toISOString(),
-    },
-  ],
-};
-
 let conversations: Conversation[] = [...MOCK_CONVERSATIONS];
-let messagesMap = { ...initialMessages };
-let notesMap = { ...initialNotes };
-let activeConversationId: string | null = 'conv_1';
+let messagesMap: Record<string, Message[]> = {};
+let notesMap: Record<string, InternalNote[]> = {};
+let activeConversationId: string | null = null;
+let isLoadingConversations = false;
+let isLoadingMessages = false;
 
 const listeners = new Set<() => void>();
 function notify() {
@@ -67,24 +22,82 @@ export const chatStore = {
   getActiveConversationId() {
     return activeConversationId;
   },
-  setActiveConversation(id: string | null) {
+  getIsLoadingConversations() {
+    return isLoadingConversations;
+  },
+  getIsLoadingMessages() {
+    return isLoadingMessages;
+  },
+
+  async fetchConversations(filter: any = {}) {
+    isLoadingConversations = true;
+    notify();
+    try {
+      const res = await conversationService.listConversations(filter);
+      if (res && res.conversations && res.conversations.length > 0) {
+        conversations = res.conversations;
+        if (!activeConversationId && conversations.length > 0) {
+          activeConversationId = conversations[0].id;
+          chatStore.fetchMessagesAndNotes(conversations[0].id);
+        }
+      }
+    } catch (err) {
+      console.warn('[ChatStore] Could not load live conversations, using local state', err);
+    } finally {
+      isLoadingConversations = false;
+      notify();
+    }
+  },
+
+  async fetchMessagesAndNotes(convId: string) {
+    if (!convId) return;
+    isLoadingMessages = true;
+    notify();
+    try {
+      const [messages, notes] = await Promise.all([
+        conversationService.getMessages(convId).catch(() => []),
+        conversationService.getNotes(convId).catch(() => []),
+      ]);
+
+      if (messages.length > 0) {
+        messagesMap[convId] = messages;
+      }
+      if (notes.length > 0) {
+        notesMap[convId] = notes;
+      }
+    } catch (err) {
+      console.warn('[ChatStore] Error loading messages/notes:', err);
+    } finally {
+      isLoadingMessages = false;
+      notify();
+    }
+  },
+
+  async setActiveConversation(id: string | null) {
     activeConversationId = id;
     if (id) {
       conversations = conversations.map((c) =>
         c.id === id ? { ...c, unreadCount: 0 } : c
       );
+      // Mark read on backend
+      conversationService.markAsRead(id).catch(() => {});
+      chatStore.fetchMessagesAndNotes(id);
     }
     notify();
   },
+
   getMessages(convId: string): Message[] {
     return messagesMap[convId] || [];
   },
+
   getNotes(convId: string): InternalNote[] {
     return notesMap[convId] || [];
   },
-  sendMessage(convId: string, content: string, type: Message['type'] = 'text', mediaUrl?: string) {
-    const newMsg: Message = {
-      id: 'msg_' + Date.now(),
+
+  async sendMessage(convId: string, content: string, type: Message['type'] = 'text', mediaUrl?: string) {
+    const tempId = 'msg_' + Date.now();
+    const optimisticMsg: Message = {
+      id: tempId,
       conversationId: convId,
       senderId: 'usr_current',
       senderType: 'user',
@@ -96,32 +109,75 @@ export const chatStore = {
     };
 
     const cur = messagesMap[convId] || [];
-    messagesMap[convId] = [...cur, newMsg];
+    messagesMap[convId] = [...cur, optimisticMsg];
 
     conversations = conversations.map((c) =>
-      c.id === convId ? { ...c, lastMessage: newMsg, updatedAt: newMsg.timestamp } : c
+      c.id === convId ? { ...c, lastMessage: optimisticMsg, updatedAt: optimisticMsg.timestamp } : c
     );
-
     notify();
 
-    setTimeout(() => {
-      newMsg.status = 'delivered';
-      notify();
-    }, 1200);
+    try {
+      const sent = await conversationService.sendReply(convId, content, type, mediaUrl);
+      if (sent) {
+        messagesMap[convId] = messagesMap[convId].map((m) =>
+          m.id === tempId ? sent : m
+        );
+        notify();
+      }
+    } catch (err) {
+      console.warn('[ChatStore] Error sending reply to backend:', err);
+    }
   },
-  addNote(convId: string, content: string) {
-    const newNote: InternalNote = {
-      id: 'nt_' + Date.now(),
+
+  async addNote(convId: string, content: string) {
+    const tempId = 'nt_' + Date.now();
+    const optimisticNote: InternalNote = {
+      id: tempId,
       conversationId: convId,
       authorId: 'usr_current',
-      authorName: 'Sarah Jenkins',
+      authorName: 'You',
       content,
       createdAt: new Date().toISOString(),
     };
+
     const cur = notesMap[convId] || [];
-    notesMap[convId] = [...cur, newNote];
+    notesMap[convId] = [...cur, optimisticNote];
     notify();
+
+    try {
+      const realNote = await conversationService.addNote(convId, content);
+      if (realNote) {
+        notesMap[convId] = notesMap[convId].map((n) =>
+          n.id === tempId ? realNote : n
+        );
+        notify();
+      }
+    } catch (err) {
+      console.warn('[ChatStore] Error saving note to backend:', err);
+    }
   },
+
+  async assignAgent(convId: string, agentId: string | null) {
+    try {
+      await conversationService.assignAgent(convId, agentId);
+      chatStore.fetchConversations();
+    } catch (err) {
+      console.warn('[ChatStore] Error assigning agent:', err);
+    }
+  },
+
+  async updateStatus(convId: string, status: string, tags?: string[]) {
+    try {
+      await conversationService.updateConversation(convId, { status, tags });
+      conversations = conversations.map((c) =>
+        c.id === convId ? { ...c, status: status.toLowerCase() as any, tags: tags || c.tags } : c
+      );
+      notify();
+    } catch (err) {
+      console.warn('[ChatStore] Error updating status:', err);
+    }
+  },
+
   subscribe(fn: () => void) {
     listeners.add(fn);
     return () => {
@@ -134,6 +190,7 @@ export function useChatStore() {
   const [, setTick] = useState(0);
 
   useEffect(() => {
+    chatStore.fetchConversations();
     return chatStore.subscribe(() => setTick((t) => t + 1));
   }, []);
 
@@ -146,8 +203,13 @@ export function useChatStore() {
     activeConversation,
     activeMessages: activeId ? chatStore.getMessages(activeId) : [],
     activeNotes: activeId ? chatStore.getNotes(activeId) : [],
+    isLoadingConversations: chatStore.getIsLoadingConversations(),
+    isLoadingMessages: chatStore.getIsLoadingMessages(),
     setActiveConversation: chatStore.setActiveConversation.bind(chatStore),
     sendMessage: chatStore.sendMessage.bind(chatStore),
     addNote: chatStore.addNote.bind(chatStore),
+    assignAgent: chatStore.assignAgent.bind(chatStore),
+    updateStatus: chatStore.updateStatus.bind(chatStore),
+    refreshConversations: chatStore.fetchConversations.bind(chatStore),
   };
 }
