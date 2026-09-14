@@ -4,7 +4,6 @@ import { PageContainer } from '../../../components/layout/PageContainer';
 import { templatesApi } from '../api';
 import type { WhatsAppTemplate } from '../types';
 import { Button } from '../../../components/ui/Button';
-import { Badge } from '../../../components/ui/Badge';
 import {
   ArrowLeft,
   FileText,
@@ -17,9 +16,13 @@ import {
   Calendar,
   Globe,
   Tag,
-  Code,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  Wifi,
+  ChevronLeft,
+  Phone,
+  Video,
+  CheckCheck
 } from 'lucide-react';
 import { ROUTES } from '../../../utils/constants';
 
@@ -38,12 +41,12 @@ export const TemplateDetails: React.FC = () => {
           setTemplate(data);
           // Pre-populate sample variable defaults
           const matches: string[] = (data.body && data.body.match(/\{\{(\d+)\}\}/g)) || [];
-          const initial: { [key: string]: string } = {};
-          matches.forEach((m) => {
+          const initialMap: { [key: string]: string } = {};
+          matches.forEach((m: string) => {
             const num = m.replace(/[{}]/g, '');
-            initial[num] = num === '1' ? 'Alex Johnson' : `Value ${num}`;
+            initialMap[num] = `[Var ${num}]`;
           });
-          setSampleVars(initial);
+          setSampleVars(initialMap);
         }
       });
     }
@@ -56,7 +59,7 @@ export const TemplateDetails: React.FC = () => {
       await templatesApi.deleteTemplate(id);
       navigate(ROUTES.TEMPLATES);
     } catch (err) {
-      console.error('Delete failed:', err);
+      console.error('Failed to delete template', err);
     } finally {
       setIsDeleting(false);
       setIsConfirmOpen(false);
@@ -66,46 +69,50 @@ export const TemplateDetails: React.FC = () => {
   if (!template) {
     return (
       <PageContainer>
-        <div className="p-12 text-center text-[#5F7069] font-semibold">Loading template details...</div>
+        <div className="py-20 text-center">
+          <div className="w-10 h-10 border-4 border-[#05A222] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-[#5F7069] text-sm font-semibold">Loading HSM template specification...</p>
+        </div>
       </PageContainer>
     );
   }
 
-  // Live variable preview replacement
-  const previewBody = template.body.replace(/\{\{(\d+)\}\}/g, (_, num) => {
-    return sampleVars[num] || `[Variable {{${num}}}]`;
+  // Generate live preview text with dynamic values
+  let previewBody = template.body;
+  Object.keys(sampleVars).forEach((key) => {
+    previewBody = previewBody.replace(
+      new RegExp(`\\{\\{${key}\\}\\}`, 'g'),
+      sampleVars[key] || `{{${key}}}`
+    );
   });
 
-  const foundVars = Array.from(new Set(Array.from(template.body.matchAll(/\{\{(\d+)\}\}/g), (m) => m[1])));
+  const foundVars = Object.keys(sampleVars);
 
   const getStatusBadge = (status: string) => {
-    switch (status.toUpperCase()) {
+    switch (status) {
       case 'APPROVED':
         return (
-          <Badge variant="success" size="md">
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-            Approved by Meta
-          </Badge>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#05A222]" /> Approved by Meta
+          </span>
         );
       case 'PENDING':
         return (
-          <Badge variant="warning" size="md">
-            <Clock className="w-3.5 h-3.5 mr-1" />
-            Under Review (Pending)
-          </Badge>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+            <Clock className="w-3.5 h-3.5 text-amber-500 animate-pulse" /> Pending Review
+          </span>
         );
       case 'REJECTED':
         return (
-          <Badge variant="danger" size="md">
-            <AlertCircle className="w-3.5 h-3.5 mr-1" />
-            Rejected
-          </Badge>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+            <AlertCircle className="w-3.5 h-3.5 text-rose-500" /> Rejected by Meta
+          </span>
         );
       default:
         return (
-          <Badge variant="neutral" size="md">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#F6FAF8] text-[#5F7069] border border-[#E2EAE6]">
             {status}
-          </Badge>
+          </span>
         );
     }
   };
@@ -178,15 +185,14 @@ export const TemplateDetails: React.FC = () => {
           {/* Variable Testing Playground */}
           {foundVars.length > 0 && (
             <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4">
-              <div className="flex items-center gap-2 text-sm font-black text-[#14201C] uppercase tracking-wider">
-                <Code className="w-4 h-4 text-[#05A222]" />
-                <span>Variable Testing Playground</span>
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#14201C]">
+                <Sparkles className="w-4 h-4 text-[#05A222]" />
+                <span>Live Variable Playground ({foundVars.length} Variables)</span>
               </div>
-              <p className="text-xs text-[#5F7069] font-medium">
-                Replace placeholder variables with test values to see instant live rendering in the smartphone mockup.
+              <p className="text-xs text-[#5F7069]">
+                Type values into the inputs below to see dynamic variable replacements live on the iPhone preview screen.
               </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {foundVars.map((v) => (
                   <div key={v}>
                     <label className="block text-[11px] font-mono font-bold text-[#14201C] mb-1">
@@ -257,41 +263,69 @@ export const TemplateDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Realistic WhatsApp Smartphone Mockup */}
+        {/* Right Column: Ultra-Realistic Modern iPhone Mockup */}
         <div className="lg:col-span-5 flex flex-col items-center sticky top-6">
           <div className="text-xs font-bold text-[#5F7069] uppercase tracking-wider mb-3 flex items-center gap-2">
             <Smartphone className="w-4 h-4 text-[#05A222]" />
             <span>Official WhatsApp Device Preview</span>
           </div>
 
-          {/* Smartphone Chassis */}
-          <div className="w-full max-w-[340px] bg-[#14201C] rounded-[44px] p-3.5 shadow-[0_20px_60px_rgba(1,59,35,0.18)] border-4 border-[#1F2A26]">
-            {/* Speaker & Notch */}
-            <div className="w-24 h-4 bg-[#14201C] mx-auto rounded-b-xl mb-2 flex items-center justify-center">
-              <div className="w-10 h-1 bg-[#2D3A35] rounded-full" />
-            </div>
-
-            {/* Smartphone Inner Screen */}
-            <div className="bg-[#E5DDD5] rounded-[34px] p-3.5 min-h-[460px] flex flex-col justify-between overflow-hidden relative">
-              {/* WhatsApp App Bar */}
-              <div className="bg-[#006736] text-white py-2 px-3 rounded-2xl flex items-center gap-2.5 shadow-sm">
-                <div className="w-8 h-8 rounded-full bg-[#05A222] flex items-center justify-center font-bold text-xs text-white shrink-0 shadow-xs">
-                  W
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs font-black truncate flex items-center gap-1">
-                    <span>Acme Official Store</span>
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
+          {/* iPhone Chassis (Refined Slim Bezel) */}
+          <div className="w-full max-w-[330px] bg-[#1C1C1E] rounded-[48px] p-[10px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.08)] ring-1 ring-black/40">
+            {/* Screen Inner Glass */}
+            <div className="bg-[#EFEAE2] rounded-[38px] min-h-[540px] flex flex-col justify-between overflow-hidden relative shadow-inner">
+              {/* iOS Top Status Bar & Dynamic Island */}
+              <div className="bg-[#008069] text-white pt-2.5 pb-1 px-5">
+                <div className="flex items-center justify-between text-[11px] font-bold">
+                  <span>9:41</span>
+                  {/* Dynamic Island */}
+                  <div className="w-20 h-4 bg-black rounded-full flex items-center justify-end px-1.5 gap-1">
+                    <div className="w-2 h-2 rounded-full bg-[#111] ring-1 ring-slate-800" />
                   </div>
-                  <div className="text-[10px] text-[#C4EBD0] font-medium">Verified WhatsApp Business</div>
+                  <div className="flex items-center gap-1.5 text-[10px]">
+                    <Wifi className="w-3 h-3" />
+                    <div className="w-4 h-2 border border-white rounded-[3px] p-[1px] flex items-center">
+                      <div className="h-full w-full bg-white rounded-[1px]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* WhatsApp Chat Navigation Bar */}
+                <div className="flex items-center justify-between gap-2 mt-2 pt-1 pb-1.5">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <ChevronLeft className="w-5 h-5 -ml-1 text-white shrink-0" />
+                    <div className="w-7 h-7 rounded-full bg-[#05A222] text-white flex items-center justify-center font-bold text-[11px] shrink-0 shadow-xs ring-1 ring-white/30">
+                      W
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold truncate flex items-center gap-1 text-white">
+                        <span>Acme Official</span>
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
+                      </div>
+                      <div className="text-[9px] text-[#C4EBD0] leading-none">Official Business Account</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 text-white/90">
+                    <Video className="w-4 h-4" />
+                    <Phone className="w-3.5 h-3.5" />
+                  </div>
                 </div>
               </div>
 
-              {/* Message Bubble Preview */}
-              <div className="my-auto py-3 space-y-2">
-                <div className="bg-white rounded-2xl rounded-tl-xs p-3.5 shadow-sm space-y-1.5 text-xs text-[#14201C]">
+              {/* Chat Canvas Body */}
+              <div className="p-3 my-auto space-y-2">
+                {/* Date Pill */}
+                <div className="flex justify-center my-1">
+                  <span className="bg-white/80 backdrop-blur-xs text-[#5F7069] text-[9px] font-bold px-2.5 py-0.5 rounded-md shadow-2xs uppercase tracking-wider">
+                    Today
+                  </span>
+                </div>
+
+                {/* WhatsApp Incoming Chat Bubble */}
+                <div className="bg-white rounded-2xl rounded-tl-xs p-3 shadow-xs space-y-1.5 text-xs text-[#14201C]">
                   {template.header?.text && (
-                    <div className="font-bold text-[#006736] border-b border-[#E2EAE6] pb-1">
+                    <div className="font-bold text-[#008069] text-[11px] border-b border-[#F0F2F5] pb-1">
                       {template.header.text}
                     </div>
                   )}
@@ -299,23 +333,23 @@ export const TemplateDetails: React.FC = () => {
                     {previewBody}
                   </div>
                   {template.footer && (
-                    <div className="text-[10px] text-[#8A9993] pt-1 border-t border-[#F6FAF8]">
+                    <div className="text-[10px] text-[#8A9993] pt-0.5">
                       {template.footer}
                     </div>
                   )}
                   <div className="text-[9px] text-right text-[#8A9993] font-medium flex items-center justify-end gap-1">
                     <span>12:45 PM</span>
-                    <CheckCircle2 className="w-3 h-3 text-[#05A222]" />
+                    <CheckCheck className="w-3.5 h-3.5 text-[#53BDEB]" />
                   </div>
                 </div>
 
                 {/* Interactive Action Buttons Preview */}
                 {template.buttons && template.buttons.length > 0 && (
-                  <div className="space-y-1.5">
+                  <div className="space-y-1 pt-1">
                     {template.buttons.map((btn, idx) => (
                       <div
                         key={idx}
-                        className="bg-white py-2 px-3 text-center text-xs font-bold text-[#05A222] rounded-xl shadow-xs border border-[#C4EBD0] flex items-center justify-center gap-1.5"
+                        className="bg-white hover:bg-[#F6FAF8] py-2 px-3 text-center text-xs font-bold text-[#00A884] rounded-xl shadow-2xs border border-[#E2EAE6] flex items-center justify-center gap-1.5"
                       >
                         <span>{btn.text}</span>
                       </div>
@@ -324,10 +358,9 @@ export const TemplateDetails: React.FC = () => {
                 )}
               </div>
 
-              {/* Verified Meta Badge Footer */}
-              <div className="bg-white/90 backdrop-blur-xs py-1.5 px-3 rounded-xl border border-[#E2EAE6] text-center text-[10px] text-[#006736] font-bold flex items-center justify-center gap-1">
-                <Sparkles className="w-3 h-3 text-[#05A222]" />
-                <span>Verified Meta HSM Template</span>
+              {/* iPhone Home Indicator */}
+              <div className="pb-2 pt-1 flex justify-center">
+                <div className="w-28 h-1 bg-black/20 rounded-full" />
               </div>
             </div>
           </div>

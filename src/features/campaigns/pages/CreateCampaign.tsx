@@ -15,7 +15,12 @@ import {
   Smartphone,
   Sparkles,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  Wifi,
+  ChevronLeft,
+  Phone,
+  Video,
+  CheckCheck
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
@@ -500,43 +505,70 @@ export const CreateCampaign: React.FC = () => {
           )}
         </div>
 
-        {/* Right Side: Realistic WhatsApp Smartphone Mockup */}
+        {/* Right Side: Ultra-Realistic Modern iPhone Mockup */}
         <div className="lg:col-span-5 flex flex-col items-center sticky top-6">
           <div className="text-xs font-bold text-[#5F7069] uppercase tracking-wider mb-3 flex items-center gap-2">
             <Smartphone className="w-4 h-4 text-[#05A222]" />
             <span>Live WhatsApp Message Preview</span>
           </div>
 
-          {/* Phone Chassis Container */}
-          <div className="w-full max-w-[340px] bg-[#14201C] rounded-[44px] p-3.5 shadow-[0_20px_60px_rgba(1,59,35,0.18)] border-4 border-[#1F2A26]">
-            {/* Speaker & Notch */}
-            <div className="w-24 h-4 bg-[#14201C] mx-auto rounded-b-xl mb-2 flex items-center justify-center">
-              <div className="w-10 h-1 bg-[#2D3A35] rounded-full" />
-            </div>
-
-            {/* Smartphone Inner Screen */}
-            <div className="bg-[#E5DDD5] rounded-[34px] p-3.5 min-h-[460px] flex flex-col justify-between overflow-hidden relative">
-              {/* WhatsApp App Header */}
-              <div className="bg-[#006736] text-white py-2 px-3 rounded-2xl flex items-center gap-2.5 shadow-sm">
-                <div className="w-8 h-8 rounded-full bg-[#05A222] flex items-center justify-center font-bold text-xs text-white shrink-0 shadow-xs">
-                  W
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs font-black truncate flex items-center gap-1">
-                    <span>Acme Official Store</span>
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
+          {/* iPhone Chassis (Refined Slim Bezel) */}
+          <div className="w-full max-w-[330px] bg-[#1C1C1E] rounded-[48px] p-[10px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.08)] ring-1 ring-black/40">
+            {/* Screen Inner Glass */}
+            <div className="bg-[#EFEAE2] rounded-[38px] min-h-[540px] flex flex-col justify-between overflow-hidden relative shadow-inner">
+              {/* iOS Top Status Bar & Dynamic Island */}
+              <div className="bg-[#008069] text-white pt-2.5 pb-1 px-5">
+                <div className="flex items-center justify-between text-[11px] font-bold">
+                  <span>9:41</span>
+                  {/* Dynamic Island */}
+                  <div className="w-20 h-4 bg-black rounded-full flex items-center justify-end px-1.5 gap-1">
+                    <div className="w-2 h-2 rounded-full bg-[#111] ring-1 ring-slate-800" />
                   </div>
-                  <div className="text-[10px] text-[#C4EBD0] font-medium">Verified WhatsApp Business</div>
+                  <div className="flex items-center gap-1.5 text-[10px]">
+                    <Wifi className="w-3 h-3" />
+                    <div className="w-4 h-2 border border-white rounded-[3px] p-[1px] flex items-center">
+                      <div className="h-full w-full bg-white rounded-[1px]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* WhatsApp Chat Navigation Bar */}
+                <div className="flex items-center justify-between gap-2 mt-2 pt-1 pb-1.5">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <ChevronLeft className="w-5 h-5 -ml-1 text-white shrink-0" />
+                    <div className="w-7 h-7 rounded-full bg-[#05A222] text-white flex items-center justify-center font-bold text-[11px] shrink-0 shadow-xs ring-1 ring-white/30">
+                      W
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold truncate flex items-center gap-1 text-white">
+                        <span>Acme Official</span>
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
+                      </div>
+                      <div className="text-[9px] text-[#C4EBD0] leading-none">Official Business Account</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 text-white/90">
+                    <Video className="w-4 h-4" />
+                    <Phone className="w-3.5 h-3.5" />
+                  </div>
                 </div>
               </div>
 
-              {/* Chat Bubble & Interactive Buttons */}
-              <div className="my-auto py-3 space-y-2">
+              {/* Chat Canvas Body */}
+              <div className="p-3 my-auto space-y-2">
+                {/* Date Pill */}
+                <div className="flex justify-center my-1">
+                  <span className="bg-white/80 backdrop-blur-xs text-[#5F7069] text-[9px] font-bold px-2.5 py-0.5 rounded-md shadow-2xs uppercase tracking-wider">
+                    Today
+                  </span>
+                </div>
+
                 {selectedTemplate ? (
                   <div>
-                    <div className="bg-white rounded-2xl rounded-tl-xs p-3.5 shadow-sm space-y-1.5 text-xs text-[#14201C]">
+                    <div className="bg-white rounded-2xl rounded-tl-xs p-3.5 shadow-xs space-y-1.5 text-xs text-[#14201C]">
                       {selectedTemplate.header?.text && (
-                        <div className="font-bold text-[#006736] border-b border-[#E2EAE6] pb-1">
+                        <div className="font-bold text-[#008069] text-[11px] border-b border-[#F0F2F5] pb-1">
                           {selectedTemplate.header.text}
                         </div>
                       )}
@@ -544,23 +576,23 @@ export const CreateCampaign: React.FC = () => {
                         {previewBody}
                       </div>
                       {selectedTemplate.footer && (
-                        <div className="text-[10px] text-[#8A9993] pt-1 border-t border-[#F6FAF8]">
+                        <div className="text-[10px] text-[#8A9993] pt-0.5">
                           {selectedTemplate.footer}
                         </div>
                       )}
                       <div className="text-[9px] text-right text-[#8A9993] font-medium flex items-center justify-end gap-1">
                         <span>12:45 PM</span>
-                        <CheckCircle2 className="w-3 h-3 text-[#05A222]" />
+                        <CheckCheck className="w-3.5 h-3.5 text-[#53BDEB]" />
                       </div>
                     </div>
 
                     {/* Buttons Preview */}
                     {selectedTemplate.buttons && selectedTemplate.buttons.length > 0 && (
-                      <div className="mt-2 space-y-1.5">
+                      <div className="mt-2 space-y-1 pt-0.5">
                         {selectedTemplate.buttons.map((btn, idx) => (
                           <div
                             key={idx}
-                            className="bg-white py-2 px-3 text-center text-xs font-bold text-[#05A222] rounded-xl shadow-xs border border-[#C4EBD0] flex items-center justify-center gap-1.5"
+                            className="bg-white hover:bg-[#F6FAF8] py-2 px-3 text-center text-xs font-bold text-[#00A884] rounded-xl shadow-2xs border border-[#E2EAE6] flex items-center justify-center gap-1.5"
                           >
                             <span>{btn.text}</span>
                           </div>
@@ -577,7 +609,7 @@ export const CreateCampaign: React.FC = () => {
 
               {/* Variable Value Editor (Quick test inside preview) */}
               {selectedTemplate && foundVars.length > 0 && (
-                <div className="bg-white/90 backdrop-blur-xs rounded-2xl p-2.5 border border-[#E2EAE6] space-y-1.5 shadow-xs">
+                <div className="mx-3 mb-2 bg-white/95 backdrop-blur-xs rounded-2xl p-2.5 border border-[#E2EAE6] space-y-1.5 shadow-xs">
                   <div className="text-[10px] font-bold text-[#5F7069] uppercase flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-[#05A222]" />
                     <span>Test Preview Variables</span>
@@ -590,12 +622,17 @@ export const CreateCampaign: React.FC = () => {
                         placeholder={`{{${v}}}`}
                         value={sampleVarValues[v] || ''}
                         onChange={(e) => setSampleVarValues({ ...sampleVarValues, [v]: e.target.value })}
-                        className="text-[10px] p-1.5 rounded-lg border border-[#E2EAE6] bg-white text-[#14201C] font-semibold"
+                        className="text-[10px] p-1.5 rounded-lg border border-[#E2EAE6] bg-white text-[#14201C] font-semibold focus:border-[#05A222] focus:outline-none"
                       />
                     ))}
                   </div>
                 </div>
               )}
+
+              {/* iPhone Home Indicator */}
+              <div className="pb-2 pt-1 flex justify-center">
+                <div className="w-28 h-1 bg-black/20 rounded-full" />
+              </div>
             </div>
           </div>
         </div>

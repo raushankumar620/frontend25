@@ -21,7 +21,12 @@ import {
   Users,
   Smartphone,
   ShieldCheck,
-  Radio
+  Radio,
+  Wifi,
+  ChevronLeft,
+  Phone,
+  Video,
+  CheckCheck
 } from 'lucide-react';
 import { ROUTES } from '../../../utils/constants';
 
@@ -325,34 +330,68 @@ export const CampaignDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Right WhatsApp Smartphone Preview (4 cols) */}
+        {/* Right WhatsApp Modern iPhone Preview (4 cols) */}
         <div className="lg:col-span-4 flex flex-col items-center">
           <div className="text-xs font-bold text-[#5F7069] uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <Smartphone className="w-4 h-4 text-[#05A222]" />
             <span>Message Render Preview</span>
           </div>
 
-          <div className="w-full max-w-[310px] bg-[#14201C] rounded-[38px] p-3 shadow-[0_16px_50px_rgba(1,59,35,0.12)] border-3 border-[#1F2A26]">
-            {/* Screen */}
-            <div className="bg-[#E5DDD5] rounded-[28px] p-3 min-h-[380px] flex flex-col justify-between overflow-hidden">
-              {/* WhatsApp App Header */}
-              <div className="bg-[#006736] text-white py-1.5 px-2.5 rounded-xl flex items-center gap-2 shadow-xs">
-                <div className="w-6 h-6 rounded-full bg-[#05A222] flex items-center justify-center font-bold text-[10px] text-white shrink-0">
-                  W
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[11px] font-black truncate flex items-center gap-1">
-                    <span>Acme Official Store</span>
-                    <ShieldCheck className="w-3 h-3 text-[#6AEB31] shrink-0" />
+          {/* iPhone Chassis (Refined Slim Bezel) */}
+          <div className="w-full max-w-[310px] bg-[#1C1C1E] rounded-[44px] p-[9px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.08)] ring-1 ring-black/40">
+            {/* Screen Inner Glass */}
+            <div className="bg-[#EFEAE2] rounded-[35px] min-h-[440px] flex flex-col justify-between overflow-hidden relative shadow-inner">
+              {/* iOS Top Status Bar & Dynamic Island */}
+              <div className="bg-[#008069] text-white pt-2 pb-1 px-4">
+                <div className="flex items-center justify-between text-[10px] font-bold">
+                  <span>9:41</span>
+                  {/* Dynamic Island */}
+                  <div className="w-16 h-3.5 bg-black rounded-full flex items-center justify-end px-1 gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#111] ring-1 ring-slate-800" />
                   </div>
-                  <div className="text-[9px] text-[#C4EBD0]">Official WhatsApp Account</div>
+                  <div className="flex items-center gap-1 text-[9px]">
+                    <Wifi className="w-2.5 h-2.5" />
+                    <div className="w-3.5 h-1.5 border border-white rounded-[2px] p-[0.5px] flex items-center">
+                      <div className="h-full w-full bg-white rounded-[0.5px]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* WhatsApp Chat Navigation Bar */}
+                <div className="flex items-center justify-between gap-1.5 mt-1.5 pt-0.5 pb-1">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <ChevronLeft className="w-4 h-4 -ml-1 text-white shrink-0" />
+                    <div className="w-6 h-6 rounded-full bg-[#05A222] text-white flex items-center justify-center font-bold text-[10px] shrink-0 shadow-xs ring-1 ring-white/30">
+                      W
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[11px] font-bold truncate flex items-center gap-1 text-white">
+                        <span>Acme Official</span>
+                        <ShieldCheck className="w-3 h-3 text-[#6AEB31] shrink-0" />
+                      </div>
+                      <div className="text-[8px] text-[#C4EBD0] leading-none">Official Account</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-white/90">
+                    <Video className="w-3.5 h-3.5" />
+                    <Phone className="w-3 h-3" />
+                  </div>
                 </div>
               </div>
 
-              {/* Chat Bubble */}
-              <div className="my-auto py-2">
-                <div className="bg-white rounded-xl rounded-tl-xs p-3 shadow-xs space-y-1 text-xs text-[#14201C]">
-                  <div className="font-bold text-[#006736] text-[11px] border-b border-[#E2EAE6] pb-0.5">
+              {/* Chat Canvas Body */}
+              <div className="p-2.5 my-auto space-y-2">
+                {/* Date Pill */}
+                <div className="flex justify-center my-0.5">
+                  <span className="bg-white/80 backdrop-blur-xs text-[#5F7069] text-[8px] font-bold px-2 py-0.5 rounded-md shadow-2xs uppercase tracking-wider">
+                    Today
+                  </span>
+                </div>
+
+                {/* Chat Bubble */}
+                <div className="bg-white rounded-2xl rounded-tl-xs p-3 shadow-xs space-y-1 text-xs text-[#14201C]">
+                  <div className="font-bold text-[#008069] text-[11px] border-b border-[#F0F2F5] pb-0.5">
                     {campaign.templateName}
                   </div>
                   <div className="text-[11px] text-[#1F2A26] leading-relaxed">
@@ -360,13 +399,14 @@ export const CampaignDetails: React.FC = () => {
                   </div>
                   <div className="text-[8px] text-right text-[#8A9993] flex items-center justify-end gap-1 pt-1">
                     <span>12:45 PM</span>
-                    <CheckCircle2 className="w-2.5 h-2.5 text-[#05A222]" />
+                    <CheckCheck className="w-3 h-3 text-[#53BDEB]" />
                   </div>
                 </div>
               </div>
 
-              <div className="text-[9px] text-center text-[#5F7069] font-medium bg-white/60 py-1 rounded-lg">
-                Verified WhatsApp Broadcast
+              {/* iPhone Home Indicator */}
+              <div className="pb-2 pt-1 flex justify-center">
+                <div className="w-24 h-1 bg-black/20 rounded-full" />
               </div>
             </div>
           </div>
