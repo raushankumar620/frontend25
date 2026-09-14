@@ -1,10 +1,19 @@
-import { whatsappService } from '../../services/whatsappService';
+import { contactService } from '../../services/contactService';
 import type { Contact } from './types';
 
 export const contactsApi = {
-  getContacts: () => whatsappService.getContacts(),
-  getContactById: async (id: string): Promise<Contact | undefined> => {
-    const contacts = await whatsappService.getContacts();
-    return contacts.find((c) => c.id === id);
+  getContacts: async (): Promise<Contact[]> => {
+    const res = await contactService.listContacts();
+    return res.contacts;
   },
+  getContactById: async (id: string): Promise<Contact | undefined> => {
+    return contactService.getContactById(id);
+  },
+  createContact: contactService.createContact,
+  updateContact: contactService.updateContact,
+  deleteContact: contactService.deleteContact,
+  bulkImport: contactService.bulkImport,
+  exportContacts: contactService.exportContacts,
+  toggleOptStatus: contactService.toggleOptStatus,
+  getTagsSummary: contactService.getTagsSummary,
 };
