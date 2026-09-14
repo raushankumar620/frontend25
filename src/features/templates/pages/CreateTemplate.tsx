@@ -39,8 +39,8 @@ export const CreateTemplate: React.FC = () => {
 
   const insertVariable = () => {
     // Detect next variable index
-    const matches = body.match(/\{\{(\d+)\}\}/g) || [];
-    const maxIdx = matches.reduce((max, m) => {
+    const matches: string[] = body.match(/\{\{(\d+)\}\}/g) || [];
+    const maxIdx = matches.reduce<number>((max, m) => {
       const num = parseInt(m.replace(/[{}]/g, ''), 10);
       return isNaN(num) ? max : Math.max(max, num);
     }, 0);
