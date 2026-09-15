@@ -119,18 +119,33 @@ export const conversationService = {
   async getMessages(conversationId: string): Promise<Message[]> {
     const res = await apiClient.get<any>(`/conversations/${conversationId}/messages?limit=100`);
     if (res.success && res.data && Array.isArray(res.data.messages)) {
-      return res.data.messages.map((m: any) => ({
-        id: m._id || m.id,
-        conversationId: m.conversationId,
-        senderId: m.direction === 'OUTBOUND' ? 'user' : 'contact',
-        senderType: m.direction === 'OUTBOUND' ? 'user' : 'contact',
-        content: m.content?.body || m.content?.caption || (typeof m.content === 'string' ? m.content : ''),
-        type: m.type || 'text',
-        mediaUrl: m.content?.url || m.content?.mediaUrl,
-        mediaFileName: m.content?.fileName,
-        status: (m.status || 'SENT').toLowerCase() as any,
-        timestamp: m.sentAt || m.createdAt || new Date().toISOString(),
-      }));
+      return res.data.messages.map((m: any) => {
+        let msgContent = m.content?.body || m.content?.caption;
+        if (!msgContent) {
+          if (m.type === 'template') {
+            msgContent = `📋 [Template: ${m.content?.name || m.templateName || 'hello_world'}]`;
+          } else if (typeof m.content === 'string') {
+            msgContent = m.content;
+          } else if (m.content && typeof m.content === 'object') {
+            msgContent = m.content.text || m.content.name || JSON.stringify(m.content);
+          } else {
+            msgContent = '';
+          }
+        }
+        return {
+          id: m._id || m.id,
+          conversationId: m.conversationId,
+          senderId: m.direction === 'OUTBOUND' ? 'user' : 'contact',
+          senderType: m.direction === 'OUTBOUND' ? 'user' : 'contact',
+          content: msgContent,
+          type: m.type || 'text',
+          mediaUrl: m.content?.url || m.content?.mediaUrl,
+          mediaFileName: m.content?.fileName,
+          status: (m.status || 'SENT').toLowerCase() as any,
+          timestamp: m.sentAt || m.createdAt || new Date().toISOString(),
+          templateName: m.content?.name || m.templateName,
+        };
+      });
     }
     return [];
   },

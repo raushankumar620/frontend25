@@ -85,6 +85,9 @@ import { AccountSettings } from '../features/settings/pages/AccountSettings';
 import { BusinessProfile } from '../features/settings/pages/BusinessProfile';
 import { Security } from '../features/settings/pages/Security';
 
+// Notifications
+import { Notifications } from '../features/notifications/pages/Notifications';
+
 import { ROUTES } from '../utils/constants';
 
 export const AppRoutes: React.FC = () => {
@@ -157,6 +160,7 @@ export const AppRoutes: React.FC = () => {
           <Route path={ROUTES.TEAM} element={<Team />} />
           <Route path={ROUTES.ROLES_PERMISSIONS} element={<RolesPermissions />} />
           
+          <Route path={ROUTES.NOTIFICATIONS} element={<Notifications />} />
           <Route path={ROUTES.ACCOUNT_SETTINGS} element={<AccountSettings />} />
           <Route path={ROUTES.BUSINESS_PROFILE} element={<BusinessProfile />} />
           <Route path={ROUTES.SECURITY_SETTINGS} element={<Security />} />

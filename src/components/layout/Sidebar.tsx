@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -16,14 +16,26 @@ import {
   Users2,
   Sparkles,
   PanelLeftClose,
+  Bell,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { ROUTES, APP_NAME } from '../../utils/constants';
 import { useAuthStore } from '../../store/authStore';
+import { notificationService } from '../../services/notificationService';
 
 export interface SidebarProps {
   collapsed?: boolean;
   onToggleCollapse?: () => void;
+}
+
+interface NavItem {
+  label: string;
+  path: string;
+  icon: React.ComponentType<any>;
+  color: string;
+  bgColor: string;
+  badge?: string;
+  highlight?: boolean;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -31,10 +43,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggleCollapse,
 }) => {
   const { user, organization } = useAuthStore();
+  const [unreadNotifCount, setUnreadNotifCount] = useState<number>(0);
 
-  const mainNavItems = [
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await notificationService.getUnreadCount();
+        if (res.success && res.data) {
+          setUnreadNotifCount(res.data.unreadCount || 0);
+        }
+      } catch {
+        // Silently catch
+      }
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 20000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const mainNavItems: NavItem[] = [
     { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: LayoutDashboard, color: '#2563EB', bgColor: '#EFF6FF' },
-    { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, badge: '5', color: '#059669', bgColor: '#ECFDF5' },
+    { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, color: '#059669', bgColor: '#ECFDF5' },
     { label: 'Contacts', path: ROUTES.CONTACTS, icon: Users, color: '#7C3AED', bgColor: '#F5F3FF' },
     { label: 'WhatsApp', path: ROUTES.WHATSAPP_NUMBERS, icon: Smartphone, color: '#25D366', bgColor: '#E9F9EE' },
     { label: 'Templates', path: ROUTES.TEMPLATES, icon: FileText, color: '#D97706', bgColor: '#FFFBEB' },
@@ -44,7 +73,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: 'Analytics', path: ROUTES.ANALYTICS, icon: BarChart3, color: '#4F46E5', bgColor: '#EEF2FF' },
   ];
 
-  const adminNavItems = [
+  const adminNavItems: NavItem[] = [
+    {
+      label: 'Notifications',
+      path: ROUTES.NOTIFICATIONS,
+      icon: Bell,
+      color: '#05A222',
+      bgColor: '#E9F9EE',
+      badge: unreadNotifCount > 0 ? (unreadNotifCount > 99 ? '99+' : String(unreadNotifCount)) : undefined,
+    },
     { label: 'Developers API', path: ROUTES.DEVELOPERS_DASHBOARD, icon: Code2, color: '#0D9488', bgColor: '#F0FDFA' },
     { label: 'Team', path: ROUTES.TEAM, icon: Users2, color: '#DB2777', bgColor: '#FDF2F8' },
     { label: 'Billing', path: ROUTES.BILLING, icon: CreditCard, color: '#16A34A', bgColor: '#F0FDF4' },

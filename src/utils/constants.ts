@@ -67,6 +67,7 @@ export const ROUTES = {
   // Team & Settings
   TEAM: '/team',
   ROLES_PERMISSIONS: '/team/roles',
+  NOTIFICATIONS: '/notifications',
   ACCOUNT_SETTINGS: '/settings/account',
   BUSINESS_PROFILE: '/settings/business',
   SECURITY_SETTINGS: '/settings/security',

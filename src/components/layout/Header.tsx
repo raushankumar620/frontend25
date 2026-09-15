@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Bell,
   Search,
   Menu,
   Zap,
@@ -16,6 +15,7 @@ import { Avatar } from '../ui/Avatar';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
 import { useAuthStore } from '../../store/authStore';
+import { NotificationDropdown } from '../notifications/NotificationDropdown';
 
 export interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -101,13 +101,7 @@ export const Header: React.FC<HeaderProps> = ({
           <span>Quick Broadcast</span>
         </button>
 
-        <button
-          className="relative p-2.5 rounded-xl text-[#5F7069] hover:bg-[#F6FAF8] hover:text-[#14201C] transition-colors cursor-pointer"
-          aria-label="Notifications"
-        >
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-[#05A222] rounded-full ring-2 ring-white" />
-        </button>
+        <NotificationDropdown />
 
         <div className="h-8 w-px bg-[#E2EAE6] mx-1" />
 
