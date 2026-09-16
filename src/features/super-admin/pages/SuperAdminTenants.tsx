@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Building2,
   Search,
   UserCheck,
   Settings,
@@ -236,7 +235,8 @@ export const SuperAdminTenants: React.FC = () => {
         <div className="p-4 border-t border-[#E2EAE6] flex items-center justify-between text-xs bg-[#F6FAF8]">
           <span className="text-[#5F7069]">
             Page <strong className="text-[#14201C]">{page}</strong> of{' '}
-            <strong className="text-[#14201C]">{totalPages}</strong>
+            <strong className="text-[#14201C]">{totalPages}</strong>{' '}
+            <span className="text-[#8A9993]">({totalCount} total organizations)</span>
           </span>
           <div className="flex items-center gap-2">
             <button

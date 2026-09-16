@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Sliders,
   ShieldAlert,
   Save,
   Globe,

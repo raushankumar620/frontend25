@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Cpu, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { superAdminService } from '../services/superAdminService';
 import { QueueMetricsCard } from '../components/QueueMetricsCard';
 import { PageContainer } from '../../../components/layout/PageContainer';
@@ -60,9 +60,10 @@ export const SuperAdminQueues: React.FC = () => {
 
         <button
           onClick={fetchQueues}
-          className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E2EAE6] text-[#14201C] hover:bg-[#F2F7F5] rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
+          disabled={loading}
+          className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E2EAE6] text-[#14201C] hover:bg-[#F2F7F5] rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
         >
-          <RefreshCw className="w-3.5 h-3.5 text-[#5F7069]" />
+          <RefreshCw className={`w-3.5 h-3.5 text-[#5F7069] ${loading ? 'animate-spin text-[#05A222]' : ''}`} />
           <span>Refresh Telemetry</span>
         </button>
       </div>
