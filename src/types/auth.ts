@@ -4,6 +4,10 @@ export interface OrganizationBranding {
   logoUrl?: string;
   primaryColor?: string;
   website?: string;
+  description?: string;
+  address?: string;
+  supportEmail?: string;
+  industry?: string;
 }
 
 export interface OrganizationSettings {

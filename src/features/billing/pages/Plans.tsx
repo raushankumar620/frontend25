@@ -133,7 +133,15 @@ export const Plans: React.FC = () => {
         {plans.map((p) => {
           const isCurrent = subscription?.planCode === p.code;
           const isPopular = p.isPopular;
-          const price = billingCycle === 'yearly' ? p.priceYearly : p.priceMonthly;
+          const getINRPrice = (p: PricingPlan, cycle: 'monthly' | 'yearly') => {
+            if (p.priceMonthly === 0) return 0;
+            if (p.code === 'STARTER') return cycle === 'yearly' ? 19990 : 1999;
+            if (p.code === 'GROWTH') return cycle === 'yearly' ? 49990 : 4999;
+            if (p.code === 'ENTERPRISE') return cycle === 'yearly' ? 149990 : 14999;
+            const base = cycle === 'yearly' ? (p.priceYearly || p.priceMonthly * 10) : p.priceMonthly;
+            return base * 80;
+          };
+          const price = getINRPrice(p, billingCycle);
           const isActionLoading = actionLoading === p.code;
 
           return (
@@ -141,31 +149,33 @@ export const Plans: React.FC = () => {
               key={p.code}
               className={`bg-white rounded-2xl p-6 border flex flex-col justify-between relative transition-all duration-200 ${
                 isCurrent
-                  ? 'border-[#05A222] ring-2 ring-[#05A222]/20 shadow-lg'
+                  ? 'border-emerald-600 ring-2 ring-emerald-600/20 shadow-lg'
                   : isPopular
-                  ? 'border-[#006736] shadow-md'
-                  : 'border-[#E2EAE6] hover:border-[#05A222]/40 shadow-xs'
+                  ? 'border-emerald-700 shadow-md'
+                  : 'border-slate-200 hover:border-emerald-600/40 shadow-xs'
               }`}
             >
               {isPopular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#006736] text-white text-[10px] font-black px-3.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> Most Popular
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-700 text-white text-[10px] font-black px-3.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5" /> Most Popular
                 </span>
               )}
 
               {isCurrent && !isPopular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#05A222] text-white text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
                   Active Plan
                 </span>
               )}
 
               <div>
-                <h3 className="text-lg font-bold text-[#14201C]">{p.name}</h3>
-                <p className="text-xs text-[#5F7069] mt-1 line-clamp-2 min-h-[32px]">{p.description}</p>
+                <h3 className="text-lg font-bold text-slate-900">{p.name}</h3>
+                <p className="text-xs text-slate-500 mt-1 line-clamp-2 min-h-[32px]">{p.description}</p>
 
                 <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-3xl sm:text-4xl font-black text-[#14201C]">${price}</span>
-                  <span className="text-xs text-[#5F7069] font-semibold">
+                  <span className="text-3xl sm:text-4xl font-black text-slate-900 font-mono">
+                    ₹{price.toLocaleString('en-IN')}
+                  </span>
+                  <span className="text-xs text-slate-500 font-semibold">
                     / {billingCycle === 'yearly' ? 'year' : 'month'}
                   </span>
                 </div>

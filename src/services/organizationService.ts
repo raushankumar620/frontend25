@@ -13,16 +13,8 @@ export const organizationService = {
 
   async updateOrganization(data: {
     name?: string;
-    branding?: {
-      primaryColor?: string;
-      website?: string;
-      logoUrl?: string;
-    };
-    settings?: {
-      timezone?: string;
-      defaultLanguage?: string;
-      autoAssignment?: boolean;
-    };
+    branding?: Partial<import('../types/auth').OrganizationBranding>;
+    settings?: Partial<import('../types/auth').OrganizationSettings>;
   }): Promise<Organization> {
     const res = await apiClient.patch<Organization>('/organizations/me', data);
     if (res.success && res.data) {

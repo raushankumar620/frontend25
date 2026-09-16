@@ -98,8 +98,8 @@ export const Invoices: React.FC = () => {
                       <td className="py-4 text-xs text-[#5F7069]">
                         {new Date(inv.paidAt || inv.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="py-4 font-black text-xs sm:text-sm text-[#14201C]">
-                        ${inv.amount.toFixed(2)} {inv.currency}
+                      <td className="py-4 font-black text-xs sm:text-sm text-slate-900 font-mono">
+                        ₹{(inv.amount * (inv.currency === 'USD' ? 80 : 1)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </td>
                       <td className="py-4">
                         <span

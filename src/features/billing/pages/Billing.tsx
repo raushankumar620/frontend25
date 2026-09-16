@@ -13,35 +13,65 @@ import {
   Plus,
   Loader2,
   CheckCircle2,
+  Download,
+  Smartphone,
+  Info,
+  FileText,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
 import { billingService } from '../../../services/billingService';
-import type { UsageAndLimits, Subscription, PricingPlan } from '../types';
+import { whatsappService } from '../../../services/whatsappService';
+import { useAuthStore } from '../../../store/authStore';
+import type { UsageAndLimits, Subscription, PricingPlan, Invoice } from '../types';
+import clsx from 'clsx';
 
-export const Billing: React.FC = () => {
+export interface BillingProps {
+  embedded?: boolean;
+}
+
+export const Billing: React.FC<BillingProps> = ({ embedded = false }) => {
   const navigate = useNavigate();
+  const { organization } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [usageData, setUsageData] = useState<UsageAndLimits | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [plan, setPlan] = useState<PricingPlan | null>(null);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [channelCount, setChannelCount] = useState<number>(0);
 
-  // Topup modal state
+  // Topup modal state (in ₹ INR)
   const [isTopupModalOpen, setIsTopupModalOpen] = useState(false);
-  const [topupAmount, setTopupAmount] = useState<number>(50);
+  const [topupAmount, setTopupAmount] = useState<number>(1000);
+  const [customAmount, setCustomAmount] = useState<string>('');
+  const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'netbanking'>('upi');
   const [isTopupLoading, setIsTopupLoading] = useState(false);
   const [topupSuccess, setTopupSuccess] = useState(false);
+  const [topupSuccessMsg, setTopupSuccessMsg] = useState('');
 
   const loadBillingData = async () => {
     try {
       setLoading(true);
-      const [subData, uData] = await Promise.all([
+      const [subData, uData, invData, numbers] = await Promise.allSettled([
         billingService.getSubscription(),
         billingService.getUsage(),
+        billingService.getInvoices(),
+        whatsappService.getNumbers(),
       ]);
-      setSubscription(subData.subscription);
-      setPlan(subData.plan);
-      setUsageData(uData);
+
+      if (subData.status === 'fulfilled' && subData.value) {
+        setSubscription(subData.value.subscription);
+        setPlan(subData.value.plan);
+      }
+      if (uData.status === 'fulfilled' && uData.value) {
+        setUsageData(uData.value);
+      }
+      if (invData.status === 'fulfilled' && Array.isArray(invData.value)) {
+        setInvoices(invData.value);
+      }
+      if (numbers.status === 'fulfilled' && Array.isArray(numbers.value)) {
+        setChannelCount(numbers.value.length);
+      }
     } catch (error) {
       console.error('Failed to load billing data:', error);
     } finally {
@@ -51,21 +81,29 @@ export const Billing: React.FC = () => {
 
   useEffect(() => {
     loadBillingData();
-  }, []);
+  }, [organization?.id]);
 
   const handleTopup = async () => {
+    const finalAmount = customAmount ? parseFloat(customAmount) : topupAmount;
+    if (!finalAmount || finalAmount <= 0) {
+      alert('Please enter a valid amount in INR (₹)');
+      return;
+    }
+
     try {
       setIsTopupLoading(true);
-      await billingService.topupCredits(topupAmount);
+      await billingService.topupCredits(finalAmount);
       setTopupSuccess(true);
+      setTopupSuccessMsg(`₹${finalAmount.toLocaleString('en-IN')} added to your Meta Credits Wallet successfully!`);
       await loadBillingData();
       setTimeout(() => {
         setTopupSuccess(false);
         setIsTopupModalOpen(false);
-      }, 1000);
-    } catch (error) {
+        setCustomAmount('');
+      }, 1500);
+    } catch (error: any) {
       console.error('Topup failed:', error);
-      alert('Failed to top-up credits. Please try again.');
+      alert(error.message || 'Failed to top-up credits. Please try again.');
     } finally {
       setIsTopupLoading(false);
     }
@@ -77,7 +115,7 @@ export const Billing: React.FC = () => {
       if (subscription.cancelAtPeriodEnd) {
         await billingService.resumeSubscription();
       } else {
-        if (confirm('Are you sure you want to cancel your plan at the end of the billing period?')) {
+        if (confirm('Are you sure you want to cancel your plan at the end of the current billing cycle?')) {
           await billingService.cancelSubscription(false);
         } else {
           return;
@@ -89,97 +127,132 @@ export const Billing: React.FC = () => {
     }
   };
 
+  const getINRPrice = (usdPrice: number | undefined, planCode: string | undefined) => {
+    if (!usdPrice || usdPrice === 0) return 0;
+    if (planCode === 'STARTER') return 1999;
+    if (planCode === 'GROWTH') return 4999;
+    if (planCode === 'ENTERPRISE') return 14999;
+    return usdPrice * 80;
+  };
+
   if (loading) {
-    return (
-      <PageContainer>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-[#05A222]" />
-        </div>
-      </PageContainer>
+    const loadingView = (
+      <div className="flex flex-col items-center justify-center min-h-[350px] space-y-3">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+        <p className="text-xs font-semibold text-slate-500">Loading live billing & subscription data...</p>
+      </div>
     );
+    return embedded ? loadingView : <PageContainer>{loadingView}</PageContainer>;
   }
 
   const isCancelled = subscription?.cancelAtPeriodEnd;
   const isPaid = (plan?.priceMonthly || 0) > 0;
+  const inrMonthlyPrice = getINRPrice(plan?.priceMonthly, plan?.code);
+  const inrYearlyPrice = plan?.priceYearly ? plan.priceYearly * 80 : inrMonthlyPrice * 10;
+  const currentPrice = subscription?.billingCycle === 'yearly' ? inrYearlyPrice : inrMonthlyPrice;
 
-  return (
-    <PageContainer>
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
+  // Dynamic Channel Quota
+  const maxChannels = organization?.limits?.maxNumbers || 5;
+  const channelsPercent = Math.min(Math.round((channelCount / maxChannels) * 100), 100);
+
+  const mainContent = (
+    <div className="w-full space-y-7 animate-in fade-in duration-150">
+      {/* 1. Header & Quick Actions */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">
-            Billing & Meta Conversation Credits
-          </h2>
-          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
-            Manage your subscription plan, usage quotas, and Meta Cloud API conversation credits.
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              Billing & Meta Conversation Credits
+            </h2>
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+              ₹ INR (India)
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
+            Manage your subscription plan, usage quotas, and Meta Cloud API conversation credits in Indian Rupees.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 self-start md:self-auto">
           <Button
             variant="outline"
-            size="md"
-            onClick={() => navigate(ROUTES.BILLING_INVOICES)}
-            className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
+            size="sm"
+            onClick={() => navigate(ROUTES.BILLING_INVOICES || '/billing/invoices')}
+            className="text-xs font-semibold border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl"
+            leftIcon={<FileText className="w-3.5 h-3.5 text-slate-500" />}
           >
-            Invoice History
+            GST Invoices
           </Button>
           <Button
             variant="primary"
-            size="md"
-            onClick={() => navigate(ROUTES.BILLING_PLANS)}
-            rightIcon={<ArrowRight className="w-4 h-4" />}
-            className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm"
+            size="sm"
+            onClick={() => navigate(ROUTES.BILLING_PLANS || '/billing/plans')}
+            rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+            className="text-xs font-bold px-4 py-2 rounded-xl shadow-xs"
           >
-            Upgrade Plan
+            Upgrade / Change Plan
           </Button>
         </div>
       </div>
 
-      {/* Top 3 Cards Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* 1. Current Plan Card */}
-        <div className="bg-white p-6 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4 flex flex-col justify-between">
+      {/* 2. Top 3 Primary Cards Grid (₹ INR) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Card 1: Active Subscription Plan */}
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
-              <span className="text-xs sm:text-sm font-bold text-[#5F7069] uppercase tracking-wider">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Current Plan
               </span>
               <span
-                className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
+                className={clsx(
+                  'text-xs font-bold px-2.5 py-0.5 rounded-full border',
                   isCancelled
                     ? 'bg-amber-50 text-amber-700 border-amber-200'
-                    : 'bg-[#E9F9EE] text-[#006736] border-[#C4EBD0]'
-                }`}
+                    : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                )}
               >
                 {isCancelled ? 'Cancelling at Period End' : subscription?.status || 'ACTIVE'}
               </span>
             </div>
-            <div className="text-3xl font-black text-[#14201C] mt-3">{plan?.name || 'Free Trial'}</div>
-            <p className="text-sm text-[#5F7069] font-medium mt-1">
-              ${subscription?.billingCycle === 'yearly' ? plan?.priceYearly : plan?.priceMonthly}.00 /{' '}
-              {subscription?.billingCycle || 'month'}
-              {subscription?.currentPeriodEnd && (
-                <> • Renews {new Date(subscription.currentPeriodEnd).toLocaleDateString()}</>
+
+            <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-3">
+              {plan?.name || 'Free Trial'}
+            </div>
+
+            <div className="mt-1 flex items-baseline gap-1.5">
+              <span className="text-xl sm:text-2xl font-black text-emerald-700 font-mono">
+                ₹{currentPrice.toLocaleString('en-IN')}
+              </span>
+              <span className="text-xs text-slate-500 font-medium">
+                / {subscription?.billingCycle || 'month'} + 18% GST
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-400 mt-1">
+              {subscription?.currentPeriodEnd ? (
+                <>Next billing date: <strong>{new Date(subscription.currentPeriodEnd).toLocaleDateString('en-IN')}</strong></>
+              ) : (
+                'Auto-renews every month'
               )}
             </p>
           </div>
 
-          <div className="flex items-center gap-2 pt-2">
+          <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
             <Button
               variant="outline"
-              size="md"
-              className="flex-1 text-sm font-semibold rounded-xl"
-              onClick={() => navigate(ROUTES.BILLING_PLANS)}
+              size="sm"
+              className="flex-1 text-xs font-semibold rounded-xl"
+              onClick={() => navigate(ROUTES.BILLING_PLANS || '/billing/plans')}
             >
               Change Plan
             </Button>
             {isPaid && (
               <Button
                 variant="outline"
-                size="md"
+                size="sm"
                 onClick={handleToggleCancel}
-                className="text-xs text-[#E53E3E] border-[#E2EAE6] hover:bg-red-50 rounded-xl"
+                className="text-xs text-rose-600 border-rose-200 hover:bg-rose-50 rounded-xl"
               >
                 {isCancelled ? 'Resume' : 'Cancel'}
               </Button>
@@ -187,184 +260,452 @@ export const Billing: React.FC = () => {
           </div>
         </div>
 
-        {/* 2. Meta Wallet Balance Card */}
-        <div className="bg-white p-6 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4 flex flex-col justify-between">
+        {/* Card 2: Meta Cloud API Credit Wallet (₹ INR) */}
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
-              <span className="text-xs sm:text-sm font-bold text-[#5F7069] uppercase tracking-wider">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Meta API Credit Wallet
               </span>
-              <div className="w-7 h-7 rounded-lg bg-[#E9F9EE] text-[#05A222] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200">
                 <Wallet className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-3xl font-black text-[#05A222] mt-3">
-              ${usageData?.creditsBalance?.toFixed(2) || '10.00'}
+
+            <div className="text-2xl sm:text-3xl font-black text-emerald-700 mt-3 font-mono">
+              ₹{(usageData?.creditsBalance ? usageData.creditsBalance * 80 : 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
-            <p className="text-sm text-[#5F7069] font-medium mt-1">
-              Used for Meta 24h conversation charges and template marketing blasts.
+
+            <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
+              Available conversation balance for WhatsApp template marketing broadcasts and 24h Meta Cloud API sessions.
             </p>
           </div>
 
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => setIsTopupModalOpen(true)}
-            leftIcon={<Plus className="w-4 h-4" />}
-            className="w-full text-sm font-bold rounded-xl"
-          >
-            Add Conversation Credits
-          </Button>
+          <div className="pt-2 border-t border-slate-100">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsTopupModalOpen(true)}
+              leftIcon={<Plus className="w-4 h-4" />}
+              className="w-full text-xs font-bold rounded-xl shadow-xs"
+            >
+              + Add Conversation Credits (₹)
+            </Button>
+          </div>
         </div>
 
-        {/* 3. Payment Method Card */}
-        <div className="bg-white p-6 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4 flex flex-col justify-between">
+        {/* Card 3: Indian Payment Gateway & GST Compliance */}
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
-              <span className="text-xs sm:text-sm font-bold text-[#5F7069] uppercase tracking-wider">
-                Payment Method
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Payment Gateway & GST
               </span>
-              <CreditCard className="w-5 h-5 text-[#5F7069]" />
+              <CreditCard className="w-5 h-5 text-slate-400" />
             </div>
-            <div className="flex items-center gap-3 mt-3">
-              <div className="w-10 h-7 bg-[#14201C] rounded-lg flex items-center justify-center text-white text-[11px] font-black tracking-widest">
-                VISA
-              </div>
-              <div>
-                <div className="font-bold text-sm text-[#14201C]">•••• •••• •••• 4242</div>
-                <div className="text-xs text-[#5F7069]">Expires 12/28 • Default</div>
-              </div>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-2 text-xs text-[#05A222] font-semibold bg-[#E9F9EE] p-2.5 rounded-xl">
-            <ShieldCheck className="w-4 h-4 shrink-0" />
-            <span>Encrypted & Protected via Stripe PCI-DSS</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Monthly Quota & Resource Usage Meters */}
-      <div className="bg-white rounded-2xl border border-[#E2EAE6] p-6 shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2EAE6] pb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#E9F9EE] text-[#05A222] flex items-center justify-center">
-              <Zap className="w-4 h-4" />
-            </div>
-            <div>
-              <h4 className="text-base font-bold text-[#14201C]">Monthly Resource Quotas & Metering</h4>
-              <p className="text-xs text-[#5F7069]">
-                Billing cycle usage period: <strong>{usageData?.month}</strong>
+            <div className="mt-3 space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 text-xs font-bold border border-purple-200">
+                  UPI / QR (GPay, PhonePe, Paytm)
+                </span>
+                <span className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200">
+                  Cards / NetBanking
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 font-medium pt-1">
+                Official Indian Payment Processing via Razorpay / Stripe India.
               </p>
             </div>
           </div>
 
-          <span className="text-xs text-[#5F7069]">
+          <div className="flex items-center gap-2 text-xs text-emerald-700 font-semibold bg-emerald-50/80 p-2.5 rounded-xl border border-emerald-200/80">
+            <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-600" />
+            <span>GST Input Tax Credit (ITC) 18% Invoices Generated</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Monthly Resource Quotas & Live Metering */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-2xs space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200">
+              <Zap className="w-4.5 h-4.5" />
+            </div>
+            <div>
+              <h4 className="text-base font-bold text-slate-900 tracking-tight">Monthly Resource Quotas & Metering</h4>
+              <p className="text-xs text-slate-500">
+                Current usage billing period: <strong className="text-slate-700">{usageData?.month || new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</strong>
+              </p>
+            </div>
+          </div>
+
+          <span className="text-xs text-slate-400 font-normal">
             Resets automatically on the 1st of each month.
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Messages Quota */}
-          <div className="p-4 bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Meter 1: Messages Quota */}
+          <div className="p-4 bg-slate-50/80 border border-slate-200/80 rounded-xl space-y-2.5">
             <div className="flex justify-between items-center text-xs font-bold">
-              <span className="flex items-center gap-1.5 text-[#14201C]">
-                <MessageSquare className="w-3.5 h-3.5 text-[#05A222]" /> WhatsApp Messages
+              <span className="flex items-center gap-1.5 text-slate-800">
+                <MessageSquare className="w-3.5 h-3.5 text-emerald-600" /> WhatsApp Messages
               </span>
-              <span className="text-[#05A222]">
-                {usageData?.metrics.messages.percent}% Used
+              <span className="text-emerald-700 font-mono">
+                {usageData?.metrics?.messages?.percent || 0}%
               </span>
             </div>
-            <div className="w-full h-3 bg-white border border-[#E2EAE6] rounded-full overflow-hidden">
+            <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#05A222] rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(usageData?.metrics.messages.percent || 0, 100)}%` }}
+                className="h-full bg-emerald-600 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(usageData?.metrics?.messages?.percent || 0, 100)}%` }}
               />
             </div>
-            <div className="flex justify-between text-xs text-[#5F7069] font-medium">
-              <span>Used: <strong>{usageData?.metrics.messages.current.toLocaleString()}</strong></span>
-              <span>Limit: <strong>{usageData?.metrics.messages.limit.toLocaleString()}</strong></span>
+            <div className="flex justify-between text-xs text-slate-500 font-medium">
+              <span>Used: <strong className="text-slate-800 font-mono">{(usageData?.metrics?.messages?.current || 0).toLocaleString('en-IN')}</strong></span>
+              <span>Limit: <strong className="text-slate-800 font-mono">{(usageData?.metrics?.messages?.limit || 1000).toLocaleString('en-IN')}</strong></span>
             </div>
           </div>
 
-          {/* AI Tokens Quota */}
-          <div className="p-4 bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl space-y-3">
+          {/* Meter 2: AI Tokens Quota */}
+          <div className="p-4 bg-slate-50/80 border border-slate-200/80 rounded-xl space-y-2.5">
             <div className="flex justify-between items-center text-xs font-bold">
-              <span className="flex items-center gap-1.5 text-[#14201C]">
-                <Sparkles className="w-3.5 h-3.5 text-[#006736]" /> AI Token Processing
+              <span className="flex items-center gap-1.5 text-slate-800">
+                <Sparkles className="w-3.5 h-3.5 text-purple-600" /> AI Tokens (LLM)
               </span>
-              <span className="text-[#006736]">
-                {usageData?.metrics.aiTokens.percent}% Used
+              <span className="text-purple-700 font-mono">
+                {usageData?.metrics?.aiTokens?.percent || 0}%
               </span>
             </div>
-            <div className="w-full h-3 bg-white border border-[#E2EAE6] rounded-full overflow-hidden">
+            <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#006736] rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(usageData?.metrics.aiTokens.percent || 0, 100)}%` }}
+                className="h-full bg-purple-600 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(usageData?.metrics?.aiTokens?.percent || 0, 100)}%` }}
               />
             </div>
-            <div className="flex justify-between text-xs text-[#5F7069] font-medium">
-              <span>Used: <strong>{usageData?.metrics.aiTokens.current.toLocaleString()}</strong></span>
-              <span>Limit: <strong>{usageData?.metrics.aiTokens.limit.toLocaleString()}</strong></span>
+            <div className="flex justify-between text-xs text-slate-500 font-medium">
+              <span>Used: <strong className="text-slate-800 font-mono">{(usageData?.metrics?.aiTokens?.current || 0).toLocaleString('en-IN')}</strong></span>
+              <span>Limit: <strong className="text-slate-800 font-mono">{(usageData?.metrics?.aiTokens?.limit || 50000).toLocaleString('en-IN')}</strong></span>
             </div>
           </div>
 
-          {/* Contacts Quota */}
-          <div className="p-4 bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl space-y-3">
+          {/* Meter 3: Contacts Quota */}
+          <div className="p-4 bg-slate-50/80 border border-slate-200/80 rounded-xl space-y-2.5">
             <div className="flex justify-between items-center text-xs font-bold">
-              <span className="flex items-center gap-1.5 text-[#14201C]">
-                <Users className="w-3.5 h-3.5 text-[#07CF74]" /> CRM Audience Contacts
+              <span className="flex items-center gap-1.5 text-slate-800">
+                <Users className="w-3.5 h-3.5 text-blue-600" /> CRM Contacts
               </span>
-              <span className="text-[#07CF74]">
-                {usageData?.metrics.contacts.percent}% Used
+              <span className="text-blue-700 font-mono">
+                {usageData?.metrics?.contacts?.percent || 0}%
               </span>
             </div>
-            <div className="w-full h-3 bg-white border border-[#E2EAE6] rounded-full overflow-hidden">
+            <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#07CF74] rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(usageData?.metrics.contacts.percent || 0, 100)}%` }}
+                className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(usageData?.metrics?.contacts?.percent || 0, 100)}%` }}
               />
             </div>
-            <div className="flex justify-between text-xs text-[#5F7069] font-medium">
-              <span>Stored: <strong>{usageData?.metrics.contacts.current.toLocaleString()}</strong></span>
-              <span>Limit: <strong>{usageData?.metrics.contacts.limit.toLocaleString()}</strong></span>
+            <div className="flex justify-between text-xs text-slate-500 font-medium">
+              <span>Stored: <strong className="text-slate-800 font-mono">{(usageData?.metrics?.contacts?.current || 0).toLocaleString('en-IN')}</strong></span>
+              <span>Limit: <strong className="text-slate-800 font-mono">{(usageData?.metrics?.contacts?.limit || 500).toLocaleString('en-IN')}</strong></span>
+            </div>
+          </div>
+
+          {/* Meter 4: Official Phone Channels */}
+          <div className="p-4 bg-slate-50/80 border border-slate-200/80 rounded-xl space-y-2.5">
+            <div className="flex justify-between items-center text-xs font-bold">
+              <span className="flex items-center gap-1.5 text-slate-800">
+                <Smartphone className="w-3.5 h-3.5 text-amber-600" /> Active Channels
+              </span>
+              <span className="text-amber-700 font-bold font-mono">
+                {channelsPercent}%
+              </span>
+            </div>
+            <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-amber-500 rounded-full transition-all duration-500"
+                style={{ width: `${channelsPercent}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-xs text-slate-500 font-medium">
+              <span>Connected: <strong className="text-slate-800 font-mono">{channelCount} Active</strong></span>
+              <span>Capacity: <strong className="text-slate-800 font-mono">{maxChannels} Numbers</strong></span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Topup Modal */}
+      {/* 4. Meta WhatsApp Cloud API India Conversation Rates (₹ INR Breakdown) */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-2xs space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200">
+              <Info className="w-4.5 h-4.5" />
+            </div>
+            <div>
+              <h4 className="text-base font-bold text-slate-900 tracking-tight">Meta Cloud API India Conversation Charges</h4>
+              <p className="text-xs text-slate-500">Official Meta WhatsApp conversation rates per 24-hour session in Indian Rupees (₹)</p>
+            </div>
+          </div>
+          <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+            First 1,000 Service Chats/Mo FREE
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Rate 1: Marketing */}
+          <div className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800">Marketing</span>
+              <span className="text-sm font-black text-slate-900 font-mono">₹0.82 / convo</span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-normal">
+              Promotions, festive discounts, abandoned carts, and bulk broadcast templates.
+            </p>
+          </div>
+
+          {/* Rate 2: Utility */}
+          <div className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800">Utility</span>
+              <span className="text-sm font-black text-slate-900 font-mono">₹0.12 / convo</span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-normal">
+              Order confirmations, dispatch alerts, payment receipts, and billing updates.
+            </p>
+          </div>
+
+          {/* Rate 3: Authentication (OTP) */}
+          <div className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800">Authentication</span>
+              <span className="text-sm font-black text-slate-900 font-mono">₹0.12 / convo</span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-normal">
+              High-priority instant verification codes, 2FA logins, and account recovery OTPs.
+            </p>
+          </div>
+
+          {/* Rate 4: Service (Customer Care) */}
+          <div className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800">Service (Inbound)</span>
+              <span className="text-sm font-black text-emerald-700 font-mono">₹0.35 / convo</span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-normal">
+              User-initiated customer support responses. (1,000 free sessions every month).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Invoices & Transaction History Table */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-2xs space-y-5">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <h4 className="text-base font-bold text-slate-900 tracking-tight">Recent Invoices & GST Receipts</h4>
+            <p className="text-xs text-slate-500">Official tax invoices for subscription renewals and wallet top-ups</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(ROUTES.BILLING_INVOICES || '/billing/invoices')}
+            className="text-xs font-semibold rounded-xl"
+          >
+            View All Invoices
+          </Button>
+        </div>
+
+        {invoices.length === 0 ? (
+          <div className="p-8 text-center bg-slate-50/50 rounded-xl border border-slate-200 space-y-2">
+            <FileText className="w-8 h-8 text-slate-400 mx-auto" />
+            <p className="text-xs font-bold text-slate-700">No invoices generated yet</p>
+            <p className="text-[11px] text-slate-400">Invoices will appear here automatically upon plan renewal or credit recharge.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[11px]">
+                  <th className="pb-3 px-3">Invoice Number</th>
+                  <th className="pb-3 px-3">Date</th>
+                  <th className="pb-3 px-3">Description</th>
+                  <th className="pb-3 px-3">Amount (INR)</th>
+                  <th className="pb-3 px-3">Status</th>
+                  <th className="pb-3 px-3 text-right">Receipt</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {invoices.slice(0, 5).map((inv) => (
+                  <tr key={inv.id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="py-3 px-3 font-mono font-bold text-slate-800">{inv.invoiceNumber}</td>
+                    <td className="py-3 px-3 text-slate-500">{new Date(inv.createdAt).toLocaleDateString('en-IN')}</td>
+                    <td className="py-3 px-3 text-slate-700 font-medium">{inv.description}</td>
+                    <td className="py-3 px-3 font-mono font-bold text-slate-900">
+                      ₹{(inv.amount * (inv.currency === 'USD' ? 80 : 1)).toLocaleString('en-IN')}
+                    </td>
+                    <td className="py-3 px-3">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        {inv.status}
+                      </span>
+                    </td>
+                    <td className="py-3 px-3 text-right">
+                      {inv.pdfUrl ? (
+                        <a
+                          href={inv.pdfUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-800 font-bold"
+                        >
+                          <Download className="w-3.5 h-3.5" /> PDF
+                        </a>
+                      ) : (
+                        <span className="text-slate-400 font-medium">Paid</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* 6. Top-Up Wallet Modal (in ₹ INR with UPI / Cards) */}
       {isTopupModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#14201C]/50 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white border border-[#E2EAE6] rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] text-[#05A222] flex items-center justify-center border border-[#C4EBD0]">
-                <Wallet className="w-5 h-5" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-lg p-6 sm:p-7 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200 font-bold">
+                  <Wallet className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 tracking-tight">Recharge Meta Credits (₹ INR)</h3>
+                  <p className="text-xs text-slate-500">Instant recharge for WhatsApp Cloud API conversations</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-[#14201C]">Add Meta Credits</h3>
-                <p className="text-xs text-[#5F7069]">Instant conversation credits recharge</p>
+              <button
+                type="button"
+                onClick={() => setIsTopupModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {topupSuccess && (
+              <div className="p-3.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>{topupSuccessMsg}</span>
+              </div>
+            )}
+
+            {/* Top-up Amount Selector */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-700">Select Recharge Amount</label>
+              <div className="grid grid-cols-3 gap-2.5">
+                {[500, 1000, 2500, 5000, 10000].map((amt) => (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => {
+                      setTopupAmount(amt);
+                      setCustomAmount('');
+                    }}
+                    className={clsx(
+                      'py-2.5 rounded-xl font-bold text-xs sm:text-sm border cursor-pointer transition-all',
+                      topupAmount === amt && !customAmount
+                        ? 'border-emerald-600 bg-emerald-50 text-emerald-800 shadow-2xs font-mono'
+                        : 'border-slate-200 text-slate-700 hover:border-slate-300 font-mono'
+                    )}
+                  >
+                    +₹{amt.toLocaleString('en-IN')}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
-              {[25, 50, 100].map((amt) => (
+            {/* Custom Amount */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700">Or Enter Custom Amount (₹)</label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-500">₹</span>
+                <input
+                  type="number"
+                  placeholder="e.g. 1500"
+                  value={customAmount}
+                  onChange={(e) => setCustomAmount(e.target.value)}
+                  className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            {/* Payment Method Option */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-700">Payment Gateway</label>
+              <div className="grid grid-cols-3 gap-2 p-1 bg-slate-100/80 rounded-xl border border-slate-200">
                 <button
-                  key={amt}
-                  onClick={() => setTopupAmount(amt)}
-                  className={`py-3 rounded-xl font-black text-sm border cursor-pointer transition-all ${
-                    topupAmount === amt
-                      ? 'border-[#05A222] bg-[#E9F9EE] text-[#006736]'
-                      : 'border-[#E2EAE6] text-[#14201C] hover:border-[#05A222]/30'
-                  }`}
+                  type="button"
+                  onClick={() => setPaymentMethod('upi')}
+                  className={clsx(
+                    'py-2 text-xs font-bold rounded-lg transition-all text-center cursor-pointer',
+                    paymentMethod === 'upi'
+                      ? 'bg-white text-emerald-700 shadow-2xs border border-slate-200/80'
+                      : 'text-slate-600 hover:text-slate-900'
+                  )}
                 >
-                  +${amt}
+                  ⚡ UPI / QR
                 </button>
-              ))}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('card')}
+                  className={clsx(
+                    'py-2 text-xs font-bold rounded-lg transition-all text-center cursor-pointer',
+                    paymentMethod === 'card'
+                      ? 'bg-white text-blue-700 shadow-2xs border border-slate-200/80'
+                      : 'text-slate-600 hover:text-slate-900'
+                  )}
+                >
+                  💳 Card
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('netbanking')}
+                  className={clsx(
+                    'py-2 text-xs font-bold rounded-lg transition-all text-center cursor-pointer',
+                    paymentMethod === 'netbanking'
+                      ? 'bg-white text-purple-700 shadow-2xs border border-slate-200/80'
+                      : 'text-slate-600 hover:text-slate-900'
+                  )}
+                >
+                  🏦 NetBanking
+                </button>
+              </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#E2EAE6]">
-              <Button variant="outline" size="md" onClick={() => setIsTopupModalOpen(false)}>
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1">
+              <div className="flex justify-between font-semibold">
+                <span>Recharge Amount:</span>
+                <span className="font-mono font-bold text-slate-900">
+                  ₹{(customAmount ? parseFloat(customAmount) || 0 : topupAmount).toLocaleString('en-IN')}
+                </span>
+              </div>
+              <div className="flex justify-between text-[11px] text-slate-400">
+                <span>GST (18% ITC Included):</span>
+                <span>Tax Invoice Auto-generated</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => setIsTopupModalOpen(false)}
+                className="text-xs font-semibold rounded-xl"
+              >
                 Cancel
               </Button>
               <Button
@@ -372,22 +713,25 @@ export const Billing: React.FC = () => {
                 size="md"
                 onClick={handleTopup}
                 disabled={isTopupLoading}
+                className="text-xs font-bold rounded-xl shadow-xs"
                 leftIcon={
                   isTopupLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : topupSuccess ? (
-                    <CheckCircle2 className="w-4 h-4" />
                   ) : (
                     <Plus className="w-4 h-4" />
                   )
                 }
               >
-                {isTopupLoading ? 'Processing...' : topupSuccess ? 'Success!' : `Add $${topupAmount} Credits`}
+                {isTopupLoading
+                  ? 'Processing Payment...'
+                  : `Pay & Add ₹${(customAmount ? parseFloat(customAmount) || 0 : topupAmount).toLocaleString('en-IN')}`}
               </Button>
             </div>
           </div>
         </div>
       )}
-    </PageContainer>
+    </div>
   );
+
+  return embedded ? mainContent : <PageContainer>{mainContent}</PageContainer>;
 };

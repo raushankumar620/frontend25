@@ -106,4 +106,52 @@ export const whatsappService = {
     }
     return [];
   },
+
+  async sendMessage(payload: {
+    to: string;
+    type?: string;
+    content?: any;
+    text?: string;
+    phoneNumberId?: string;
+  }): Promise<any> {
+    const body: any = {
+      to: payload.to,
+      type: payload.type || 'text',
+      content: payload.content || { text: payload.text || 'Test message' },
+    };
+    if (payload.phoneNumberId) {
+      body.phoneNumberId = payload.phoneNumberId;
+    }
+    const res = await apiClient.post('/messages', body);
+    if (res.success && res.data) {
+      return res.data;
+    }
+    throw new Error(res.message || 'Failed to send WhatsApp message');
+  },
+
+  async getMessages(params?: { limit?: number; page?: number }): Promise<any[]> {
+    try {
+      const query = new URLSearchParams();
+      if (params?.limit) query.append('limit', String(params.limit));
+      if (params?.page) query.append('page', String(params.page));
+      const res = await apiClient.get<any>(`/messages?${query.toString()}`);
+      if (res.success && Array.isArray(res.data)) {
+        return res.data;
+      }
+      if (res.success && res.data && Array.isArray(res.data.messages)) {
+        return res.data.messages;
+      }
+    } catch (error) {
+      console.error('Failed to fetch message logs from backend:', error);
+    }
+    return [];
+  },
+
+  async updateNumber(id: string, data: any): Promise<any> {
+    const res = await apiClient.patch(`/whatsapp/numbers/${id}`, data);
+    if (res.success && res.data) {
+      return res.data;
+    }
+    throw new Error(res.message || 'Failed to update WhatsApp number');
+  },
 };
