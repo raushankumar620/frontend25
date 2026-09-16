@@ -84,7 +84,12 @@ export const AccountSettings: React.FC = () => {
           <div className="space-y-1">
             <div className="font-bold text-[#14201C] text-lg">{displayName}</div>
             <div className="text-xs font-semibold text-[#05A222] uppercase tracking-wide">
-              {user?.role || 'ORG_ADMIN'}
+              {(() => {
+                const roleStr = String(user?.role || '').toUpperCase();
+                if (roleStr === 'ORG_ADMIN' || roleStr === 'ADMIN') return 'Organization Head';
+                if (roleStr === 'TEAM_LEAD') return 'Team Lead';
+                return user?.role ? String(user.role).replace(/_/g, ' ') : 'Organization Head';
+              })()}
             </div>
           </div>
         </div>

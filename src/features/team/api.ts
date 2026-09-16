@@ -3,9 +3,9 @@ import type { TeamMember, RolePermission } from './types';
 
 export const ROLES_LIST: RolePermission[] = [
   {
-    role: 'Admin',
-    description: 'Full workspace access including billing, API keys, and team invites.',
-    permissions: ['Manage Billing', 'Manage Numbers', 'Broadcast Campaigns', 'API Access', 'Delete Contacts'],
+    role: 'Organization Head',
+    description: 'Full workspace and organization access including billing, numbers, API keys, and team management.',
+    permissions: ['Manage Billing', 'Manage Numbers', 'Broadcast Campaigns', 'API Access', 'Delete Contacts', 'Team Access'],
   },
   {
     role: 'Support Agent',

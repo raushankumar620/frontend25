@@ -27,7 +27,7 @@ export const RolesPermissions: React.FC = () => {
       <div className="mb-6">
         <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Roles & Permissions (RBAC)</h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-          Define access control levels for workspace administrators, agents, and managers.
+          Define access control levels for organization heads, team leads, and agents.
         </p>
       </div>
 

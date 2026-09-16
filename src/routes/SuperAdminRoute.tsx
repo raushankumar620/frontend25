@@ -6,7 +6,7 @@ export const SuperAdminRoute: React.FC = () => {
   const { user, isAuthenticated } = useAuthStore();
 
   if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/super-admin/login" replace />;
   }
 
   if (user.role !== 'SUPER_ADMIN') {

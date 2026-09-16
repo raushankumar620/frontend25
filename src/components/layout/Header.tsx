@@ -52,7 +52,14 @@ export const Header: React.FC<HeaderProps> = ({
   const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
   const displayName = fullName || user?.name || (user?.email ? user.email.split('@')[0] : 'User');
   const displayEmail = user?.email || '';
-  const displayRole = user?.role ? user.role.replace(/_/g, ' ') : 'ORG ADMIN';
+  const formatRoleLabel = (role?: string) => {
+    if (!role) return 'ORGANIZATION HEAD';
+    const upper = role.toUpperCase();
+    if (upper === 'ORG_ADMIN' || upper === 'ADMIN') return 'ORGANIZATION HEAD';
+    if (upper === 'TEAM_LEAD') return 'TEAM LEAD';
+    return upper.replace(/_/g, ' ');
+  };
+  const displayRole = formatRoleLabel(user?.role);
   const orgName = organization?.name || user?.organizationName || 'WhatsApp Workspace';
   const orgPlan = organization?.plan ? organization.plan.replace(/_/g, ' ') : 'FREE TRIAL';
 

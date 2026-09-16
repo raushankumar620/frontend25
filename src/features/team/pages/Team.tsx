@@ -117,10 +117,10 @@ export const Team: React.FC = () => {
           onChange={(e) => handleRoleChange(m.id || m._id || '', e.target.value as UserRole)}
           className="bg-[#F6FAF8] border border-[#E2EAE6] text-xs font-bold text-[#14201C] rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#05A222] cursor-pointer"
         >
-          <option value="ORG_ADMIN">ORG_ADMIN</option>
-          <option value="TEAM_LEAD">TEAM_LEAD</option>
-          <option value="AGENT">AGENT</option>
-          <option value="DEVELOPER">DEVELOPER</option>
+          <option value="ORG_ADMIN">Organization Head</option>
+          <option value="TEAM_LEAD">Team Lead</option>
+          <option value="AGENT">Agent</option>
+          <option value="DEVELOPER">Developer</option>
         </select>
       ),
     },
@@ -316,10 +316,10 @@ export const Team: React.FC = () => {
                   onChange={(e) => setInviteRole(e.target.value as UserRole)}
                   className="w-full rounded-xl border border-[#E2EAE6] bg-[#F6FAF8] text-[#14201C] text-sm px-3 py-2.5 focus:bg-white focus:outline-none focus:border-[#05A222] font-bold cursor-pointer"
                 >
-                  <option value="AGENT">AGENT (Shared Inbox & Customer Chats)</option>
-                  <option value="TEAM_LEAD">TEAM_LEAD (Lead Agent & Assignments)</option>
-                  <option value="DEVELOPER">DEVELOPER (API Keys & Webhooks)</option>
-                  <option value="ORG_ADMIN">ORG_ADMIN (Full Workspace Management)</option>
+                  <option value="AGENT">Agent (Shared Inbox & Customer Chats)</option>
+                  <option value="TEAM_LEAD">Team Lead (Lead Agent & Assignments)</option>
+                  <option value="DEVELOPER">Developer (API Keys & Webhooks)</option>
+                  <option value="ORG_ADMIN">Organization Head (Full Workspace Management)</option>
                 </select>
               </div>
 
