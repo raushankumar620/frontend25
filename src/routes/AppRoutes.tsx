@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Layouts
 import { PublicLayout } from '../layouts/PublicLayout';
@@ -88,6 +88,20 @@ import { Security } from '../features/settings/pages/Security';
 // Notifications
 import { Notifications } from '../features/notifications/pages/Notifications';
 
+// Super Admin Pages
+import { SuperAdminRoute } from './SuperAdminRoute';
+import { SuperAdminLayout } from '../layouts/SuperAdminLayout';
+import { SuperAdminLogin } from '../features/super-admin/pages/SuperAdminLogin';
+import { SuperAdminDashboard } from '../features/super-admin/pages/SuperAdminDashboard';
+import { SuperAdminTenants } from '../features/super-admin/pages/SuperAdminTenants';
+import { SuperAdminUsers } from '../features/super-admin/pages/SuperAdminUsers';
+import { SuperAdminWhatsApp } from '../features/super-admin/pages/SuperAdminWhatsApp';
+import { SuperAdminMessages } from '../features/super-admin/pages/SuperAdminMessages';
+import { SuperAdminWebhooks } from '../features/super-admin/pages/SuperAdminWebhooks';
+import { SuperAdminQueues } from '../features/super-admin/pages/SuperAdminQueues';
+import { SuperAdminAuditLogs } from '../features/super-admin/pages/SuperAdminAuditLogs';
+import { SuperAdminSettings } from '../features/super-admin/pages/SuperAdminSettings';
+
 import { ROUTES } from '../utils/constants';
 
 export const AppRoutes: React.FC = () => {
@@ -102,6 +116,11 @@ export const AppRoutes: React.FC = () => {
         <Route path={ROUTES.PUBLIC_ABOUT} element={<About />} />
         <Route path={ROUTES.PUBLIC_CONTACT} element={<Contact />} />
       </Route>
+
+      {/* Super Admin Dedicated Login Route */}
+      <Route path={ROUTES.SUPER_ADMIN_LOGIN} element={<SuperAdminLogin />} />
+      <Route path="/admin/login" element={<Navigate to={ROUTES.SUPER_ADMIN_LOGIN} replace />} />
+      <Route path="/admin" element={<Navigate to={ROUTES.SUPER_ADMIN_DASHBOARD} replace />} />
 
       {/* Auth Routes */}
       <Route element={<AuthLayout />}>
@@ -167,9 +186,23 @@ export const AppRoutes: React.FC = () => {
         </Route>
       </Route>
 
+      {/* Super Admin Isolated Master Control Suite */}
+      <Route element={<SuperAdminRoute />}>
+        <Route element={<SuperAdminLayout />}>
+          <Route path={ROUTES.SUPER_ADMIN_DASHBOARD} element={<SuperAdminDashboard />} />
+          <Route path={ROUTES.SUPER_ADMIN_TENANTS} element={<SuperAdminTenants />} />
+          <Route path={ROUTES.SUPER_ADMIN_USERS} element={<SuperAdminUsers />} />
+          <Route path={ROUTES.SUPER_ADMIN_WHATSAPP} element={<SuperAdminWhatsApp />} />
+          <Route path={ROUTES.SUPER_ADMIN_MESSAGES} element={<SuperAdminMessages />} />
+          <Route path={ROUTES.SUPER_ADMIN_WEBHOOKS} element={<SuperAdminWebhooks />} />
+          <Route path={ROUTES.SUPER_ADMIN_QUEUES} element={<SuperAdminQueues />} />
+          <Route path={ROUTES.SUPER_ADMIN_AUDIT_LOGS} element={<SuperAdminAuditLogs />} />
+          <Route path={ROUTES.SUPER_ADMIN_SETTINGS} element={<SuperAdminSettings />} />
+        </Route>
+      </Route>
+
       {/* Fallback 404 Route */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
-

@@ -80,6 +80,32 @@ export const authService = {
     throw new Error(res.message || 'Login failed');
   },
 
+  async adminLogin(identifier: string, pass: string): Promise<{ user: User; organization: Organization | null; token: string }> {
+    const res = await apiClient.post<AuthResponseData>('/auth/admin-login', { identifier, password: pass });
+
+    if (res.success && res.data && res.data.accessToken) {
+      const token = res.data.accessToken;
+      const org = res.data.organization || null;
+      const user = normalizeUser(res.data.user, org || undefined);
+
+      localStorage.setItem('whatsappmsg_token', token);
+      localStorage.setItem('chatflow_token', token);
+      if (res.data.refreshToken) {
+        localStorage.setItem('whatsappmsg_refresh_token', res.data.refreshToken);
+        localStorage.setItem('chatflow_refresh_token', res.data.refreshToken);
+      }
+      localStorage.setItem('whatsappmsg_user', JSON.stringify(user));
+      localStorage.setItem('chatflow_user', JSON.stringify(user));
+      if (org) {
+        localStorage.setItem('whatsappmsg_org', JSON.stringify(org));
+      }
+
+      return { user, organization: org, token };
+    }
+
+    throw new Error(res.message || 'Super Admin authentication failed');
+  },
+
   async register(payload: RegisterPayload | { name: string; email: string; pass: string; company?: string }): Promise<{ user: User; organization: Organization | null; token: string }> {
     let body: any;
 

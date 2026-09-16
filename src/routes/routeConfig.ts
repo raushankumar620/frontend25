@@ -52,4 +52,16 @@ export const routeConfig = {
     { path: ROUTES.DEVELOPERS_API_LOGS, label: 'API Logs' },
     { path: ROUTES.DEVELOPERS_DOCS, label: 'Documentation' },
   ],
+  superAdmin: [
+    { path: ROUTES.SUPER_ADMIN_DASHBOARD, label: 'Master Overview' },
+    { path: ROUTES.SUPER_ADMIN_TENANTS, label: 'Tenant Directory' },
+    { path: ROUTES.SUPER_ADMIN_USERS, label: 'Global Users' },
+    { path: ROUTES.SUPER_ADMIN_WHATSAPP, label: 'WhatsApp Gateway' },
+    { path: ROUTES.SUPER_ADMIN_MESSAGES, label: 'Messages & Trace' },
+    { path: ROUTES.SUPER_ADMIN_WEBHOOKS, label: 'Webhooks & Events' },
+    { path: ROUTES.SUPER_ADMIN_QUEUES, label: 'Queue Telemetry' },
+    { path: ROUTES.SUPER_ADMIN_AUDIT_LOGS, label: 'Audit Trail' },
+    { path: ROUTES.SUPER_ADMIN_SETTINGS, label: 'System Flags' },
+  ],
 };
+

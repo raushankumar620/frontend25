@@ -65,6 +65,13 @@ export const authStore = {
     notify();
     return user;
   },
+  async adminLogin(identifier: string, pass: string) {
+    const { user, organization } = await authService.adminLogin(identifier, pass);
+    currentUser = user;
+    currentOrg = organization;
+    notify();
+    return user;
+  },
   async register(payload: RegisterPayload | { name: string; email: string; pass: string; company?: string }) {
     const { user, organization } = await authService.register(payload);
     currentUser = user;
@@ -131,6 +138,7 @@ export function useAuthStore() {
     organization,
     isAuthenticated: !!user,
     login: authStore.login.bind(authStore),
+    adminLogin: authStore.adminLogin.bind(authStore),
     register: authStore.register.bind(authStore),
     acceptInvite: authStore.acceptInvite.bind(authStore),
     refreshProfile: authStore.refreshProfile.bind(authStore),

@@ -71,6 +71,18 @@ export const ROUTES = {
   ACCOUNT_SETTINGS: '/settings/account',
   BUSINESS_PROFILE: '/settings/business',
   SECURITY_SETTINGS: '/settings/security',
+
+  // Super Admin Infrastructure
+  SUPER_ADMIN_LOGIN: '/super-admin/login',
+  SUPER_ADMIN_DASHBOARD: '/super-admin',
+  SUPER_ADMIN_TENANTS: '/super-admin/tenants',
+  SUPER_ADMIN_USERS: '/super-admin/users',
+  SUPER_ADMIN_WHATSAPP: '/super-admin/whatsapp',
+  SUPER_ADMIN_MESSAGES: '/super-admin/messages',
+  SUPER_ADMIN_WEBHOOKS: '/super-admin/webhooks',
+  SUPER_ADMIN_QUEUES: '/super-admin/queues',
+  SUPER_ADMIN_AUDIT_LOGS: '/super-admin/audit-logs',
+  SUPER_ADMIN_SETTINGS: '/super-admin/settings',
 };
 
 export const MESSAGE_STATUS_COLORS: Record<string, string> = {
