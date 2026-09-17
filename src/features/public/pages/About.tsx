@@ -45,13 +45,20 @@ export const About: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white py-16 sm:py-24 text-[#1F2A26]">
+    <div className="bg-white text-[#1F2A26]">
       <SEO page="about" />
-      <div className="w-full px-4 sm:px-6 lg:px-8">
-        
-        {/* Header Hero */}
-        <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E9F9EE] border border-[#C4EBD0] text-[#006736] text-xs font-bold uppercase tracking-wider mb-4">
+      
+      {/* Top Header Hero */}
+      <section className="relative overflow-hidden w-full border-b border-[#C4EBD0]/70 py-16 sm:py-20 lg:py-24 bg-[#EBF7EE]">
+        <div className="absolute inset-0 z-0 pointer-events-none select-none">
+          <img 
+            src="/images/commonheader_bg.png" 
+            alt="WhatsAppMSG About Us Header" 
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+        <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 text-center max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#C4EBD0] bg-white/80 backdrop-blur-xs text-[#006736] text-xs font-bold uppercase tracking-wider mb-4 shadow-2xs">
             <Users className="w-3.5 h-3.5 text-[#05A222]" />
             Our Mission & Story
           </div>
@@ -62,6 +69,9 @@ export const About: React.FC = () => {
             {APP_NAME} was founded to eliminate the friction between enterprises and their customers. We build the high-throughput infrastructure that powers intelligent, automated WhatsApp conversations for the modern global economy.
           </p>
         </div>
+      </section>
+
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
 
         {/* Big Metrics Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-24">

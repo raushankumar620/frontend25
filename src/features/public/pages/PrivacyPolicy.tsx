@@ -44,8 +44,15 @@ export const PrivacyPolicy: React.FC = () => {
       <SEO page="privacy" />
 
       {/* Header Banner */}
-      <div className="bg-linear-to-b from-[#E9F9EE] via-[#F6FAF8] to-white border-b border-[#E2EAE6] py-14 sm:py-18">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="relative overflow-hidden border-b border-[#C4EBD0]/70 py-14 sm:py-18 bg-[#EBF7EE]">
+        <div className="absolute inset-0 z-0 pointer-events-none select-none">
+          <img 
+            src="/images/commonheader_bg.png" 
+            alt="WhatsAppMSG Privacy Policy Header" 
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+        <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8">
           
           <div className="flex items-center gap-2 text-xs font-semibold text-[#006736] mb-4">
             <Link to={ROUTES.HOME} className="hover:underline flex items-center gap-1">
@@ -57,7 +64,7 @@ export const PrivacyPolicy: React.FC = () => {
           </div>
 
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#C4EBD0] text-xs font-bold text-[#006736] mb-4 shadow-2xs">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/80 backdrop-blur-xs border border-[#C4EBD0] text-xs font-bold text-[#006736] mb-4 shadow-2xs">
               <ShieldCheck className="w-4 h-4 text-[#05A222]" />
               <span>Meta Verified Cloud Solution Architecture</span>
             </div>

@@ -69,23 +69,31 @@ export const Pricing: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white py-12 sm:py-20 text-[#1F2A26]">
+    <div className="bg-white text-[#1F2A26] pb-16 sm:pb-24">
       <SEO page="pricing" faqItems={faqs.map((f) => ({ question: f.q, answer: f.a }))} />
-      {/* Top Banner */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 mb-8">
-        <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E9F9EE] border border-[#C4EBD0] text-[#006736] text-xs font-bold uppercase tracking-wider mb-4">
+      
+      {/* Top Header Hero */}
+      <section className="relative overflow-hidden w-full border-b border-[#C4EBD0]/70 py-16 sm:py-20 lg:py-24 bg-[#EBF7EE] mb-12 sm:mb-16">
+        <div className="absolute inset-0 z-0 pointer-events-none select-none">
+          <img 
+            src="/images/commonheader_bg.png" 
+            alt="WhatsAppMSG Pricing Header" 
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+        <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 text-center max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#C4EBD0] bg-white/80 backdrop-blur-xs text-[#006736] text-xs font-bold uppercase tracking-wider mb-4 shadow-2xs">
             <CreditCard className="w-3.5 h-3.5 text-[#05A222]" />
             Transparent & Scalable Pricing
           </div>
           <h1 className="text-3xl sm:text-5xl font-black text-[#14201C] tracking-tight mb-4">
             Predictable plans designed to scale with your growth
           </h1>
-          <p className="text-sm sm:text-base text-[#5F7069]">
+          <p className="text-sm sm:text-base text-[#5F7069] leading-relaxed">
             Direct Meta Cloud API access with 0% message markup. Cancel or change your subscription at any time.
           </p>
         </div>
-      </div>
+      </section>
 
       {/* Main Pricing Cards */}
       <PricingSection />
