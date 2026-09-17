@@ -52,6 +52,7 @@ export interface User {
   email: string;
   phone?: string;
   role: UserRole;
+  permissions?: string[];
   avatarUrl?: string;
   avatar?: string;
   organizationId: string | Organization;
@@ -80,6 +81,7 @@ export interface TeamMemberItem {
   firstName?: string;
   lastName?: string;
   role: UserRole;
+  permissions?: string[];
   phone?: string;
   avatarUrl?: string;
   isActive?: boolean;

@@ -10,7 +10,10 @@ export interface TeamListResponse {
 export interface InvitePayload {
   email: string;
   name?: string;
+  phone?: string;
+  password?: string;
   role: UserRole;
+  permissions?: string[];
 }
 
 export const teamService = {
@@ -26,20 +29,24 @@ export const teamService = {
     };
   },
 
-  async inviteMember(payload: InvitePayload): Promise<TeamMemberItem> {
-    const res = await apiClient.post<TeamMemberItem>('/team/invite', payload);
+  async inviteMember(payload: InvitePayload): Promise<any> {
+    const res = await apiClient.post<any>('/team/invite', payload);
     if (res.success && res.data) {
       return res.data;
     }
-    throw new Error(res.message || 'Failed to invite team member');
+    throw new Error(res.message || 'Failed to create / invite team member');
   },
 
-  async updateMemberRole(memberId: string, role: UserRole): Promise<TeamMemberItem> {
-    const res = await apiClient.patch<TeamMemberItem>(`/team/${memberId}/role`, { role });
+  async updateMemberRole(
+    memberId: string,
+    payload: { role?: UserRole; permissions?: string[]; name?: string; phone?: string; password?: string } | UserRole
+  ): Promise<TeamMemberItem> {
+    const body = typeof payload === 'string' ? { role: payload } : payload;
+    const res = await apiClient.patch<TeamMemberItem>(`/team/${memberId}/role`, body);
     if (res.success && res.data) {
       return res.data;
     }
-    throw new Error(res.message || 'Failed to update member role');
+    throw new Error(res.message || 'Failed to update member');
   },
 
   async removeMember(memberId: string): Promise<{ message: string }> {

@@ -18,6 +18,7 @@ import {
   ArrowUpRight,
   Sparkles,
   X,
+  UserPlus,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { ROUTES, APP_NAME } from '../../utils/constants';
@@ -38,6 +39,7 @@ interface NavItem {
   bgColor: string;
   badge?: string;
   highlight?: boolean;
+  permissionKey?: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -76,18 +78,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return () => clearInterval(interval);
   }, [organization?.id]);
 
-  const navItems: NavItem[] = [
-    { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: LayoutDashboard, color: '#2563EB', bgColor: '#EFF6FF' },
-    { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, color: '#059669', bgColor: '#ECFDF5' },
-    { label: 'Contacts', path: ROUTES.CONTACTS, icon: Users, color: '#7C3AED', bgColor: '#F5F3FF' },
-    { label: 'Templates', path: ROUTES.TEMPLATES, icon: FileText, color: '#D97706', bgColor: '#FFFBEB' },
-    { label: 'Campaigns', path: ROUTES.CAMPAIGNS, icon: Send, color: '#E11D48', bgColor: '#FFF1F2' },
-    { label: 'Automations', path: ROUTES.AUTOMATIONS, icon: GitBranch, color: '#0891B2', bgColor: '#ECFEFF' },
-    { label: 'AI Agents', path: ROUTES.AI_DASHBOARD, icon: Bot, highlight: true, color: '#9333EA', bgColor: '#FAF5FF' },
-    { label: 'Analytics', path: ROUTES.ANALYTICS, icon: BarChart3, color: '#4F46E5', bgColor: '#EEF2FF' },
-    { label: 'Developers API', path: ROUTES.DEVELOPERS_DASHBOARD, icon: Code2, color: '#0D9488', bgColor: '#F0FDFA' },
-    { label: 'Settings', path: ROUTES.ACCOUNT_SETTINGS, icon: Settings, color: '#64748B', bgColor: '#F8FAFC' },
+  const allNavItems: NavItem[] = [
+    { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: LayoutDashboard, color: '#2563EB', bgColor: '#EFF6FF', permissionKey: 'dashboard' },
+    { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, color: '#059669', bgColor: '#ECFDF5', permissionKey: 'inbox' },
+    { label: 'Contacts', path: ROUTES.CONTACTS, icon: Users, color: '#7C3AED', bgColor: '#F5F3FF', permissionKey: 'contacts' },
+    { label: 'Templates', path: ROUTES.TEMPLATES, icon: FileText, color: '#D97706', bgColor: '#FFFBEB', permissionKey: 'templates' },
+    { label: 'Campaigns', path: ROUTES.CAMPAIGNS, icon: Send, color: '#E11D48', bgColor: '#FFF1F2', permissionKey: 'campaigns' },
+    { label: 'Automations', path: ROUTES.AUTOMATIONS, icon: GitBranch, color: '#0891B2', bgColor: '#ECFEFF', permissionKey: 'automations' },
+    { label: 'AI Agents', path: ROUTES.AI_DASHBOARD, icon: Bot, highlight: true, color: '#9333EA', bgColor: '#FAF5FF', permissionKey: 'ai_agents' },
+    { label: 'Analytics', path: ROUTES.ANALYTICS, icon: BarChart3, color: '#4F46E5', bgColor: '#EEF2FF', permissionKey: 'analytics' },
+    { label: 'Developers API', path: ROUTES.DEVELOPERS_DASHBOARD, icon: Code2, color: '#0D9488', bgColor: '#F0FDFA', permissionKey: 'developers' },
+    { label: 'Team', path: ROUTES.TEAM, icon: UserPlus, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'team' },
+    { label: 'Settings', path: ROUTES.ACCOUNT_SETTINGS, icon: Settings, color: '#64748B', bgColor: '#F8FAFC', permissionKey: 'settings' },
   ];
+
+  // Admins see everything. For members, filter by their granted permissions.
+  const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ORG_ADMIN' || user?.role === 'admin';
+  const navItems = isAdmin
+    ? allNavItems
+    : allNavItems.filter((item) => {
+        if (!item.permissionKey) return true;
+        if (!user?.permissions || user.permissions.length === 0) {
+          // Default fallback for legacy members without explicit permissions array
+          return ['dashboard', 'inbox', 'contacts', 'templates'].includes(item.permissionKey);
+        }
+        return user.permissions.includes(item.permissionKey);
+      });
 
   const orgDisplayName = organization?.name || user?.organizationName || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Workspace');
   const userInitial = (orgDisplayName?.[0] || user?.firstName?.[0] || 'A').toUpperCase();
