@@ -41,7 +41,7 @@ export const LogoCloud: React.FC = () => {
 
   return (
     <section className="py-8 sm:py-10 bg-white border-b border-[#E2EAE6] overflow-hidden relative select-none">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-5 sm:mb-6 text-center">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mb-5 sm:mb-6 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E9F9EE] border border-[#C4EBD0] text-[#006736] text-[11px] font-bold uppercase tracking-wider">
           <span className="w-1.5 h-1.5 rounded-full bg-[#05A222] animate-ping" />
           Enterprise Trust

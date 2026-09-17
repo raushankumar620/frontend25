@@ -69,7 +69,7 @@ export const PublicFooter: React.FC = () => {
     <footer className="bg-[#F8FAF9] border-t border-[#E2EAE6] text-[#4A5D54]">
       
       {/* MAIN CLEAN CONTENT AREA */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-14">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-14">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           
           {/* Brand Column (Col Span 2) */}

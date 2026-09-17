@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Menu, X, ArrowRight, ShieldCheck, Zap, LayoutDashboard, LogOut } from 'lucide-react';
+import { Menu, X, ArrowRight, Zap, LayoutDashboard, LogOut } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { ROUTES, APP_NAME } from '../../../utils/constants';
 import { useAuthStore } from '../../../store/authStore';
@@ -20,13 +20,7 @@ export const PublicNavbar: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E2EAE6] shadow-xs">
-      {/* Meta Partner Ribbon */}
-      <div className="bg-[#E9F9EE] border-b border-[#C4EBD0] py-1.5 px-4 text-center text-xs text-[#006736] font-medium flex items-center justify-center gap-2">
-        <ShieldCheck className="w-4 h-4 text-[#05A222]" />
-        <span>Official Meta Business Solution Provider — Direct WhatsApp Cloud API Tier 3 (100k msgs/day)</span>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand - Clean Logo Only */}
         <Link to={ROUTES.HOME} className="flex items-center group">
           <img

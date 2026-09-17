@@ -30,7 +30,7 @@ export const CTASection: React.FC = () => {
 
   return (
     <section ref={sectionRef} className="py-8 sm:py-12 bg-[#F6FAF8] relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         
         {/* Main Banner Card - Slimmer & Streamlined */}
         <div className="relative rounded-3xl bg-linear-to-br from-[#013B23] via-[#006736] to-[#012817] border border-[#1CD72C]/25 shadow-[0_20px_50px_rgba(1,59,35,0.22)] overflow-hidden text-white">

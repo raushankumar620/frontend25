@@ -44,7 +44,7 @@ console.log('Message delivered via Meta Cloud API:', result.messageId);`;
 
   return (
     <section className="py-20 bg-white border-b border-[#E2EAE6]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           {/* Left Text */}

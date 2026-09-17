@@ -148,7 +148,7 @@ const isValid = whatsAppMsg.security.verifySignature({
   return (
     <div className="bg-white py-16 sm:py-24 text-[#1F2A26]">
       <SEO page="features" />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">

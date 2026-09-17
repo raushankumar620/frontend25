@@ -72,7 +72,7 @@ export const Pricing: React.FC = () => {
     <div className="bg-white py-12 sm:py-20 text-[#1F2A26]">
       <SEO page="pricing" faqItems={faqs.map((f) => ({ question: f.q, answer: f.a }))} />
       {/* Top Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mb-8">
         <div className="text-center max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E9F9EE] border border-[#C4EBD0] text-[#006736] text-xs font-bold uppercase tracking-wider mb-4">
             <CreditCard className="w-3.5 h-3.5 text-[#05A222]" />
@@ -91,7 +91,7 @@ export const Pricing: React.FC = () => {
       <PricingSection />
 
       {/* Deep Feature Comparison Table */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-[#14201C] mb-3">Compare Plan Specifications</h2>
           <p className="text-xs sm:text-sm text-[#5F7069]">Detailed breakdown of quotas, limits, and enterprise capabilities.</p>
@@ -122,7 +122,7 @@ export const Pricing: React.FC = () => {
       </div>
 
       {/* Enterprise Custom Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mb-20">
         <div className="bg-linear-to-r from-[#E9F9EE] via-[#F6FAF8] to-[#E9F9EE] border border-[#C4EBD0] rounded-3xl p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-sm">
           <div className="space-y-3 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E9F9EE] text-[#006736] text-xs font-bold border border-[#C4EBD0]">

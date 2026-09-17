@@ -45,7 +45,7 @@ export const TermsOfService: React.FC = () => {
 
       {/* Header Banner */}
       <div className="bg-linear-to-b from-[#E9F9EE] via-[#F6FAF8] to-white border-b border-[#E2EAE6] py-14 sm:py-18">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           
           <div className="flex items-center gap-2 text-xs font-semibold text-[#006736] mb-4">
             <Link to={ROUTES.HOME} className="hover:underline flex items-center gap-1">
@@ -113,7 +113,7 @@ export const TermsOfService: React.FC = () => {
       </div>
 
       {/* Main Content Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
           {/* Table of Contents - Desktop Sticky Sidebar */}
