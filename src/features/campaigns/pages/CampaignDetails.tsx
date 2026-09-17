@@ -427,17 +427,24 @@ export const CampaignDetails: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-              {(['ALL', 'SENT', 'DELIVERED', 'READ', 'FAILED', 'PENDING'] as const).map((st) => (
+              {[
+                { key: 'ALL', label: 'All' },
+                { key: 'SENT', label: 'Sent' },
+                { key: 'DELIVERED', label: 'Delivered' },
+                { key: 'READ', label: 'Read' },
+                { key: 'FAILED', label: 'Failed' },
+                { key: 'PENDING', label: 'Pending' },
+              ].map((st) => (
                 <button
-                  key={st}
-                  onClick={() => setStatusFilter(st)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    statusFilter === st
+                  key={st.key}
+                  onClick={() => setStatusFilter(st.key as any)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                    statusFilter === st.key
                       ? 'bg-[#05A222] text-white shadow-xs'
                       : 'bg-white text-[#14201C] border border-[#E2EAE6] hover:bg-[#F6FAF8]'
                   }`}
                 >
-                  {st}
+                  {st.label}
                 </button>
               ))}
             </div>

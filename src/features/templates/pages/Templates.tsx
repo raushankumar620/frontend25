@@ -495,18 +495,23 @@ export const Templates: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-          <span className="text-xs font-bold text-[#5F7069] uppercase mr-1">Category:</span>
-          {(['ALL', 'MARKETING', 'UTILITY', 'AUTHENTICATION'] as const).map((cat) => (
+          <span className="text-xs font-semibold text-[#5F7069] mr-1">Category:</span>
+          {[
+            { key: 'ALL', label: 'All' },
+            { key: 'MARKETING', label: 'Marketing' },
+            { key: 'UTILITY', label: 'Utility' },
+            { key: 'AUTHENTICATION', label: 'Authentication' },
+          ].map((cat) => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
-                selectedCategory === cat
+              key={cat.key}
+              onClick={() => setSelectedCategory(cat.key as any)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 ${
+                selectedCategory === cat.key
                   ? 'bg-[#013B23] text-white shadow-xs'
                   : 'bg-white text-[#14201C] border border-[#E2EAE6] hover:bg-[#F6FAF8]'
               }`}
             >
-              {cat}
+              {cat.label}
             </button>
           ))}
         </div>

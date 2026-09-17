@@ -269,17 +269,24 @@ export const Campaigns: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-            {(['ALL', 'RUNNING', 'SCHEDULED', 'COMPLETED', 'PAUSED', 'DRAFT'] as const).map((st) => (
+            {[
+              { key: 'ALL', label: 'All' },
+              { key: 'RUNNING', label: 'Running' },
+              { key: 'SCHEDULED', label: 'Scheduled' },
+              { key: 'COMPLETED', label: 'Completed' },
+              { key: 'PAUSED', label: 'Paused' },
+              { key: 'DRAFT', label: 'Draft' },
+            ].map((st) => (
               <button
-                key={st}
-                onClick={() => setSelectedStatus(st)}
-                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-                  selectedStatus === st
+                key={st.key}
+                onClick={() => setSelectedStatus(st.key as any)}
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                  selectedStatus === st.key
                     ? 'bg-[#05A222] text-white shadow-xs'
                     : 'bg-white text-[#14201C] border border-[#E2EAE6] hover:bg-[#F6FAF8]'
                 }`}
               >
-                {st}
+                {st.label}
               </button>
             ))}
           </div>

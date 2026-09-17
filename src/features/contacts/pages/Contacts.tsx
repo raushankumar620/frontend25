@@ -234,70 +234,72 @@ export const Contacts: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex items-center justify-end gap-3 mb-6">
-        <Button
-          variant="outline"
-          size="md"
-          onClick={() => setIsImportModalOpen(true)}
-          leftIcon={<Upload className="w-4 h-4" />}
-          className="text-sm font-semibold rounded-xl"
-        >
-          Import CSV
-        </Button>
-        <Button
-          variant="outline"
-          size="md"
-          onClick={handleExportCSV}
-          leftIcon={<Download className="w-4 h-4" />}
-          className="text-sm font-semibold rounded-xl"
-        >
-          Export
-        </Button>
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => setIsAddModalOpen(true)}
-          leftIcon={<Plus className="w-4 h-4" />}
-          className="text-sm font-bold rounded-xl shadow-sm"
-        >
-          Add Contact
-        </Button>
-      </div>
+      {/* Unified Search, Tag Filters & Action Toolbar */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+          <div className="max-w-md w-full">
+            <SearchBar value={query} onChange={setQuery} placeholder="Search by name, phone or email..." />
+          </div>
 
-      {/* Filter and Tag Pills */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div className="max-w-md w-full">
-          <SearchBar value={query} onChange={setQuery} placeholder="Search by name, phone or email..." />
-        </div>
-
-        {tagSummaries.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-            <button
-              onClick={() => setSelectedTag(null)}
-              className={`text-xs px-3 py-1.5 rounded-full font-semibold transition-colors cursor-pointer ${
-                selectedTag === null
-                  ? 'bg-[#14201C] text-white'
-                  : 'bg-white text-[#5F7069] border border-slate-200 hover:bg-slate-50'
-              }`}
-            >
-              All ({contacts.length})
-            </button>
-            {tagSummaries.map((ts) => (
+          {tagSummaries.length > 0 && (
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
               <button
-                key={ts.tag}
-                onClick={() => setSelectedTag(ts.tag === selectedTag ? null : ts.tag)}
-                className={`text-xs px-3 py-1.5 rounded-full font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
-                  selectedTag === ts.tag
-                    ? 'bg-[#006736] text-white'
-                    : 'bg-white text-[#5F7069] border border-slate-200 hover:bg-slate-50'
+                onClick={() => setSelectedTag(null)}
+                className={`text-xs px-3 py-1.5 rounded-xl font-semibold transition-colors cursor-pointer shrink-0 ${
+                  selectedTag === null
+                    ? 'bg-[#006736] text-white shadow-xs'
+                    : 'bg-white text-[#5F7069] border border-[#E2EAE6] hover:bg-[#F6FAF8]'
                 }`}
               >
-                <Tag className="w-3 h-3" />
-                {ts.tag} ({ts.count})
+                All ({contacts.length})
               </button>
-            ))}
-          </div>
-        )}
+              {tagSummaries.map((ts) => (
+                <button
+                  key={ts.tag}
+                  onClick={() => setSelectedTag(ts.tag === selectedTag ? null : ts.tag)}
+                  className={`text-xs px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
+                    selectedTag === ts.tag
+                      ? 'bg-[#006736] text-white shadow-xs'
+                      : 'bg-white text-[#5F7069] border border-[#E2EAE6] hover:bg-[#F6FAF8]'
+                  }`}
+                >
+                  <Tag className="w-3 h-3" />
+                  {ts.tag} ({ts.count})
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0 self-end lg:self-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsImportModalOpen(true)}
+            leftIcon={<Upload className="w-3.5 h-3.5" />}
+            className="text-xs font-bold rounded-xl border-[#C4EBD0] text-[#006736] hover:bg-[#E9F9EE] cursor-pointer"
+          >
+            Import CSV
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportCSV}
+            leftIcon={<Download className="w-3.5 h-3.5" />}
+            className="text-xs font-bold rounded-xl border-[#E2EAE6] text-[#14201C] hover:bg-[#F6FAF8] cursor-pointer"
+          >
+            Export
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsAddModalOpen(true)}
+            leftIcon={<Plus className="w-3.5 h-3.5" />}
+            className="text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs bg-[#05A222] hover:bg-[#006736] text-white cursor-pointer"
+          >
+            Add Contact
+          </Button>
+        </div>
       </div>
 
       <Table columns={columns} data={filtered} isLoading={isLoading} />
