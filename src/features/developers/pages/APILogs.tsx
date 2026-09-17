@@ -217,7 +217,7 @@ export const APILogs: React.FC = () => {
 
               <div>
                 <span className="text-[10px] uppercase font-bold text-[#5F7069]">Request Path</span>
-                <div className="p-2.5 bg-[#14201C] text-[#6AEB31] font-mono text-xs rounded-xl mt-1 break-all select-all">
+                <div className="p-2.5 bg-white text-[#0F172A] font-mono font-semibold text-xs rounded-xl mt-1 break-all select-all border border-[#E2EAE6] shadow-2xs">
                   {selectedLog.endpoint}
                 </div>
               </div>

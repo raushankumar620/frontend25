@@ -334,13 +334,13 @@ curl_close($ch);`,
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-3.5 bg-[#0F1A17] rounded-xl font-mono text-xs text-[#6AEB31] border border-[#21352E] shadow-inner flex items-center justify-between">
-              <span>x-api-key: wmsg_live_98a7s6d••••••••••••••</span>
-              <span className="text-[10px] text-[#5F7069] font-sans font-medium">Header</span>
+            <div className="p-3.5 bg-[#F8FAFC] rounded-xl font-mono text-xs text-[#0F172A] border border-[#E2EAE6] shadow-2xs flex items-center justify-between">
+              <span className="text-[#006736] font-bold">x-api-key: <span className="text-[#1E293B] font-medium">wmsg_live_98a7s6d••••••••••••••</span></span>
+              <span className="text-[10px] text-[#64748B] font-sans font-semibold bg-white px-2 py-0.5 rounded border border-[#E2EAE6]">Header</span>
             </div>
-            <div className="p-3.5 bg-[#0F1A17] rounded-xl font-mono text-xs text-[#6AEB31] border border-[#21352E] shadow-inner flex items-center justify-between">
-              <span>Authorization: Bearer wmsg_live_98a7s6d••••••••••</span>
-              <span className="text-[10px] text-[#5F7069] font-sans font-medium">Bearer</span>
+            <div className="p-3.5 bg-[#F8FAFC] rounded-xl font-mono text-xs text-[#0F172A] border border-[#E2EAE6] shadow-2xs flex items-center justify-between">
+              <span className="text-[#006736] font-bold">Authorization: <span className="text-[#1E293B] font-medium">Bearer wmsg_live_98a7s6d••••••••••</span></span>
+              <span className="text-[10px] text-[#64748B] font-sans font-semibold bg-white px-2 py-0.5 rounded border border-[#E2EAE6]">Bearer</span>
             </div>
           </div>
         </div>
@@ -377,15 +377,15 @@ curl_close($ch);`,
             </Button>
           </div>
 
-          <div className="rounded-xl overflow-hidden border border-[#21352E] bg-[#0F1A17] shadow-inner">
-            <div className="flex items-center justify-between px-4 py-2 bg-[#09110F] border-b border-[#21352E] text-xs font-mono text-[#8B9D96]">
+          <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC] shadow-2xs">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono text-[#475569]">
               <span className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]/80"></span>
-                <span>Payload Example ({activeLang.toUpperCase()})</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]"></span>
+                <span className="font-semibold">Payload Example ({activeLang.toUpperCase()})</span>
               </span>
-              <span className="text-[11px] text-[#5F7069]">Content-Type: application/json</span>
+              <span className="text-[11px] text-[#64748B]">Content-Type: application/json</span>
             </div>
-            <pre className="p-4 font-mono text-xs text-[#6AEB31] overflow-x-auto leading-relaxed">
+            <pre className="p-4 font-mono text-xs text-[#0F172A] overflow-x-auto leading-relaxed bg-white">
               {textSnippets[activeLang]}
             </pre>
           </div>
@@ -423,15 +423,15 @@ curl_close($ch);`,
             </Button>
           </div>
 
-          <div className="rounded-xl overflow-hidden border border-[#21352E] bg-[#0F1A17] shadow-inner">
-            <div className="flex items-center justify-between px-4 py-2 bg-[#09110F] border-b border-[#21352E] text-xs font-mono text-[#8B9D96]">
+          <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC] shadow-2xs">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono text-[#475569]">
               <span className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]/80"></span>
-                <span>HSM Template Example ({activeLang.toUpperCase()})</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]"></span>
+                <span className="font-semibold">HSM Template Example ({activeLang.toUpperCase()})</span>
               </span>
-              <span className="text-[11px] text-[#5F7069]">Meta Cloud Verified</span>
+              <span className="text-[11px] text-[#64748B]">Meta Cloud Verified</span>
             </div>
-            <pre className="p-4 font-mono text-xs text-[#6AEB31] overflow-x-auto leading-relaxed">
+            <pre className="p-4 font-mono text-xs text-[#0F172A] overflow-x-auto leading-relaxed bg-white">
               {templateSnippets[activeLang]}
             </pre>
           </div>
@@ -469,15 +469,15 @@ curl_close($ch);`,
             </Button>
           </div>
 
-          <div className="rounded-xl overflow-hidden border border-[#21352E] bg-[#0F1A17] shadow-inner">
-            <div className="flex items-center justify-between px-4 py-2 bg-[#09110F] border-b border-[#21352E] text-xs font-mono text-[#8B9D96]">
+          <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC] shadow-2xs">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono text-[#475569]">
               <span className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]/80"></span>
-                <span>Contact Payload ({activeLang.toUpperCase()})</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]"></span>
+                <span className="font-semibold">Contact Payload ({activeLang.toUpperCase()})</span>
               </span>
-              <span className="text-[11px] text-[#5F7069]">CRM Sync API</span>
+              <span className="text-[11px] text-[#64748B]">CRM Sync API</span>
             </div>
-            <pre className="p-4 font-mono text-xs text-[#6AEB31] overflow-x-auto leading-relaxed">
+            <pre className="p-4 font-mono text-xs text-[#0F172A] overflow-x-auto leading-relaxed bg-white">
               {contactSnippets[activeLang]}
             </pre>
           </div>

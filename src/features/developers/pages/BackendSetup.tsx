@@ -173,9 +173,18 @@ console.log(response.data);`;
             </Button>
           </div>
 
-          <pre className="p-4 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
-            {envVariablesCode}
-          </pre>
+          <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC] shadow-2xs">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono text-[#475569]">
+              <span className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]"></span>
+                <span className="font-semibold">.env Configuration File</span>
+              </span>
+              <span className="text-[11px] text-[#64748B]">UTF-8 Text</span>
+            </div>
+            <pre className="p-4 font-mono text-xs text-[#0F172A] overflow-x-auto leading-relaxed bg-white">
+              {envVariablesCode}
+            </pre>
+          </div>
         </div>
       )}
 
@@ -375,7 +384,7 @@ console.log(response.data);`;
                 {copiedSection === 'env_example' ? 'Copied' : 'Copy'}
               </Button>
             </div>
-            <pre className="p-3.5 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
+            <pre className="p-3.5 bg-white rounded-2xl font-mono text-xs text-[#0F172A] overflow-x-auto border border-[#E2EAE6] shadow-2xs leading-relaxed">
               {envExampleCode}
             </pre>
           </div>
@@ -397,7 +406,7 @@ console.log(response.data);`;
                 {copiedSection === 'gitignore' ? 'Copied' : 'Copy'}
               </Button>
             </div>
-            <pre className="p-3.5 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
+            <pre className="p-3.5 bg-white rounded-2xl font-mono text-xs text-[#0F172A] overflow-x-auto border border-[#E2EAE6] shadow-2xs leading-relaxed">
               {gitignoreCode}
             </pre>
           </div>
@@ -464,7 +473,7 @@ console.log(response.data);`;
                 {copiedSection === 'node_client' ? 'Copied' : 'Copy'}
               </Button>
             </div>
-            <pre className="p-4 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
+            <pre className="p-4 bg-white rounded-2xl font-mono text-xs text-[#0F172A] overflow-x-auto border border-[#E2EAE6] shadow-2xs leading-relaxed">
               {nodeClientCode}
             </pre>
 
@@ -480,7 +489,7 @@ console.log(response.data);`;
                 {copiedSection === 'node_req' ? 'Copied' : 'Copy'}
               </Button>
             </div>
-            <pre className="p-4 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
+            <pre className="p-4 bg-white rounded-2xl font-mono text-xs text-[#0F172A] overflow-x-auto border border-[#E2EAE6] shadow-2xs leading-relaxed">
               {nodeExampleRequestCode}
             </pre>
           </div>

@@ -226,8 +226,15 @@ export const DeveloperDashboard: React.FC = () => {
           </Button>
         </div>
 
-        <div className="relative">
-          <pre className="p-4 bg-[#14201C] rounded-2xl text-[#6AEB31] text-xs font-mono overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
+        <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC] shadow-2xs">
+          <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono text-[#475569]">
+            <span className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]"></span>
+              <span className="font-semibold">Terminal cURL Request</span>
+            </span>
+            <span className="text-[11px] text-[#64748B]">POST /api/v1/messages</span>
+          </div>
+          <pre className="p-4 bg-white text-[#0F172A] text-xs font-mono overflow-x-auto leading-relaxed">
             {curlExample}
           </pre>
         </div>
