@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { PageContainer } from '../../../components/layout/PageContainer';
 import { KPICards } from '../components/KPICards';
 import { MessageFunnelChart } from '../components/MessageFunnelChart';
+import { MessageAnalytics } from '../components/MessageAnalytics';
 import { AgentLeaderboard } from '../components/AgentLeaderboard';
 import { CampaignROI } from '../components/CampaignROI';
+import { CampaignAnalytics } from '../components/CampaignAnalytics';
 import { AiContainmentBreakdown } from '../components/AiContainmentBreakdown';
+import { CustomerAnalytics } from '../components/CustomerAnalytics';
 import { CSVExportModal } from '../components/CSVExportModal';
 import { Button } from '../../../components/ui/Button';
 import { analyticsService } from '../../../services/analyticsService';
@@ -16,6 +19,7 @@ import {
   Award,
   Send,
   Bot,
+  Users,
 } from 'lucide-react';
 import type {
   OverviewKPIs,
@@ -28,7 +32,7 @@ import type {
 
 export const Analytics: React.FC = () => {
   const [range, setRange] = useState<'7d' | '30d' | '90d'>('30d');
-  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'agents' | 'campaigns' | 'ai'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'agents' | 'campaigns' | 'ai' | 'audience'>('overview');
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -145,9 +149,10 @@ export const Analytics: React.FC = () => {
         {[
           { id: 'overview', label: 'Overview & Funnel', icon: LayoutDashboard },
           { id: 'messages', label: 'Message Analytics', icon: MessageSquare },
-          { id: 'agents', label: 'Agent SLAs', icon: Award },
           { id: 'campaigns', label: 'Campaign ROI', icon: Send },
+          { id: 'agents', label: 'Agent SLAs', icon: Award },
           { id: 'ai', label: 'AI Deflection', icon: Bot },
+          { id: 'audience', label: 'Audience & Contacts', icon: Users },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -174,6 +179,14 @@ export const Analytics: React.FC = () => {
           <MessageFunnelChart stats={messageStats} timeseries={timeseries} loading={loading} />
           <AiContainmentBreakdown data={aiStats} loading={loading} />
           <div className="lg:col-span-2">
+            <CustomerAnalytics
+              activeContacts={overview?.activeContacts || 0}
+              conversations={overview?.conversations || null}
+              messages={messageStats}
+              loading={loading}
+            />
+          </div>
+          <div className="lg:col-span-2">
             <AgentLeaderboard agents={agents} loading={loading} />
           </div>
           <div className="lg:col-span-2">
@@ -184,7 +197,15 @@ export const Analytics: React.FC = () => {
 
       {activeTab === 'messages' && (
         <div className="grid grid-cols-1 gap-6">
+          <MessageAnalytics stats={messageStats} loading={loading} />
           <MessageFunnelChart stats={messageStats} timeseries={timeseries} loading={loading} />
+        </div>
+      )}
+
+      {activeTab === 'campaigns' && (
+        <div className="grid grid-cols-1 gap-6">
+          <CampaignAnalytics data={campaignMetrics} loading={loading} />
+          <CampaignROI data={campaignMetrics} loading={loading} />
         </div>
       )}
 
@@ -194,15 +215,20 @@ export const Analytics: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'campaigns' && (
-        <div className="grid grid-cols-1 gap-6">
-          <CampaignROI data={campaignMetrics} loading={loading} />
-        </div>
-      )}
-
       {activeTab === 'ai' && (
         <div className="grid grid-cols-1 gap-6">
           <AiContainmentBreakdown data={aiStats} loading={loading} />
+        </div>
+      )}
+
+      {activeTab === 'audience' && (
+        <div className="grid grid-cols-1 gap-6">
+          <CustomerAnalytics
+            activeContacts={overview?.activeContacts || 0}
+            conversations={overview?.conversations || null}
+            messages={messageStats}
+            loading={loading}
+          />
         </div>
       )}
 
