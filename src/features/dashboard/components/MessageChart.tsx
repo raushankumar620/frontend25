@@ -1,16 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { analyticsService } from '../../../services/analyticsService';
 import type { MessageTimeseriesPoint, OverviewKPIs } from '../../analytics/types';
-import {
-  TrendingUp,
-  Calendar,
-  CheckCircle2,
-  Send,
-  Eye,
-  MessageSquare,
-  Sparkles,
-  Layers,
-} from 'lucide-react';
+import { Calendar, Layers } from 'lucide-react';
+
+
 
 interface MessageChartProps {
   timeseries?: MessageTimeseriesPoint[];
@@ -285,14 +278,6 @@ export const MessageChart: React.FC<MessageChartProps> = ({
 
   const activePoint = hoverIndex !== null ? chartPoints[hoverIndex] : null;
   const activeX = hoverIndex !== null ? getX(hoverIndex) : null;
-
-  // Adaptive Label interval to strictly prevent text overlapping
-  const labelInterval = useMemo(() => {
-    if (selectedRange === 'Today') return 3; // every 3 hours
-    if (selectedRange === '7 Days') return 1; // everyday
-    if (selectedRange === '30 Days') return 3; // every 3 days
-    return 7; // every week for 3 months
-  }, [selectedRange]);
 
   const toggleSeries = (key: keyof typeof visibleSeries) => {
     setVisibleSeries((prev) => ({ ...prev, [key]: !prev[key] }));

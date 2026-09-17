@@ -192,7 +192,21 @@ export function useChatStore() {
 
   useEffect(() => {
     chatStore.fetchConversations();
-    return chatStore.subscribe(() => setTick((t) => t + 1));
+
+    // Auto-poll every 3 seconds for real-time live WhatsApp inbound sync
+    const interval = setInterval(() => {
+      chatStore.fetchConversations();
+      const curId = chatStore.getActiveConversationId();
+      if (curId) {
+        chatStore.fetchMessagesAndNotes(curId);
+      }
+    }, 3000);
+
+    const unsub = chatStore.subscribe(() => setTick((t) => t + 1));
+    return () => {
+      clearInterval(interval);
+      unsub();
+    };
   }, []);
 
   const activeId = chatStore.getActiveConversationId();
@@ -214,3 +228,4 @@ export function useChatStore() {
     refreshConversations: chatStore.fetchConversations.bind(chatStore),
   };
 }
+
