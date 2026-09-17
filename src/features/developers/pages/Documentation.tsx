@@ -125,7 +125,7 @@ const generateCodeSnippet = (
   path: string,
   body: any | null,
   lang: LanguageTab,
-  baseUrl: string = 'https://api.whatsappmsg.com/api/v1'
+  baseUrl: string = 'https://whatsappmsg.com/api/v1'
 ): string => {
   const fullUrl = `${baseUrl}${path}`;
   const bodyString = body ? JSON.stringify(body, null, 2) : '';
@@ -539,7 +539,7 @@ export const Documentation: React.FC = () => {
             <div className="text-xs text-[#5F7069] font-medium px-2 flex items-center gap-1.5 shrink-0">
               <span>Base URL:</span>
               <code className="text-[#006736] font-mono bg-[#E9F9EE] px-2 py-0.5 rounded-lg font-bold border border-[#C4EBD0]">
-                https://api.whatsappmsg.com/api/v1
+                https://whatsappmsg.com/api/v1
               </code>
             </div>
           </div>

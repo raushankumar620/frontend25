@@ -70,7 +70,7 @@ export const BackendSetup: React.FC = () => {
   };
 
   const envVariablesCode = `# WhatsAppMSG API Configuration
-WMSG_API_BASE_URL=https://api.whatsappmsg.com/api/v1
+WMSG_API_BASE_URL=https://whatsappmsg.com/api/v1
 WMSG_API_KEY=wmsg_live_your_api_key_here
 
 # WhatsApp Business Configuration
@@ -84,7 +84,7 @@ WMSG_WEBHOOK_SECRET=your_webhook_secret
 APP_BASE_URL=https://yourdomain.com
 PORT=5000`;
 
-  const envExampleCode = `WMSG_API_BASE_URL=https://api.whatsappmsg.com/api/v1
+  const envExampleCode = `WMSG_API_BASE_URL=https://whatsappmsg.com/api/v1
 WMSG_API_KEY=
 WMSG_PHONE_NUMBER_ID=
 WMSG_WABA_ID=

@@ -27,7 +27,7 @@ export const DeveloperDashboard: React.FC = () => {
     developerService.getApiMetrics().then(setMetrics).catch(() => {});
   }, []);
 
-  const curlExample = `curl -X POST https://api.whatsappmsg.com/api/v1/messages \\
+  const curlExample = `curl -X POST https://whatsappmsg.com/api/v1/messages \\
   -H "x-api-key: wmsg_live_your_secret_key_here" \\
   -H "Content-Type: application/json" \\
   -d '{
