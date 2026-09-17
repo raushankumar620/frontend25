@@ -187,6 +187,11 @@ const ROUTE_HEADER_MAP: Array<{
     subtitle: 'Inspect real-time API traffic, payloads, response codes, and latency.',
   },
   {
+    pattern: '/developers/backend-setup',
+    title: 'Backend Environment Setup',
+    subtitle: 'Configure your backend environment (.env) and credentials for WhatsAppMSG API.',
+  },
+  {
     pattern: '/developers/docs',
     title: 'API Documentation',
     subtitle: 'Interactive endpoints reference, SDKs, and code examples.',

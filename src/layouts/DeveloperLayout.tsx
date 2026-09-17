@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { Code2, Key, Webhook, Terminal, BookOpen, ShieldCheck } from 'lucide-react';
+import { Code2, Key, Webhook, Terminal, BookOpen, ShieldCheck, Server } from 'lucide-react';
 import { ROUTES } from '../utils/constants';
 import { PageContainer } from '../components/layout/PageContainer';
 
@@ -10,6 +10,7 @@ export const DeveloperLayout: React.FC = () => {
     { label: 'API Keys', path: ROUTES.DEVELOPERS_API_KEYS, icon: Key },
     { label: 'Webhooks', path: ROUTES.DEVELOPERS_WEBHOOKS, icon: Webhook },
     { label: 'API Logs', path: ROUTES.DEVELOPERS_API_LOGS, icon: Terminal },
+    { label: 'Backend Setup', path: ROUTES.DEVELOPERS_BACKEND_SETUP, icon: Server, badge: 'New' },
     { label: 'Documentation', path: ROUTES.DEVELOPERS_DOCS, icon: BookOpen },
   ];
 

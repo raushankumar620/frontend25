@@ -62,6 +62,7 @@ export const ROUTES = {
   DEVELOPERS_API_KEYS: '/developers/api-keys',
   DEVELOPERS_WEBHOOKS: '/developers/webhooks',
   DEVELOPERS_API_LOGS: '/developers/logs',
+  DEVELOPERS_BACKEND_SETUP: '/developers/backend-setup',
   DEVELOPERS_DOCS: '/developers/docs',
   
   // Team & Settings

@@ -50,6 +50,7 @@ export const routeConfig = {
     { path: ROUTES.DEVELOPERS_API_KEYS, label: 'API Keys' },
     { path: ROUTES.DEVELOPERS_WEBHOOKS, label: 'Webhooks' },
     { path: ROUTES.DEVELOPERS_API_LOGS, label: 'API Logs' },
+    { path: ROUTES.DEVELOPERS_BACKEND_SETUP, label: 'Backend Setup' },
     { path: ROUTES.DEVELOPERS_DOCS, label: 'Documentation' },
   ],
   superAdmin: [

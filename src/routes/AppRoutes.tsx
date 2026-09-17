@@ -74,6 +74,7 @@ import { DeveloperDashboard } from '../features/developers/pages/DeveloperDashbo
 import { APIKeys } from '../features/developers/pages/APIKeys';
 import { Webhooks } from '../features/developers/pages/Webhooks';
 import { APILogs } from '../features/developers/pages/APILogs';
+import { BackendSetup } from '../features/developers/pages/BackendSetup';
 import { Documentation } from '../features/developers/pages/Documentation';
 
 // Team
@@ -173,6 +174,7 @@ export const AppRoutes: React.FC = () => {
             <Route path={ROUTES.DEVELOPERS_API_KEYS} element={<APIKeys />} />
             <Route path={ROUTES.DEVELOPERS_WEBHOOKS} element={<Webhooks />} />
             <Route path={ROUTES.DEVELOPERS_API_LOGS} element={<APILogs />} />
+            <Route path={ROUTES.DEVELOPERS_BACKEND_SETUP} element={<BackendSetup />} />
             <Route path={ROUTES.DEVELOPERS_DOCS} element={<Documentation />} />
           </Route>
           
