@@ -14,6 +14,7 @@ import {
   Webhook as WebhookIcon,
   Activity,
   AlertTriangle,
+  Smartphone,
 } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Link } from 'react-router-dom';
@@ -28,8 +29,9 @@ type CategoryFilter =
   | 'contacts'
   | 'templates'
   | 'campaigns'
-  | 'account'
+  | 'developer'
   | 'webhooks'
+  | 'whatsapp'
   | 'errors';
 
 /**
@@ -84,7 +86,7 @@ const highlightPostmanCode = (code: string, lang: LanguageTab): string => {
         if (match.includes('http://') || match.includes('https://')) {
           return `<span class="text-[#005CC5] font-semibold underline decoration-[#005CC5]/30">${match}</span>`;
         }
-        if (match.includes('X-API') || match.includes('X-Channel') || match.includes('Content-Type')) {
+        if (match.includes('x-api-key') || match.includes('X-Tenant') || match.includes('Content-Type')) {
           return `<span class="text-[#006736] font-bold">${match}</span>`;
         }
         return `<span class="text-[#006736] font-medium">${match}</span>`;
@@ -116,12 +118,59 @@ const highlightPostmanCode = (code: string, lang: LanguageTab): string => {
 };
 
 /**
+ * Dynamic Code Snippet Generator for cURL, Node.js (Axios), Python (Requests), and PHP
+ */
+const generateCodeSnippet = (
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT',
+  path: string,
+  body: any | null,
+  lang: LanguageTab,
+  baseUrl: string = 'http://localhost:5000/api/v1'
+): string => {
+  const fullUrl = `${baseUrl}${path}`;
+  const bodyString = body ? JSON.stringify(body, null, 2) : '';
+
+  if (lang === 'curl') {
+    if (!body || method === 'GET') {
+      return `curl -X ${method} "${fullUrl}" \\\n  -H "x-api-key: wmsg_live_your_api_key_here"`;
+    }
+    return `curl -X ${method} "${fullUrl}" \\\n  -H "x-api-key: wmsg_live_your_api_key_here" \\\n  -H "Content-Type: application/json" \\\n  -d '${bodyString}'`;
+  }
+
+  if (lang === 'node') {
+    const fn = method.toLowerCase();
+    if (!body || method === 'GET' || method === 'DELETE') {
+      return `const axios = require('axios');\n\nconst response = await axios.${fn}('${fullUrl}', {\n  headers: {\n    'x-api-key': 'wmsg_live_your_api_key_here'\n  }\n});\n\nconsole.log(response.data);`;
+    }
+    return `const axios = require('axios');\n\nconst response = await axios.${fn}('${fullUrl}', ${bodyString}, {\n  headers: {\n    'x-api-key': 'wmsg_live_your_api_key_here',\n    'Content-Type': 'application/json'\n  }\n});\n\nconsole.log(response.data);`;
+  }
+
+  if (lang === 'python') {
+    const fn = method.toLowerCase();
+    if (!body || method === 'GET' || method === 'DELETE') {
+      return `import requests\n\nurl = "${fullUrl}"\nheaders = {\n    "x-api-key": "wmsg_live_your_api_key_here"\n}\n\nresponse = requests.${fn}(url, headers=headers)\nprint(response.json())`;
+    }
+    return `import requests\n\nurl = "${fullUrl}"\nheaders = {\n    "x-api-key": "wmsg_live_your_api_key_here",\n    "Content-Type": "application/json"\n}\npayload = ${bodyString}\n\nresponse = requests.${fn}(url, json=payload, headers=headers)\nprint(response.json())`;
+  }
+
+  if (lang === 'php') {
+    if (!body || method === 'GET' || method === 'DELETE') {
+      return `<?php\n$curl = curl_init();\n\ncurl_setopt_array($curl, [\n  CURLOPT_URL => "${fullUrl}",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => "${method}",\n  CURLOPT_HTTPHEADER => [\n    "x-api-key: wmsg_live_your_api_key_here"\n  ],\n]);\n\n$response = curl_exec($curl);\ncurl_close($curl);\necho $response;`;
+    }
+    return `<?php\n$curl = curl_init();\n\ncurl_setopt_array($curl, [\n  CURLOPT_URL => "${fullUrl}",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => "${method}",\n  CURLOPT_POSTFIELDS => json_encode(${bodyString}),\n  CURLOPT_HTTPHEADER => [\n    "x-api-key: wmsg_live_your_api_key_here",\n    "Content-Type: application/json"\n  ],\n]);\n\n$response = curl_exec($curl);\ncurl_close($curl);\necho $response;`;
+  }
+
+  return '';
+};
+
+/**
  * Method Badge Helper
  */
-const MethodBadge: React.FC<{ method: 'GET' | 'POST' | 'PUT' | 'DELETE' }> = ({ method }) => {
+const MethodBadge: React.FC<{ method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' }> = ({ method }) => {
   const colors = {
     GET: 'bg-blue-50 text-blue-700 border-blue-200',
     POST: 'bg-[#E9F9EE] text-[#006736] border-[#C4EBD0]',
+    PATCH: 'bg-purple-50 text-purple-700 border-purple-200',
     PUT: 'bg-amber-50 text-amber-700 border-amber-200',
     DELETE: 'bg-rose-50 text-rose-700 border-rose-200',
   };
@@ -261,7 +310,7 @@ export const Documentation: React.FC = () => {
       id: 'all',
       label: 'All Endpoints',
       icon: ListTree,
-      count: '14',
+      count: '16',
       activeClasses: 'bg-emerald-50 text-emerald-900 border-emerald-300 font-bold shadow-2xs',
       badgeActive: 'bg-emerald-600 text-white shadow-2xs',
       badgeInactive: 'bg-emerald-100/70 text-emerald-800 border border-emerald-200/70',
@@ -272,7 +321,7 @@ export const Documentation: React.FC = () => {
       id: 'auth',
       label: 'Authentication',
       icon: ShieldCheck,
-      count: 'Headers',
+      count: 'x-api-key',
       activeClasses: 'bg-indigo-50 text-indigo-900 border-indigo-300 font-bold shadow-2xs',
       badgeActive: 'bg-indigo-600 text-white shadow-2xs',
       badgeInactive: 'bg-indigo-100/70 text-indigo-800 border border-indigo-200/70',
@@ -294,7 +343,7 @@ export const Documentation: React.FC = () => {
       id: 'messaging',
       label: 'Messaging',
       icon: MessageSquare,
-      count: '4',
+      count: '5',
       activeClasses: 'bg-sky-50 text-sky-900 border-sky-300 font-bold shadow-2xs',
       badgeActive: 'bg-sky-600 text-white shadow-2xs',
       badgeInactive: 'bg-sky-100/70 text-sky-800 border border-sky-200/70',
@@ -303,9 +352,9 @@ export const Documentation: React.FC = () => {
     },
     {
       id: 'contacts',
-      label: 'Contacts & Groups',
+      label: 'Contacts & Audience',
       icon: Users,
-      count: '7',
+      count: '5',
       activeClasses: 'bg-teal-50 text-teal-900 border-teal-300 font-bold shadow-2xs',
       badgeActive: 'bg-teal-600 text-white shadow-2xs',
       badgeInactive: 'bg-teal-100/70 text-teal-800 border border-teal-200/70',
@@ -316,7 +365,7 @@ export const Documentation: React.FC = () => {
       id: 'templates',
       label: 'Templates',
       icon: LayoutTemplate,
-      count: '1',
+      count: '3',
       activeClasses: 'bg-purple-50 text-purple-900 border-purple-300 font-bold shadow-2xs',
       badgeActive: 'bg-purple-600 text-white shadow-2xs',
       badgeInactive: 'bg-purple-100/70 text-purple-800 border border-purple-200/70',
@@ -327,7 +376,7 @@ export const Documentation: React.FC = () => {
       id: 'campaigns',
       label: 'Campaigns',
       icon: Send,
-      count: '1',
+      count: '4',
       activeClasses: 'bg-rose-50 text-rose-900 border-rose-300 font-bold shadow-2xs',
       badgeActive: 'bg-rose-600 text-white shadow-2xs',
       badgeInactive: 'bg-rose-100/70 text-rose-800 border border-rose-200/70',
@@ -335,10 +384,10 @@ export const Documentation: React.FC = () => {
       iconBg: 'bg-rose-100/80',
     },
     {
-      id: 'account',
-      label: 'Account & Usage',
+      id: 'developer',
+      label: 'Developer & Analytics',
       icon: UserCheck,
-      count: '2',
+      count: '3',
       activeClasses: 'bg-blue-50 text-blue-900 border-blue-300 font-bold shadow-2xs',
       badgeActive: 'bg-blue-600 text-white shadow-2xs',
       badgeInactive: 'bg-blue-100/70 text-blue-800 border border-blue-200/70',
@@ -357,10 +406,21 @@ export const Documentation: React.FC = () => {
       iconBg: 'bg-orange-100/80',
     },
     {
+      id: 'whatsapp',
+      label: 'WhatsApp Accounts',
+      icon: Smartphone,
+      count: '2',
+      activeClasses: 'bg-emerald-50 text-emerald-900 border-emerald-300 font-bold shadow-2xs',
+      badgeActive: 'bg-emerald-600 text-white shadow-2xs',
+      badgeInactive: 'bg-emerald-100/70 text-emerald-800 border border-emerald-200/70',
+      iconColor: 'text-emerald-700',
+      iconBg: 'bg-emerald-100/80',
+    },
+    {
       id: 'errors',
       label: 'HTTP Error Codes',
       icon: AlertTriangle,
-      count: '7',
+      count: '9',
       activeClasses: 'bg-red-50 text-red-900 border-red-300 font-bold shadow-2xs',
       badgeActive: 'bg-red-600 text-white shadow-2xs',
       badgeInactive: 'bg-red-100/70 text-red-800 border border-red-200/70',
@@ -378,7 +438,7 @@ export const Documentation: React.FC = () => {
             WhatsApp Business REST API Reference
           </h3>
           <p className="text-xs text-[#5F7069] mt-0.5">
-            Use the REST API to integrate messaging, contacts, campaigns, and webhooks into your applications.
+            Production-ready REST API for WhatsApp messaging, contacts 360°, broadcast campaigns, templates & webhooks.
           </p>
         </div>
 
@@ -402,6 +462,7 @@ export const Documentation: React.FC = () => {
           {/* Global Language Selector, Response Format (Raw/Pretty), & Base URL Bar */}
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 bg-white p-2.5 rounded-2xl border border-[#E2EAE6] shadow-2xs">
             <div className="flex flex-wrap items-center gap-2">
+              {/* Language Tabs */}
               <div className="flex items-center gap-1 bg-[#F6FAF8] p-1 rounded-xl border border-[#E2EAE6]">
                 {[
                   {
@@ -478,7 +539,7 @@ export const Documentation: React.FC = () => {
             <div className="text-xs text-[#5F7069] font-medium px-2 flex items-center gap-1.5 shrink-0">
               <span>Base URL:</span>
               <code className="text-[#006736] font-mono bg-[#E9F9EE] px-2 py-0.5 rounded-lg font-bold border border-[#C4EBD0]">
-                https://api24.in/api/v1
+                http://localhost:5000/api/v1
               </code>
             </div>
           </div>
@@ -492,53 +553,55 @@ export const Documentation: React.FC = () => {
                     <ShieldCheck className="w-4 h-4 text-[#05A222]" />
                   </div>
                   <div>
-                    <h4 className="text-base font-bold text-[#14201C]">Authentication</h4>
-                    <p className="text-xs text-[#5F7069]">Authenticate all API requests via key and secret headers</p>
+                    <h4 className="text-base font-bold text-[#14201C]">Authentication & Security</h4>
+                    <p className="text-xs text-[#5F7069]">Authenticate API requests via secret API Key or JWT token</p>
                   </div>
                 </div>
                 <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]">
-                  Required Headers
+                  x-api-key Header
                 </span>
               </div>
 
               <p className="text-xs text-[#5F7069] leading-relaxed">
-                All API requests must include your API key and secret in the request headers. You can generate and manage API keys from the Settings page.
-                All responses follow the standard format: <code className="font-mono bg-[#F8FAFC] px-1.5 py-0.5 rounded border border-[#E2EAE6] text-[#006736]">&#123; success: boolean, data?: any, error?: string &#125;</code>
+                Pass your API key in the <code className="font-mono text-[#006736] bg-[#F8FAFC] px-1.5 py-0.5 rounded border border-[#E2EAE6]">x-api-key</code> header or as a Bearer token <code className="font-mono text-[#006736] bg-[#F8FAFC] px-1.5 py-0.5 rounded border border-[#E2EAE6]">Authorization: Bearer wmsg_live_...</code>.
+                Our backend automatically resolves your tenant organization, developer permissions, and rate limits.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                <div className="p-3 bg-white rounded-xl font-mono text-xs border border-[#E2EAE6] shadow-2xs">
-                  <div className="text-[10px] uppercase font-bold text-[#64748B]">Header 1</div>
-                  <div className="text-[#A31515] font-bold mt-1">X-API-Key: <span className="text-[#006736]">YOUR_API_KEY</span></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="p-3.5 bg-white rounded-xl font-mono text-xs border border-[#E2EAE6] shadow-2xs">
+                  <div className="text-[10px] uppercase font-bold text-[#64748B]">Primary Header</div>
+                  <div className="text-[#A31515] font-bold mt-1">x-api-key: <span className="text-[#006736]">wmsg_live_your_api_key_here</span></div>
                 </div>
-                <div className="p-3 bg-white rounded-xl font-mono text-xs border border-[#E2EAE6] shadow-2xs">
-                  <div className="text-[10px] uppercase font-bold text-[#64748B]">Header 2</div>
-                  <div className="text-[#A31515] font-bold mt-1">X-API-Secret: <span className="text-[#006736]">YOUR_API_SECRET</span></div>
+                <div className="p-3.5 bg-white rounded-xl font-mono text-xs border border-[#E2EAE6] shadow-2xs">
+                  <div className="text-[10px] uppercase font-bold text-[#64748B]">Alternative Bearer Header</div>
+                  <div className="text-[#A31515] font-bold mt-1">Authorization: <span className="text-[#006736]">Bearer wmsg_live_your_api_key_here</span></div>
                 </div>
-                <div className="p-3 bg-white rounded-xl font-mono text-xs border border-[#E2EAE6] shadow-2xs">
-                  <div className="text-[10px] uppercase font-bold text-[#64748B]">Header 3 (Optional / Multi-Channel)</div>
-                  <div className="text-[#A31515] font-bold mt-1">X-Channel-Id: <span className="text-[#006736]">YOUR_CHANNEL_ID</span></div>
-                </div>
+              </div>
+
+              {/* Standard Response Envelope Description */}
+              <div className="p-3.5 bg-[#F8FAFC] rounded-xl border border-[#E2EAE6] text-xs text-[#5F7069] space-y-1.5">
+                <div className="font-bold text-[#14201C]">Standard API Response Envelope:</div>
+                <div>All backend responses follow the structured format: <code className="font-mono bg-white px-1.5 py-0.5 rounded border border-[#E2EAE6] text-[#006736] font-bold">&#123; success: boolean, message: string, data?: any, meta?: any &#125;</code></div>
               </div>
 
               {/* Example Authenticated Request */}
               <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC] shadow-2xs">
                 <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono text-[#475569]">
-                  <span className="font-bold">Example Authenticated Request (GET /api/v1/account)</span>
+                  <span className="font-bold">Example Authenticated Ping (GET /api/v1/developer/metrics)</span>
                   <button
-                    onClick={() => handleCopy('auth_curl', `curl -X GET "https://api24.in/api/v1/account" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID"`)}
+                    onClick={() => handleCopy('auth_snippet', generateCodeSnippet('GET', '/developer/metrics', null, activeLang))}
                     className="flex items-center gap-1 text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
                   >
-                    {copiedId === 'auth_curl' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedId === 'auth_curl' ? 'Copied' : 'Copy cURL'}</span>
+                    {copiedId === 'auth_snippet' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedId === 'auth_snippet' ? 'Copied' : `Copy ${activeLang.toUpperCase()}`}</span>
                   </button>
                 </div>
                 <div className="p-4 bg-white overflow-x-auto">
                   <pre
                     dangerouslySetInnerHTML={{
                       __html: highlightPostmanCode(
-                        `curl -X GET "https://api24.in/api/v1/account" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID"`,
-                        'curl'
+                        generateCodeSnippet('GET', '/developer/metrics', null, activeLang),
+                        activeLang
                       ),
                     }}
                     className="font-mono text-xs leading-relaxed text-[#0F172A]"
@@ -557,8 +620,8 @@ export const Documentation: React.FC = () => {
                     <Activity className="w-4 h-4 text-amber-600" />
                   </div>
                   <div>
-                    <h4 className="text-base font-bold text-[#14201C]">Rate Limiting</h4>
-                    <p className="text-xs text-[#5F7069]">Monthly request quotas and per-minute threshold protection</p>
+                    <h4 className="text-base font-bold text-[#14201C]">Rate Limiting & Headers</h4>
+                    <p className="text-xs text-[#5F7069]">Automatic per-minute rate protection and response headers</p>
                   </div>
                 </div>
                 <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
@@ -567,17 +630,22 @@ export const Documentation: React.FC = () => {
               </div>
 
               <p className="text-xs text-[#5F7069] leading-relaxed">
-                API usage is rate-limited based on your subscription plan. Exceeding limits will result in a 429 status code response.
+                Every API response includes rate limit headers allowing client applications to track capacity in real-time.
+                Default rate limit is <strong>120 requests/minute</strong> per API key.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2EAE6] space-y-1">
-                  <h5 className="text-xs font-bold text-[#14201C]">Monthly Request Limit</h5>
-                  <p className="text-[11px] text-[#5F7069]">Total API requests allowed per calendar month, based on your subscription plan.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 font-mono text-xs">
+                <div className="p-3 bg-[#F8FAFC] rounded-xl border border-[#E2EAE6]">
+                  <div className="text-[10px] uppercase font-bold text-[#64748B]">X-RateLimit-Limit</div>
+                  <div className="text-[#006736] font-bold mt-1">120 <span className="font-normal text-[11px] text-[#64748B]">(req / min)</span></div>
                 </div>
-                <div className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2EAE6] space-y-1">
-                  <h5 className="text-xs font-bold text-[#14201C]">Per-Minute Rate Limit</h5>
-                  <p className="text-[11px] text-[#5F7069]">Maximum number of requests allowed per minute to prevent abuse and ensure high availability.</p>
+                <div className="p-3 bg-[#F8FAFC] rounded-xl border border-[#E2EAE6]">
+                  <div className="text-[10px] uppercase font-bold text-[#64748B]">X-RateLimit-Remaining</div>
+                  <div className="text-[#006736] font-bold mt-1">119 <span className="font-normal text-[11px] text-[#64748B]">(remaining)</span></div>
+                </div>
+                <div className="p-3 bg-[#F8FAFC] rounded-xl border border-[#E2EAE6]">
+                  <div className="text-[10px] uppercase font-bold text-[#64748B]">X-RateLimit-Reset</div>
+                  <div className="text-[#006736] font-bold mt-1">1726570000 <span className="font-normal text-[11px] text-[#64748B]">(unix)</span></div>
                 </div>
               </div>
 
@@ -587,9 +655,9 @@ export const Documentation: React.FC = () => {
                   responseMode={responseMode}
                   statusCode={429}
                   statusText="Too Many Requests"
-                  timeMs={32}
-                  sizeBytes={96}
-                  jsonBody={`{\n  "success": false,\n  "error": "Rate limit exceeded. Please try again later."\n}`}
+                  timeMs={24}
+                  sizeBytes={118}
+                  jsonBody={`{\n  "success": false,\n  "message": "Rate limit exceeded. Please try again after 60 seconds.",\n  "errorCode": "RATE_LIMIT_EXCEEDED",\n  "errors": null\n}`}
                 />
               </div>
             </div>
@@ -603,37 +671,77 @@ export const Documentation: React.FC = () => {
                 <h3 className="text-base font-extrabold text-[#14201C]">Messaging Endpoints</h3>
               </div>
 
-              {/* Endpoint 1: POST /api/v1/messages/template */}
+              {/* Endpoint 1: POST /api/v1/messages (Text Message) */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
                     <MethodBadge method="POST" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/messages/template</code>
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/messages</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Send Meta pre-approved template message</span>
+                  <span className="text-xs text-[#5F7069] font-medium">Send real-time conversational text message</span>
                 </div>
 
-                <div className="p-3 bg-[#F8FAFC] rounded-xl text-xs text-[#5F7069] border border-[#E2EAE6] leading-relaxed">
-                  <strong>Phone format:</strong> Digits only with country code, no spaces or + sign (e.g. <code className="font-mono text-[#006736] font-bold">919876543210</code> for India, <code className="font-mono text-[#006736] font-bold">14155552671</code> for US).
-                </div>
-
-                {/* Request */}
                 <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC]">
                   <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono">
-                    <span className="font-bold text-[#475569]">Request Body (JSON)</span>
+                    <span className="font-bold text-[#475569]">Request Payload (Text Message)</span>
                     <button
-                      onClick={() => handleCopy('msg_tpl', `curl -X POST "https://api24.in/api/v1/messages/template" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n  "to": "919876543210",\n  "templateName": "hello_world",\n  "language": "en_US",\n  "components": [\n    {\n      "type": "body",\n      "parameters": [\n        { "type": "text", "text": "John Doe" },\n        { "type": "text", "text": "ORD-12345" }\n      ]\n    }\n  ]\n}'`)}
+                      onClick={() => handleCopy('msg_text', generateCodeSnippet('POST', '/messages', { to: '+919876543210', type: 'text', text: 'Hello Alex! Your appointment has been booked for tomorrow at 3:00 PM.' }, activeLang))}
+                      className="flex items-center gap-1 text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                    >
+                      {copiedId === 'msg_text' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedId === 'msg_text' ? 'Copied' : `Copy ${activeLang.toUpperCase()}`}</span>
+                    </button>
+                  </div>
+                  <div className="p-4 bg-white overflow-x-auto">
+                    <pre
+                      dangerouslySetInnerHTML={{
+                        __html: highlightPostmanCode(
+                          generateCodeSnippet('POST', '/messages', { to: '+919876543210', type: 'text', text: 'Hello Alex! Your appointment has been booked for tomorrow at 3:00 PM.' }, activeLang),
+                          activeLang
+                        ),
+                      }}
+                      className="font-mono text-xs leading-relaxed text-[#0F172A]"
+                    />
+                  </div>
+                </div>
+
+                <PostmanResponseViewer
+                  responseMode={responseMode}
+                  statusCode={201}
+                  statusText="Created"
+                  timeMs={142}
+                  sizeBytes={285}
+                  jsonBody={`{\n  "success": true,\n  "message": "Message dispatched successfully",\n  "data": {\n    "_id": "664f1a2b8e4b2a001c9a1234",\n    "organizationId": "664f1a2b8e4b2a001c9a1111",\n    "wamid": "wamid.HBgLMjA0ODk4M...",\n    "to": "919876543210",\n    "from": "15550001234",\n    "type": "text",\n    "direction": "OUTBOUND",\n    "status": "SENT",\n    "sentAt": "2026-09-17T10:30:00.000Z",\n    "createdAt": "2026-09-17T10:30:00.000Z"\n  }\n}`}
+                />
+              </div>
+
+              {/* Endpoint 2: POST /api/v1/messages (Approved Template) */}
+              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
+                  <div className="flex items-center gap-2">
+                    <MethodBadge method="POST" />
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/messages</code>
+                    <span className="text-[11px] font-bold text-[#006736] bg-[#E9F9EE] px-2 py-0.5 rounded border border-[#C4EBD0]">type: template</span>
+                  </div>
+                  <span className="text-xs text-[#5F7069] font-medium">Dispatches pre-approved Meta WhatsApp templates outside 24h window</span>
+                </div>
+
+                <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC]">
+                  <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono">
+                    <span className="font-bold text-[#475569]">Request Payload (Meta Template)</span>
+                    <button
+                      onClick={() => handleCopy('msg_tpl', generateCodeSnippet('POST', '/messages', { to: '+919876543210', type: 'template', templateName: 'order_confirmation', languageCode: 'en_US', components: [{ type: 'body', parameters: [{ type: 'text', text: 'Alex Johnson' }, { type: 'text', text: '#ORD-9982' }] }] }, activeLang))}
                       className="flex items-center gap-1 text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
                     >
                       {copiedId === 'msg_tpl' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedId === 'msg_tpl' ? 'Copied' : 'Copy cURL'}</span>
+                      <span>{copiedId === 'msg_tpl' ? 'Copied' : `Copy ${activeLang.toUpperCase()}`}</span>
                     </button>
                   </div>
                   <div className="p-4 bg-white overflow-x-auto">
                     <pre
                       dangerouslySetInnerHTML={{
                         __html: highlightPostmanCode(
-                          `curl -X POST "https://api24.in/api/v1/messages/template" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n  "to": "919876543210",\n  "templateName": "hello_world",\n  "language": "en_US",\n  "components": [\n    {\n      "type": "body",\n      "parameters": [\n        { "type": "text", "text": "John Doe" },\n        { "type": "text", "text": "ORD-12345" }\n      ]\n    }\n  ]\n}'`,
+                          generateCodeSnippet('POST', '/messages', { to: '+919876543210', type: 'template', templateName: 'order_confirmation', languageCode: 'en_US', components: [{ type: 'body', parameters: [{ type: 'text', text: 'Alex Johnson' }, { type: 'text', text: '#ORD-9982' }] }] }, activeLang),
                           activeLang
                         ),
                       }}
@@ -642,47 +750,87 @@ export const Documentation: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Response */}
                 <PostmanResponseViewer
                   responseMode={responseMode}
-                  statusCode={200}
-                  statusText="OK"
-                  timeMs={154}
-                  sizeBytes={228}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "messageId": "uuid-xxx",\n    "whatsappMessageId": "wamid.xxx",\n    "contactId": "uuid-xxx",\n    "conversationId": "uuid-xxx",\n    "status": "sent"\n  }\n}`}
+                  statusCode={201}
+                  statusText="Created"
+                  timeMs={168}
+                  sizeBytes={295}
+                  jsonBody={`{\n  "success": true,\n  "message": "Message dispatched successfully",\n  "data": {\n    "_id": "664f1a2b8e4b2a001c9a1235",\n    "wamid": "wamid.HBgLMjA0ODk4M...",\n    "to": "919876543210",\n    "type": "template",\n    "direction": "OUTBOUND",\n    "status": "SENT",\n    "sentAt": "2026-09-17T10:31:00.000Z"\n  }\n}`}
                 />
               </div>
 
-              {/* Endpoint 2: POST /api/v1/messages/reply */}
+              {/* Endpoint 3: POST /api/v1/messages (Media: Image / Document / Video) */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
                     <MethodBadge method="POST" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/messages/reply</code>
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/messages</code>
+                    <span className="text-[11px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">type: image | document | video</span>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Send free-text reply within 24-hr customer service window</span>
-                </div>
-
-                <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-xl text-xs text-amber-900 leading-relaxed">
-                  <strong>24-Hour Service Window:</strong> This endpoint only works when the contact has sent you an inbound message in the last 24 hours. If the window has expired, use the template message endpoint instead.
+                  <span className="text-xs text-[#5F7069] font-medium">Send media attachment with optional caption</span>
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC]">
                   <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono">
-                    <span className="font-bold text-[#475569]">Request Payload (24h Reply)</span>
+                    <span className="font-bold text-[#475569]">Request Payload (Media Message)</span>
                     <button
-                      onClick={() => handleCopy('msg_reply', `curl -X POST "https://api24.in/api/v1/messages/reply" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n  "to": "919876543210",\n  "message": "Hello! Your order has been shipped."\n}'`)}
+                      onClick={() => handleCopy('msg_media', generateCodeSnippet('POST', '/messages', { to: '+919876543210', type: 'image', mediaUrl: 'https://images.unsplash.com/photo-1579208575657-c595a05383b7', caption: 'Your monthly invoice statement' }, activeLang))}
                       className="flex items-center gap-1 text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
                     >
-                      {copiedId === 'msg_reply' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedId === 'msg_reply' ? 'Copied' : 'Copy cURL'}</span>
+                      {copiedId === 'msg_media' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedId === 'msg_media' ? 'Copied' : `Copy ${activeLang.toUpperCase()}`}</span>
                     </button>
                   </div>
                   <div className="p-4 bg-white overflow-x-auto">
                     <pre
                       dangerouslySetInnerHTML={{
                         __html: highlightPostmanCode(
-                          `curl -X POST "https://api24.in/api/v1/messages/reply" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n  "to": "919876543210",\n  "message": "Hello! Your order has been shipped."\n}'`,
+                          generateCodeSnippet('POST', '/messages', { to: '+919876543210', type: 'image', mediaUrl: 'https://images.unsplash.com/photo-1579208575657-c595a05383b7', caption: 'Your monthly invoice statement' }, activeLang),
+                          activeLang
+                        ),
+                      }}
+                      className="font-mono text-xs leading-relaxed text-[#0F172A]"
+                    />
+                  </div>
+                </div>
+
+                <PostmanResponseViewer
+                  responseMode={responseMode}
+                  statusCode={201}
+                  statusText="Created"
+                  timeMs={182}
+                  sizeBytes={310}
+                  jsonBody={`{\n  "success": true,\n  "message": "Message dispatched successfully",\n  "data": {\n    "_id": "664f1a2b8e4b2a001c9a1236",\n    "wamid": "wamid.HBgLMjA0ODk4M...",\n    "to": "919876543210",\n    "type": "image",\n    "status": "SENT",\n    "content": {\n      "url": "https://images.unsplash.com/photo-1579208575657-c595a05383b7",\n      "caption": "Your monthly invoice statement"\n    }\n  }\n}`}
+                />
+              </div>
+
+              {/* Endpoint 4: GET /api/v1/messages */}
+              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
+                  <div className="flex items-center gap-2">
+                    <MethodBadge method="GET" />
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/messages</code>
+                  </div>
+                  <span className="text-xs text-[#5F7069] font-medium">List messages with pagination & filters (?page=1&limit=20&status=SENT&to=919876543210)</span>
+                </div>
+
+                <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC]">
+                  <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono">
+                    <span className="font-bold text-[#475569]">Request URL</span>
+                    <button
+                      onClick={() => handleCopy('msg_list', generateCodeSnippet('GET', '/messages?page=1&limit=20&status=SENT', null, activeLang))}
+                      className="flex items-center gap-1 text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                    >
+                      {copiedId === 'msg_list' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedId === 'msg_list' ? 'Copied' : `Copy ${activeLang.toUpperCase()}`}</span>
+                    </button>
+                  </div>
+                  <div className="p-4 bg-white overflow-x-auto">
+                    <pre
+                      dangerouslySetInnerHTML={{
+                        __html: highlightPostmanCode(
+                          generateCodeSnippet('GET', '/messages?page=1&limit=20&status=SENT', null, activeLang),
                           activeLang
                         ),
                       }}
@@ -695,88 +843,20 @@ export const Documentation: React.FC = () => {
                   responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
-                  timeMs={118}
-                  sizeBytes={180}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "messageId": "uuid-xxx",\n    "whatsappMessageId": "wamid.xxx",\n    "status": "sent"\n  }\n}`}
+                  timeMs={78}
+                  sizeBytes={380}
+                  jsonBody={`{\n  "success": true,\n  "message": "Messages retrieved successfully",\n  "data": {\n    "messages": [\n      {\n        "_id": "664f1a2b8e4b2a001c9a1234",\n        "to": "919876543210",\n        "type": "text",\n        "direction": "OUTBOUND",\n        "status": "DELIVERED",\n        "content": { "body": "Hello Alex!" },\n        "sentAt": "2026-09-17T10:30:00.000Z",\n        "deliveredAt": "2026-09-17T10:30:02.000Z"\n      }\n    ],\n    "pagination": {\n      "total": 450,\n      "page": 1,\n      "limit": 20,\n      "pages": 23\n    }\n  }\n}`}
                 />
               </div>
 
-              {/* Endpoint 3: GET /api/v1/messages/:contactPhone */}
+              {/* Endpoint 5: GET /api/v1/messages/:id */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
                     <MethodBadge method="GET" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/messages/:contactPhone</code>
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/messages/:id</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Get message history for a contact (?limit=50&offset=0)</span>
-                </div>
-
-                <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC]">
-                  <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono">
-                    <span className="font-bold text-[#475569]">Request URL</span>
-                    <button
-                      onClick={() => handleCopy('msg_hist', `curl -X GET "https://api24.in/api/v1/messages/919876543210?limit=50&offset=0" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID"`)}
-                      className="flex items-center gap-1 text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
-                    >
-                      {copiedId === 'msg_hist' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedId === 'msg_hist' ? 'Copied' : 'Copy cURL'}</span>
-                    </button>
-                  </div>
-                  <div className="p-4 bg-white overflow-x-auto">
-                    <pre
-                      dangerouslySetInnerHTML={{
-                        __html: highlightPostmanCode(
-                          `curl -X GET "https://api24.in/api/v1/messages/919876543210?limit=50&offset=0" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID"`,
-                          activeLang
-                        ),
-                      }}
-                      className="font-mono text-xs leading-relaxed text-[#0F172A]"
-                    />
-                  </div>
-                </div>
-
-                <PostmanResponseViewer
-                  responseMode={responseMode}
-                  statusCode={200}
-                  statusText="OK"
-                  timeMs={85}
-                  sizeBytes={142}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "messages": [],\n    "total": 0,\n    "limit": 50,\n    "offset": 0\n  }\n}`}
-                />
-              </div>
-
-              {/* Endpoint 4: GET /api/v1/messages/status/:messageId */}
-              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
-                  <div className="flex items-center gap-2">
-                    <MethodBadge method="GET" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/messages/status/:messageId</code>
-                  </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Get delivery and read status of a message</span>
-                </div>
-
-                <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC]">
-                  <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono">
-                    <span className="font-bold text-[#475569]">Request URL</span>
-                    <button
-                      onClick={() => handleCopy('msg_stat', `curl -X GET "https://api24.in/api/v1/messages/status/uuid-xxx" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID"`)}
-                      className="flex items-center gap-1 text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
-                    >
-                      {copiedId === 'msg_stat' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedId === 'msg_stat' ? 'Copied' : 'Copy cURL'}</span>
-                    </button>
-                  </div>
-                  <div className="p-4 bg-white overflow-x-auto">
-                    <pre
-                      dangerouslySetInnerHTML={{
-                        __html: highlightPostmanCode(
-                          `curl -X GET "https://api24.in/api/v1/messages/status/uuid-xxx" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID"`,
-                          activeLang
-                        ),
-                      }}
-                      className="font-mono text-xs leading-relaxed text-[#0F172A]"
-                    />
-                  </div>
+                  <span className="text-xs text-[#5F7069] font-medium">Get delivery receipts and read status for a single message</span>
                 </div>
 
                 <PostmanResponseViewer
@@ -784,19 +864,19 @@ export const Documentation: React.FC = () => {
                   statusCode={200}
                   statusText="OK"
                   timeMs={62}
-                  sizeBytes={270}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "id": "uuid-xxx",\n    "whatsappMessageId": "wamid.xxx",\n    "status": "delivered",\n    "deliveredAt": "2026-09-17T12:00:00Z",\n    "readAt": null,\n    "errorCode": null,\n    "errorMessage": null,\n    "createdAt": "2026-09-17T11:59:00Z"\n  }\n}`}
+                  sizeBytes={295}
+                  jsonBody={`{\n  "success": true,\n  "message": "Message details retrieved successfully",\n  "data": {\n    "_id": "664f1a2b8e4b2a001c9a1234",\n    "wamid": "wamid.HBgLMjA0ODk4M...",\n    "to": "919876543210",\n    "from": "15550001234",\n    "direction": "OUTBOUND",\n    "status": "READ",\n    "type": "text",\n    "content": { "body": "Hello Alex!" },\n    "sentAt": "2026-09-17T10:30:00.000Z",\n    "deliveredAt": "2026-09-17T10:30:02.000Z",\n    "readAt": "2026-09-17T10:30:15.000Z"\n  }\n}`}
                 />
               </div>
             </div>
           )}
 
-          {/* SECTION: CONTACTS & GROUPS */}
+          {/* SECTION: CONTACTS & AUDIENCE */}
           {(selectedCategory === 'all' || selectedCategory === 'contacts') && (
             <div id="contacts" className="space-y-6">
               <div className="flex items-center gap-2 border-b border-[#E2EAE6] pb-2">
                 <Users className="w-5 h-5 text-[#05A222]" />
-                <h3 className="text-base font-extrabold text-[#14201C]">Contacts & Groups Endpoints</h3>
+                <h3 className="text-base font-extrabold text-[#14201C]">Contacts & Audience Endpoints</h3>
               </div>
 
               {/* 1. GET /api/v1/contacts */}
@@ -806,7 +886,7 @@ export const Documentation: React.FC = () => {
                     <MethodBadge method="GET" />
                     <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/contacts</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">List all contacts with optional filters (?search=&limit=50&offset=0&groupId=)</span>
+                  <span className="text-xs text-[#5F7069] font-medium">List all contacts with filters (?page=1&limit=20&search=Alex&tag=VIP)</span>
                 </div>
 
                 <PostmanResponseViewer
@@ -814,8 +894,8 @@ export const Documentation: React.FC = () => {
                   statusCode={200}
                   statusText="OK"
                   timeMs={75}
-                  sizeBytes={115}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "contacts": [],\n    "total": 0\n  }\n}`}
+                  sizeBytes={340}
+                  jsonBody={`{\n  "success": true,\n  "message": "Contacts retrieved successfully",\n  "data": {\n    "contacts": [\n      {\n        "_id": "664f2b1a8e4b2a001c9a5678",\n        "phoneNumber": "+919876543210",\n        "name": "Alex Johnson",\n        "email": "alex@example.com",\n        "tags": ["VIP", "Customer"],\n        "optInStatus": "OPTED_IN",\n        "isSubscribed": true,\n        "createdAt": "2026-09-17T09:00:00.000Z"\n      }\n    ],\n    "pagination": {\n      "total": 1280,\n      "page": 1,\n      "limit": 20,\n      "pages": 64\n    }\n  }\n}`}
                 />
               </div>
 
@@ -826,25 +906,25 @@ export const Documentation: React.FC = () => {
                     <MethodBadge method="POST" />
                     <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/contacts</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Create a new contact (Returns 409 Conflict if phone exists)</span>
+                  <span className="text-xs text-[#5F7069] font-medium">Create a new contact (Returns 409 Conflict if phoneNumber exists)</span>
                 </div>
 
                 <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC]">
                   <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono">
-                    <span className="font-bold text-[#475569]">Request Payload</span>
+                    <span className="font-bold text-[#475569]">Request Payload (Create Contact)</span>
                     <button
-                      onClick={() => handleCopy('cnt_create', `curl -X POST "https://api24.in/api/v1/contacts" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n  "phone": "919876543210",\n  "name": "John Doe",\n  "email": "john@example.com"\n}'`)}
+                      onClick={() => handleCopy('cnt_create', generateCodeSnippet('POST', '/contacts', { phoneNumber: '+919876543210', name: 'Alex Johnson', email: 'alex@example.com', tags: ['VIP', 'Lead'], customAttributes: { company: 'Acme Corp', city: 'Mumbai' } }, activeLang))}
                       className="flex items-center gap-1 text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
                     >
                       {copiedId === 'cnt_create' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedId === 'cnt_create' ? 'Copied' : 'Copy cURL'}</span>
+                      <span>{copiedId === 'cnt_create' ? 'Copied' : `Copy ${activeLang.toUpperCase()}`}</span>
                     </button>
                   </div>
                   <div className="p-4 bg-white overflow-x-auto">
                     <pre
                       dangerouslySetInnerHTML={{
                         __html: highlightPostmanCode(
-                          `curl -X POST "https://api24.in/api/v1/contacts" \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "X-API-Secret: YOUR_API_SECRET" \\\n  -H "X-Channel-Id: YOUR_CHANNEL_ID" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n  "phone": "919876543210",\n  "name": "John Doe",\n  "email": "john@example.com"\n}'`,
+                          generateCodeSnippet('POST', '/contacts', { phoneNumber: '+919876543210', name: 'Alex Johnson', email: 'alex@example.com', tags: ['VIP', 'Lead'], customAttributes: { company: 'Acme Corp', city: 'Mumbai' } }, activeLang),
                           activeLang
                         ),
                       }}
@@ -858,19 +938,19 @@ export const Documentation: React.FC = () => {
                   statusCode={201}
                   statusText="Created"
                   timeMs={124}
-                  sizeBytes={160}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "id": "uuid-xxx",\n    "phone": "919876543210",\n    "name": "John Doe"\n  }\n}`}
+                  sizeBytes={260}
+                  jsonBody={`{\n  "success": true,\n  "message": "Contact created successfully",\n  "data": {\n    "_id": "664f2b1a8e4b2a001c9a5678",\n    "phoneNumber": "+919876543210",\n    "name": "Alex Johnson",\n    "email": "alex@example.com",\n    "tags": ["VIP", "Lead"],\n    "optInStatus": "OPTED_IN",\n    "isSubscribed": true\n  }\n}`}
                 />
               </div>
 
-              {/* 3. PUT /api/v1/contacts/:id */}
+              {/* 3. PATCH /api/v1/contacts/:id */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
-                    <MethodBadge method="PUT" />
+                    <MethodBadge method="PATCH" />
                     <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/contacts/:id</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Update an existing contact's name or email</span>
+                  <span className="text-xs text-[#5F7069] font-medium">Update contact profile, tags, or custom attributes</span>
                 </div>
 
                 <PostmanResponseViewer
@@ -878,8 +958,8 @@ export const Documentation: React.FC = () => {
                   statusCode={200}
                   statusText="OK"
                   timeMs={98}
-                  sizeBytes={172}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "id": "uuid-xxx",\n    "name": "John Updated"\n  }\n}`}
+                  sizeBytes={240}
+                  jsonBody={`{\n  "success": true,\n  "message": "Contact updated successfully",\n  "data": {\n    "_id": "664f2b1a8e4b2a001c9a5678",\n    "name": "Alex J. Updated",\n    "tags": ["VIP", "High-Value"]\n  }\n}`}
                 />
               </div>
 
@@ -890,7 +970,7 @@ export const Documentation: React.FC = () => {
                     <MethodBadge method="DELETE" />
                     <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/contacts/:id</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Delete a contact permanently</span>
+                  <span className="text-xs text-[#5F7069] font-medium">Delete contact permanently</span>
                 </div>
 
                 <PostmanResponseViewer
@@ -898,68 +978,28 @@ export const Documentation: React.FC = () => {
                   statusCode={200}
                   statusText="OK"
                   timeMs={78}
-                  sizeBytes={110}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "message": "Contact deleted successfully"\n  }\n}`}
+                  sizeBytes={120}
+                  jsonBody={`{\n  "success": true,\n  "message": "Contact deleted successfully",\n  "data": null\n}`}
                 />
               </div>
 
-              {/* 5. GET /api/v1/contacts/groups */}
-              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
-                  <div className="flex items-center gap-2">
-                    <MethodBadge method="GET" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/contacts/groups</code>
-                  </div>
-                  <span className="text-xs text-[#5F7069] font-medium">List all contact groups</span>
-                </div>
-
-                <PostmanResponseViewer
-                  responseMode={responseMode}
-                  statusCode={200}
-                  statusText="OK"
-                  timeMs={55}
-                  sizeBytes={70}
-                  jsonBody={`{\n  "success": true,\n  "data": []\n}`}
-                />
-              </div>
-
-              {/* 6. POST /api/v1/contacts/groups/:groupId/add */}
+              {/* 5. POST /api/v1/contacts/bulk-import */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
                     <MethodBadge method="POST" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/contacts/groups/:groupId/add</code>
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/contacts/bulk-import</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Add contact to group</span>
+                  <span className="text-xs text-[#5F7069] font-medium">Bulk import contacts with duplicate handling</span>
                 </div>
 
                 <PostmanResponseViewer
                   responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
-                  timeMs={92}
-                  sizeBytes={108}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "message": "Contact added to group"\n  }\n}`}
-                />
-              </div>
-
-              {/* 7. POST /api/v1/contacts/groups/:groupId/remove */}
-              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
-                  <div className="flex items-center gap-2">
-                    <MethodBadge method="POST" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/contacts/groups/:groupId/remove</code>
-                  </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Remove contact from group</span>
-                </div>
-
-                <PostmanResponseViewer
-                  responseMode={responseMode}
-                  statusCode={200}
-                  statusText="OK"
-                  timeMs={88}
-                  sizeBytes={112}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "message": "Contact removed from group"\n  }\n}`}
+                  timeMs={245}
+                  sizeBytes={180}
+                  jsonBody={`{\n  "success": true,\n  "message": "Bulk import completed",\n  "data": {\n    "imported": 250,\n    "updated": 12,\n    "failed": 0\n  }\n}`}
                 />
               </div>
             </div>
@@ -973,26 +1013,63 @@ export const Documentation: React.FC = () => {
                 <h3 className="text-base font-extrabold text-[#14201C]">Templates Endpoints</h3>
               </div>
 
+              {/* GET /api/v1/templates */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
                     <MethodBadge method="GET" />
                     <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/templates</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">List all message templates (?status=APPROVED)</span>
+                  <span className="text-xs text-[#5F7069] font-medium">List all WhatsApp templates (?status=APPROVED&category=MARKETING)</span>
                 </div>
-
-                <p className="text-xs text-[#5F7069] leading-relaxed">
-                  Filter by status to get only approved templates ready for sending. Common status values: <code className="font-mono text-[#006736] font-bold">APPROVED</code>, <code className="font-mono text-amber-600 font-bold">PENDING</code>, <code className="font-mono text-rose-600 font-bold">REJECTED</code>.
-                </p>
 
                 <PostmanResponseViewer
                   responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={105}
-                  sizeBytes={210}
-                  jsonBody={`{\n  "success": true,\n  "data": [\n    {\n      "id": "uuid-xxx",\n      "name": "hello_world",\n      "status": "APPROVED",\n      "language": "en_US",\n      "category": "MARKETING"\n    }\n  ]\n}`}
+                  sizeBytes={340}
+                  jsonBody={`{\n  "success": true,\n  "message": "Templates retrieved successfully",\n  "data": [\n    {\n      "_id": "664f3c2a8e4b2a001c9a9999",\n      "name": "order_confirmation",\n      "language": "en_US",\n      "category": "UTILITY",\n      "status": "APPROVED",\n      "components": [\n        {\n          "type": "BODY",\n          "text": "Hi {{1}}, your order #{{2}} is confirmed!"\n        }\n      ]\n    }\n  ]\n}`}
+                />
+              </div>
+
+              {/* POST /api/v1/templates */}
+              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
+                  <div className="flex items-center gap-2">
+                    <MethodBadge method="POST" />
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/templates</code>
+                  </div>
+                  <span className="text-xs text-[#5F7069] font-medium">Create and submit template to Meta for review</span>
+                </div>
+
+                <PostmanResponseViewer
+                  responseMode={responseMode}
+                  statusCode={201}
+                  statusText="Created"
+                  timeMs={220}
+                  sizeBytes={260}
+                  jsonBody={`{\n  "success": true,\n  "message": "Template created and submitted to Meta",\n  "data": {\n    "_id": "664f3c2a8e4b2a001c9a9998",\n    "name": "seasonal_promo_v1",\n    "category": "MARKETING",\n    "status": "PENDING"\n  }\n}`}
+                />
+              </div>
+
+              {/* POST /api/v1/templates/sync */}
+              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
+                  <div className="flex items-center gap-2">
+                    <MethodBadge method="POST" />
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/templates/sync</code>
+                  </div>
+                  <span className="text-xs text-[#5F7069] font-medium">Synchronize template statuses from Meta Cloud API</span>
+                </div>
+
+                <PostmanResponseViewer
+                  responseMode={responseMode}
+                  statusCode={200}
+                  statusText="OK"
+                  timeMs={410}
+                  sizeBytes={160}
+                  jsonBody={`{\n  "success": true,\n  "message": "Templates synchronized with Meta",\n  "data": {\n    "synced": 8,\n    "updated": 2\n  }\n}`}
                 />
               </div>
             </div>
@@ -1006,13 +1083,14 @@ export const Documentation: React.FC = () => {
                 <h3 className="text-base font-extrabold text-[#14201C]">Campaigns Endpoints</h3>
               </div>
 
+              {/* GET /api/v1/campaigns */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
                     <MethodBadge method="GET" />
                     <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/campaigns</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">List all broadcast campaigns with optional filters (?status=completed&limit=10&offset=0)</span>
+                  <span className="text-xs text-[#5F7069] font-medium">List all campaigns (?page=1&limit=10&status=COMPLETED)</span>
                 </div>
 
                 <PostmanResponseViewer
@@ -1020,29 +1098,89 @@ export const Documentation: React.FC = () => {
                   statusCode={200}
                   statusText="OK"
                   timeMs={114}
-                  sizeBytes={148}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "campaigns": [],\n    "total": 0,\n    "limit": 10,\n    "offset": 0\n  }\n}`}
+                  sizeBytes={320}
+                  jsonBody={`{\n  "success": true,\n  "message": "Campaigns retrieved successfully",\n  "data": {\n    "campaigns": [\n      {\n        "_id": "664f4d3a8e4b2a001c9a7777",\n        "name": "Diwali Special Offer 2026",\n        "status": "COMPLETED",\n        "totalRecipients": 1500,\n        "sentCount": 1500,\n        "deliveredCount": 1482,\n        "readCount": 1120\n      }\n    ],\n    "pagination": {\n      "total": 12,\n      "page": 1,\n      "limit": 10\n    }\n  }\n}`}
+                />
+              </div>
+
+              {/* POST /api/v1/campaigns */}
+              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
+                  <div className="flex items-center gap-2">
+                    <MethodBadge method="POST" />
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/campaigns</code>
+                  </div>
+                  <span className="text-xs text-[#5F7069] font-medium">Create a new broadcast campaign</span>
+                </div>
+
+                <PostmanResponseViewer
+                  responseMode={responseMode}
+                  statusCode={201}
+                  statusText="Created"
+                  timeMs={156}
+                  sizeBytes={270}
+                  jsonBody={`{\n  "success": true,\n  "message": "Campaign created successfully",\n  "data": {\n    "_id": "664f4d3a8e4b2a001c9a7778",\n    "name": "Flash Sale Friday",\n    "status": "DRAFT",\n    "totalRecipients": 420,\n    "createdAt": "2026-09-17T11:00:00.000Z"\n  }\n}`}
+                />
+              </div>
+
+              {/* POST /api/v1/campaigns/:id/start */}
+              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
+                  <div className="flex items-center gap-2">
+                    <MethodBadge method="POST" />
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/campaigns/:id/start</code>
+                  </div>
+                  <span className="text-xs text-[#5F7069] font-medium">Start campaign broadcast queue execution</span>
+                </div>
+
+                <PostmanResponseViewer
+                  responseMode={responseMode}
+                  statusCode={200}
+                  statusText="OK"
+                  timeMs={95}
+                  sizeBytes={175}
+                  jsonBody={`{\n  "success": true,\n  "message": "Campaign queued and started successfully",\n  "data": {\n    "campaignId": "664f4d3a8e4b2a001c9a7778",\n    "status": "RUNNING"\n  }\n}`}
+                />
+              </div>
+
+              {/* GET /api/v1/campaigns/:id/recipients */}
+              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
+                  <div className="flex items-center gap-2">
+                    <MethodBadge method="GET" />
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/campaigns/:id/recipients</code>
+                  </div>
+                  <span className="text-xs text-[#5F7069] font-medium">Inspect recipient dispatch logs and delivery status</span>
+                </div>
+
+                <PostmanResponseViewer
+                  responseMode={responseMode}
+                  statusCode={200}
+                  statusText="OK"
+                  timeMs={82}
+                  sizeBytes={290}
+                  jsonBody={`{\n  "success": true,\n  "message": "Campaign recipients retrieved",\n  "data": {\n    "recipients": [\n      {\n        "phoneNumber": "+919876543210",\n        "status": "DELIVERED",\n        "deliveredAt": "2026-09-17T11:05:00.000Z"\n      }\n    ],\n    "total": 420\n  }\n}`}
                 />
               </div>
             </div>
           )}
 
-          {/* SECTION: ACCOUNT & USAGE */}
-          {(selectedCategory === 'all' || selectedCategory === 'account') && (
-            <div id="account" className="space-y-6">
+          {/* SECTION: DEVELOPER & API ANALYTICS */}
+          {(selectedCategory === 'all' || selectedCategory === 'developer') && (
+            <div id="developer" className="space-y-6">
               <div className="flex items-center gap-2 border-b border-[#E2EAE6] pb-2">
                 <UserCheck className="w-5 h-5 text-[#05A222]" />
-                <h3 className="text-base font-extrabold text-[#14201C]">Account & Usage Endpoints</h3>
+                <h3 className="text-base font-extrabold text-[#14201C]">Developer & API Analytics Endpoints</h3>
               </div>
 
-              {/* GET /api/v1/account */}
+              {/* GET /api/v1/developer/metrics */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
                     <MethodBadge method="GET" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/account</code>
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/developer/metrics</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Get channel information and API key details</span>
+                  <span className="text-xs text-[#5F7069] font-medium">Get API success rate, latency benchmarks, and status distribution</span>
                 </div>
 
                 <PostmanResponseViewer
@@ -1050,28 +1188,48 @@ export const Documentation: React.FC = () => {
                   statusCode={200}
                   statusText="OK"
                   timeMs={68}
-                  sizeBytes={340}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "userId": "uuid-xxx",\n    "channel": {\n      "id": "uuid-xxx",\n      "name": "My Channel",\n      "phoneNumber": "+919876543210",\n      "isActive": true,\n      "healthStatus": "healthy"\n    },\n    "usage": {\n      "requestCount": 1250,\n      "monthlyRequestCount": 340,\n      "monthlyResetAt": "2026-10-01T00:00:00Z",\n      "lastUsedAt": "2026-09-17T10:30:00Z"\n    }\n  }\n}`}
+                  sizeBytes={320}
+                  jsonBody={`{\n  "success": true,\n  "message": "Developer metrics retrieved successfully",\n  "data": {\n    "totalRequests": 12850,\n    "successRate": 99.4,\n    "avgLatencyMs": 85,\n    "last24hCount": 620,\n    "statusDistribution": {\n      "200": 11500,\n      "201": 1280,\n      "400": 45,\n      "429": 12,\n      "500": 13\n    }\n  }\n}`}
                 />
               </div>
 
-              {/* GET /api/v1/account/usage */}
+              {/* GET /api/v1/developer/logs */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
                     <MethodBadge method="GET" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/account/usage</code>
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/developer/logs</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Get detailed API usage breakdown by time period</span>
+                  <span className="text-xs text-[#5F7069] font-medium">Detailed API request audit logs (?page=1&limit=20&statusCode=200)</span>
                 </div>
 
                 <PostmanResponseViewer
                   responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
-                  timeMs={74}
-                  sizeBytes={310}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "last24Hours": 42,\n    "last7Days": 310,\n    "total": 1250,\n    "recentRequests": [\n      {\n        "endpoint": "/api/v1/messages/template",\n        "method": "POST",\n        "statusCode": 200,\n        "responseTime": 312,\n        "createdAt": "2026-09-17T10:30:00Z"\n      }\n    ]\n  }\n}`}
+                  timeMs={88}
+                  sizeBytes={390}
+                  jsonBody={`{\n  "success": true,\n  "message": "API logs retrieved successfully",\n  "data": {\n    "logs": [\n      {\n        "_id": "664f5e4a8e4b2a001c9a3333",\n        "endpoint": "/api/v1/messages",\n        "method": "POST",\n        "statusCode": 201,\n        "latencyMs": 142,\n        "ipAddress": "103.21.244.2",\n        "createdAt": "2026-09-17T10:30:00.000Z"\n      }\n    ],\n    "pagination": {\n      "total": 12850,\n      "page": 1,\n      "limit": 20\n    }\n  }\n}`}
+                />
+              </div>
+
+              {/* GET /api/v1/developer/keys */}
+              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
+                  <div className="flex items-center gap-2">
+                    <MethodBadge method="GET" />
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/developer/keys</code>
+                  </div>
+                  <span className="text-xs text-[#5F7069] font-medium">List all active API keys with key prefix and rate limit tier</span>
+                </div>
+
+                <PostmanResponseViewer
+                  responseMode={responseMode}
+                  statusCode={200}
+                  statusText="OK"
+                  timeMs={65}
+                  sizeBytes={270}
+                  jsonBody={`{\n  "success": true,\n  "message": "API keys retrieved successfully",\n  "data": [\n    {\n      "_id": "664f5e4a8e4b2a001c9a2222",\n      "name": "Production Server Key",\n      "keyPrefix": "wmsg_live_98a7",\n      "rateLimit": 120,\n      "status": "ACTIVE",\n      "createdAt": "2026-09-01T00:00:00.000Z"\n    }\n  ]\n}`}
                 />
               </div>
             </div>
@@ -1086,25 +1244,25 @@ export const Documentation: React.FC = () => {
               </div>
 
               <div className="p-4 bg-white rounded-2xl border border-[#E2EAE6] shadow-2xs space-y-2">
-                <h5 className="text-xs font-bold text-[#14201C]">Supported Webhook Events:</h5>
+                <h5 className="text-xs font-bold text-[#14201C]">Real-Time Webhook Event Payloads:</h5>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#5F7069]">
-                  <li>• <code className="font-mono text-[#006736] font-bold">message.sent</code> — fired when message is dispatched</li>
-                  <li>• <code className="font-mono text-[#006736] font-bold">message.delivered</code> — fired on WhatsApp delivery receipt</li>
-                  <li>• <code className="font-mono text-[#006736] font-bold">message.read</code> — fired when recipient reads message</li>
-                  <li>• <code className="font-mono text-rose-600 font-bold">message.failed</code> — fired when delivery fails</li>
-                  <li>• <code className="font-mono text-[#006736] font-bold">conversation.new</code> — fired when new conversation starts</li>
-                  <li>• <code className="font-mono text-[#006736] font-bold">contact.new</code> — fired when new contact is created</li>
+                  <li>• <code className="font-mono text-[#006736] font-bold">message.sent</code> — Outbound message dispatched to Meta</li>
+                  <li>• <code className="font-mono text-[#006736] font-bold">message.delivered</code> — Recipient received WhatsApp message</li>
+                  <li>• <code className="font-mono text-[#006736] font-bold">message.read</code> — Recipient read the WhatsApp message</li>
+                  <li>• <code className="font-mono text-rose-600 font-bold">message.failed</code> — Delivery error or window expired</li>
+                  <li>• <code className="font-mono text-[#006736] font-bold">conversation.new</code> — New 24-hour customer conversation</li>
+                  <li>• <code className="font-mono text-[#006736] font-bold">contact.new</code> — New inbound contact registered</li>
                 </ul>
               </div>
 
-              {/* GET /api/v1/webhooks */}
+              {/* GET /api/v1/webhooks/subscriptions */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
                     <MethodBadge method="GET" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/webhooks</code>
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/webhooks/subscriptions</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">List all registered webhooks</span>
+                  <span className="text-xs text-[#5F7069] font-medium">List all registered outbound webhook subscriptions</span>
                 </div>
 
                 <PostmanResponseViewer
@@ -1112,19 +1270,19 @@ export const Documentation: React.FC = () => {
                   statusCode={200}
                   statusText="OK"
                   timeMs={65}
-                  sizeBytes={210}
-                  jsonBody={`{\n  "success": true,\n  "data": [\n    {\n      "id": "uuid-xxx",\n      "url": "https://yourserver.com/webhooks/whatsapp",\n      "events": [\n        "message.sent",\n        "message.delivered"\n      ],\n      "isActive": true,\n      "createdAt": "2026-09-17T00:00:00Z"\n    }\n  ]\n}`}
+                  sizeBytes={290}
+                  jsonBody={`{\n  "success": true,\n  "message": "Webhooks retrieved successfully",\n  "data": [\n    {\n      "_id": "664f6f5a8e4b2a001c9a2222",\n      "url": "https://yourserver.com/api/webhooks/whatsapp",\n      "events": [\n        "message.sent",\n        "message.delivered",\n        "message.read",\n        "message.failed"\n      ],\n      "isActive": true,\n      "createdAt": "2026-09-17T00:00:00.000Z"\n    }\n  ]\n}`}
                 />
               </div>
 
-              {/* POST /api/v1/webhooks */}
+              {/* POST /api/v1/webhooks/subscriptions */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
                     <MethodBadge method="POST" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/webhooks</code>
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/webhooks/subscriptions</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Register a new webhook URL (returns signing secret)</span>
+                  <span className="text-xs text-[#5F7069] font-medium">Register a new webhook URL with signing secret</span>
                 </div>
 
                 <PostmanResponseViewer
@@ -1132,39 +1290,39 @@ export const Documentation: React.FC = () => {
                   statusCode={201}
                   statusText="Created"
                   timeMs={135}
-                  sizeBytes={310}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "id": "uuid-xxx",\n    "url": "https://yourserver.com/webhooks/whatsapp",\n    "secret": "whsec_your_webhook_secret_key",\n    "events": [\n      "message.sent",\n      "message.delivered",\n      "message.read",\n      "message.failed"\n    ],\n    "isActive": true,\n    "note": "Store the webhook secret securely for signature verification."\n  }\n}`}
+                  sizeBytes={320}
+                  jsonBody={`{\n  "success": true,\n  "message": "Webhook subscription registered successfully",\n  "data": {\n    "_id": "664f6f5a8e4b2a001c9a2222",\n    "url": "https://yourserver.com/api/webhooks/whatsapp",\n    "secret": "whsec_your_custom_signing_secret",\n    "events": [\n      "message.sent",\n      "message.delivered",\n      "message.read",\n      "message.failed"\n    ],\n    "isActive": true\n  }\n}`}
                 />
               </div>
 
-              {/* PUT /api/v1/webhooks/:id */}
+              {/* POST /api/v1/webhooks/subscriptions/:id/test */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
-                    <MethodBadge method="PUT" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/webhooks/:id</code>
+                    <MethodBadge method="POST" />
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/webhooks/subscriptions/:id/test</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Update an existing webhook's URL, events, or active status</span>
+                  <span className="text-xs text-[#5F7069] font-medium">Send ping test payload to verify endpoint connectivity</span>
                 </div>
 
                 <PostmanResponseViewer
                   responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
-                  timeMs={95}
-                  sizeBytes={225}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "id": "uuid-xxx",\n    "url": "https://yourserver.com/webhooks/new-endpoint",\n    "events": [\n      "message.sent",\n      "message.failed"\n    ],\n    "isActive": true,\n    "updatedAt": "2026-09-17T10:30:00Z"\n  }\n}`}
+                  timeMs={210}
+                  sizeBytes={160}
+                  jsonBody={`{\n  "success": true,\n  "message": "Webhook test ping delivered successfully",\n  "data": {\n    "statusCode": 200,\n    "latencyMs": 145\n  }\n}`}
                 />
               </div>
 
-              {/* DELETE /api/v1/webhooks/:id */}
+              {/* DELETE /api/v1/webhooks/subscriptions/:id */}
               <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
                   <div className="flex items-center gap-2">
                     <MethodBadge method="DELETE" />
-                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/webhooks/:id</code>
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/webhooks/subscriptions/:id</code>
                   </div>
-                  <span className="text-xs text-[#5F7069] font-medium">Delete a webhook permanently</span>
+                  <span className="text-xs text-[#5F7069] font-medium">Delete a webhook subscription permanently</span>
                 </div>
 
                 <PostmanResponseViewer
@@ -1172,8 +1330,58 @@ export const Documentation: React.FC = () => {
                   statusCode={200}
                   statusText="OK"
                   timeMs={68}
-                  sizeBytes={110}
-                  jsonBody={`{\n  "success": true,\n  "data": {\n    "message": "Webhook deleted successfully"\n  }\n}`}
+                  sizeBytes={115}
+                  jsonBody={`{\n  "success": true,\n  "message": "Webhook subscription deleted successfully",\n  "data": null\n}`}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* SECTION: WHATSAPP CONNECTED ACCOUNTS */}
+          {(selectedCategory === 'all' || selectedCategory === 'whatsapp') && (
+            <div id="whatsapp" className="space-y-6">
+              <div className="flex items-center gap-2 border-b border-[#E2EAE6] pb-2">
+                <Smartphone className="w-5 h-5 text-[#05A222]" />
+                <h3 className="text-base font-extrabold text-[#14201C]">WhatsApp Connected Accounts Endpoints</h3>
+              </div>
+
+              {/* GET /api/v1/whatsapp/numbers */}
+              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
+                  <div className="flex items-center gap-2">
+                    <MethodBadge method="GET" />
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/whatsapp/numbers</code>
+                  </div>
+                  <span className="text-xs text-[#5F7069] font-medium">List all connected WhatsApp phone numbers and quality health</span>
+                </div>
+
+                <PostmanResponseViewer
+                  responseMode={responseMode}
+                  statusCode={200}
+                  statusText="OK"
+                  timeMs={85}
+                  sizeBytes={340}
+                  jsonBody={`{\n  "success": true,\n  "message": "WhatsApp phone numbers retrieved",\n  "data": [\n    {\n      "_id": "664f7a6b8e4b2a001c9a1111",\n      "phoneNumber": "+15550001234",\n      "displayPhoneNumber": "+1 (555) 000-1234",\n      "verifiedName": "Acme Customer Care",\n      "qualityRating": "GREEN",\n      "status": "CONNECTED",\n      "isDefault": true\n    }\n  ]\n}`}
+                />
+              </div>
+
+              {/* GET /api/v1/whatsapp/accounts */}
+              <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-2xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2EAE6] pb-3">
+                  <div className="flex items-center gap-2">
+                    <MethodBadge method="GET" />
+                    <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/whatsapp/accounts</code>
+                  </div>
+                  <span className="text-xs text-[#5F7069] font-medium">List connected Meta WhatsApp Business Accounts (WABAs)</span>
+                </div>
+
+                <PostmanResponseViewer
+                  responseMode={responseMode}
+                  statusCode={200}
+                  statusText="OK"
+                  timeMs={78}
+                  sizeBytes={290}
+                  jsonBody={`{\n  "success": true,\n  "message": "WhatsApp accounts retrieved",\n  "data": [\n    {\n      "_id": "664f7a6b8e4b2a001c9a2222",\n      "wabaId": "1048958291039",\n      "name": "Acme Business Global",\n      "status": "ACTIVE"\n    }\n  ]\n}`}
                 />
               </div>
             </div>
@@ -1198,6 +1406,7 @@ export const Documentation: React.FC = () => {
                     <tr className="bg-[#F8FAFC] border-b border-[#E2EAE6] text-[#5F7069] uppercase text-[11px] font-bold">
                       <th className="px-4 py-3">Code</th>
                       <th className="px-4 py-3">Status</th>
+                      <th className="px-4 py-3">Error Code</th>
                       <th className="px-4 py-3">Description</th>
                     </tr>
                   </thead>
@@ -1206,7 +1415,8 @@ export const Documentation: React.FC = () => {
                       <td className="px-4 py-3 font-extrabold text-[#006736]">
                         <span className="px-2 py-0.5 rounded bg-[#E9F9EE] border border-[#C4EBD0]">200 / 201</span>
                       </td>
-                      <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Success</td>
+                      <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Success / Created</td>
+                      <td className="px-4 py-3 text-[#006736]">-</td>
                       <td className="px-4 py-3 font-sans text-[#5F7069]">Request completed successfully and resource was created or returned.</td>
                     </tr>
                     <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
@@ -1214,49 +1424,56 @@ export const Documentation: React.FC = () => {
                         <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200">400</span>
                       </td>
                       <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Bad Request</td>
-                      <td className="px-4 py-3 font-sans text-[#5F7069]">The request body or query parameters are invalid or malformed.</td>
+                      <td className="px-4 py-3 text-amber-700">BAD_REQUEST / RECIPIENT_REQUIRED</td>
+                      <td className="px-4 py-3 font-sans text-[#5F7069]">Invalid payload, missing required parameters, or malformed phone number.</td>
                     </tr>
                     <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
                       <td className="px-4 py-3 font-extrabold text-rose-600">
                         <span className="px-2 py-0.5 rounded bg-rose-50 border border-rose-200">401</span>
                       </td>
                       <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Unauthorized</td>
-                      <td className="px-4 py-3 font-sans text-[#5F7069]">Invalid or missing API key/secret in request headers.</td>
+                      <td className="px-4 py-3 text-rose-700">UNAUTHORIZED / TOKEN_EXPIRED</td>
+                      <td className="px-4 py-3 font-sans text-[#5F7069]">Missing or invalid API key in <code className="text-[#006736]">x-api-key</code> header.</td>
                     </tr>
                     <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
                       <td className="px-4 py-3 font-extrabold text-rose-600">
                         <span className="px-2 py-0.5 rounded bg-rose-50 border border-rose-200">403</span>
                       </td>
                       <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Forbidden</td>
-                      <td className="px-4 py-3 font-sans text-[#5F7069]">Insufficient permissions for this action or 24-hour customer service window expired.</td>
+                      <td className="px-4 py-3 text-rose-700">FORBIDDEN</td>
+                      <td className="px-4 py-3 font-sans text-[#5F7069]">Insufficient scope permissions or inactive account tier.</td>
                     </tr>
                     <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
                       <td className="px-4 py-3 font-extrabold text-slate-600">
                         <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-300">404</span>
                       </td>
                       <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Not Found</td>
-                      <td className="px-4 py-3 font-sans text-[#5F7069]">The requested resource, contact, message or webhook does not exist.</td>
+                      <td className="px-4 py-3 text-slate-700">NOT_FOUND / ACCOUNT_NOT_FOUND</td>
+                      <td className="px-4 py-3 font-sans text-[#5F7069]">The requested message, contact, template or webhook does not exist.</td>
                     </tr>
                     <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
                       <td className="px-4 py-3 font-extrabold text-amber-700">
                         <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300">409</span>
                       </td>
                       <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Conflict</td>
-                      <td className="px-4 py-3 font-sans text-[#5F7069]">Resource already exists (e.g. duplicate contact phone number).</td>
+                      <td className="px-4 py-3 text-amber-800">CONFLICT</td>
+                      <td className="px-4 py-3 font-sans text-[#5F7069]">Duplicate contact phone number or resource collision.</td>
                     </tr>
                     <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
                       <td className="px-4 py-3 font-extrabold text-amber-600">
                         <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200">429</span>
                       </td>
                       <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Rate Limited</td>
-                      <td className="px-4 py-3 font-sans text-[#5F7069]">Too many requests — slow down or upgrade your subscription plan.</td>
+                      <td className="px-4 py-3 text-amber-800">RATE_LIMIT_EXCEEDED</td>
+                      <td className="px-4 py-3 font-sans text-[#5F7069]">Exceeded 120 requests/minute tier limit. Slow down or upgrade plan.</td>
                     </tr>
                     <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
                       <td className="px-4 py-3 font-extrabold text-rose-700">
                         <span className="px-2 py-0.5 rounded bg-rose-100 border border-rose-300">500</span>
                       </td>
                       <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Internal Server Error</td>
-                      <td className="px-4 py-3 font-sans text-[#5F7069]">Unexpected server error. Check API logs or contact support.</td>
+                      <td className="px-4 py-3 text-rose-800">INTERNAL_ERROR</td>
+                      <td className="px-4 py-3 font-sans text-[#5F7069]">Unexpected server error. Check API logs or contact platform support.</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1348,4 +1565,3 @@ export const Documentation: React.FC = () => {
     </div>
   );
 };
-
