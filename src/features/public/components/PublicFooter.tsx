@@ -121,7 +121,7 @@ export const PublicFooter: React.FC = () => {
             </Link>
 
             {/* Description */}
-            <p className="text-xs sm:text-[13px] text-[#52645C] leading-relaxed max-w-xs pt-1">
+            <p className="text-xs sm:text-[13px] font-bold text-black leading-relaxed max-w-xs pt-1">
               The complete WhatsApp Business Platform for modern businesses. Send campaigns, automate support with AI, manage contacts and grow your business — all in one place.
             </p>
 
