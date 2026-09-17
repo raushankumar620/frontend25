@@ -11,6 +11,7 @@ export interface CreateCampaignPayload {
     tags?: string[];
     allContacts?: boolean;
     onlyOptedIn?: boolean;
+    directPhoneNumbers?: string[];
   };
   variableMapping?: Array<{
     paramIndex: number;

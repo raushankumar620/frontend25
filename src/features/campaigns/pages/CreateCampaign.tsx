@@ -35,14 +35,15 @@ export const CreateCampaign: React.FC = () => {
   const [name, setName] = useState('');
   const [templates, setTemplates] = useState<WhatsAppTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<WhatsAppTemplate | null>(null);
+  const [targetMode, setTargetMode] = useState<'direct' | 'all' | 'tags'>('direct');
+  const [directNumbersText, setDirectNumbersText] = useState('917061901464');
   const [availableTags, setAvailableTags] = useState<Array<{ name: string; count: number }>>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [targetAll, setTargetAll] = useState(false);
   const [variableMappings, setVariableMappings] = useState<{ [paramIndex: string]: { sourceType: string; sourceField: string } }>({});
   const [sampleVarValues, setSampleVarValues] = useState<{ [paramIndex: string]: string }>({
-    '1': 'Alex Johnson',
-    '2': '+1 (555) 234-5678',
-    '3': 'VIP-2026',
+    '1': 'Customer',
+    '2': 'ORD-9821',
+    '3': 'Tomorrow 2 PM',
   });
   const [scheduleDate, setScheduleDate] = useState('');
   const [autoLaunch, setAutoLaunch] = useState(true);
@@ -52,10 +53,11 @@ export const CreateCampaign: React.FC = () => {
   useEffect(() => {
     // Load approved templates
     templatesApi.getTemplates().then((data) => {
-      const approved = data.filter((t) => t.status === 'APPROVED' || t.status === 'PENDING');
-      setTemplates(approved.length > 0 ? approved : data);
-      if (approved.length > 0) {
-        setSelectedTemplate(approved[0]);
+      const approved = data.filter((t) => t.status === 'APPROVED');
+      const list = approved.length > 0 ? approved : data;
+      setTemplates(list);
+      if (list.length > 0) {
+        setSelectedTemplate(list[0]);
       }
     });
 
@@ -66,9 +68,9 @@ export const CreateCampaign: React.FC = () => {
       }
     }).catch(() => {
       setAvailableTags([
-        { name: 'VIP', count: 124 },
-        { name: 'Lead', count: 430 },
-        { name: 'Customer', count: 890 },
+        { name: 'VIP', count: 12 },
+        { name: 'Leads', count: 45 },
+        { name: 'Customers', count: 89 },
       ]);
     });
   }, []);
@@ -82,11 +84,11 @@ export const CreateCampaign: React.FC = () => {
       matches.forEach((m) => {
         const num = m.replace(/[{}]/g, '');
         newMappings[num] = {
-          sourceType: 'contact_field',
-          sourceField: num === '1' ? 'name' : 'phoneNumber',
+          sourceType: 'static_text',
+          sourceField: num === '1' ? 'John' : num === '2' ? 'ORD-1234' : 'Tomorrow',
         };
         if (!newSamples[num]) {
-          newSamples[num] = num === '1' ? 'Alex Johnson' : `Value ${num}`;
+          newSamples[num] = num === '1' ? 'John' : num === '2' ? 'ORD-1234' : `Sample ${num}`;
         }
       });
       setVariableMappings(newMappings);
@@ -101,6 +103,11 @@ export const CreateCampaign: React.FC = () => {
       setSelectedTags([...selectedTags, tag]);
     }
   };
+
+  const parsedDirectNumbers = directNumbersText
+    .split(/[\n,]+/)
+    .map((s) => s.trim().replace(/[^0-9+]/g, ''))
+    .filter(Boolean);
 
   const handleLaunch = async () => {
     if (!selectedTemplate) return;
@@ -120,9 +127,10 @@ export const CreateCampaign: React.FC = () => {
         templateName: selectedTemplate.name,
         language: selectedTemplate.language || 'en_US',
         audienceFilter: {
-          tags: selectedTags,
-          allContacts: targetAll,
+          tags: targetMode === 'tags' ? selectedTags : [],
+          allContacts: targetMode === 'all',
           onlyOptedIn: true,
+          directPhoneNumbers: targetMode === 'direct' ? parsedDirectNumbers : undefined,
         },
         variableMapping: varArray,
         scheduledAt: scheduleDate ? new Date(scheduleDate).toISOString() : null,
@@ -207,70 +215,119 @@ export const CreateCampaign: React.FC = () => {
             <div className="space-y-6">
               <div>
                 <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider mb-2">
-                  Campaign Title
+                  Campaign Title / अभियान का नाम <span className="text-rose-500">*</span>
                 </label>
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. VIP Summer Flash Sale 2026"
+                  placeholder="e.g. VIP Order Update / Festive Offer 2026"
                   required
                 />
                 <p className="text-[11px] text-[#5F7069] mt-1.5 font-medium">
-                  Internal campaign name used in your marketing reports & broadcast analytics.
+                  Apne campaign ko koi bhi aasan naam dein jisse reports mein pehchan sakein.
                 </p>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-[#14201C] uppercase tracking-wider mb-2">
-                  Target Audience Selection
+                  Kisko Message Bhejna Hai? (Target Audience) <span className="text-rose-500">*</span>
                 </label>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                  {/* Mode 1: Direct Numbers */}
                   <div
-                    onClick={() => {
-                      setTargetAll(true);
-                      setSelectedTags([]);
-                    }}
-                    className={`p-4 rounded-xl border-2 flex items-start justify-between cursor-pointer transition-all ${
-                      targetAll
+                    onClick={() => setTargetMode('direct')}
+                    className={`p-4 rounded-xl border-2 flex flex-col justify-between cursor-pointer transition-all ${
+                      targetMode === 'direct'
                         ? 'border-[#05A222] bg-[#E9F9EE] text-[#006736]'
                         : 'border-[#E2EAE6] bg-white hover:bg-[#F6FAF8] text-[#14201C]'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#05A222]/10 text-[#05A222] flex items-center justify-center shrink-0">
-                        <Users className="w-5 h-5" />
+                    <div className="flex items-start justify-between">
+                      <div className="w-8 h-8 rounded-lg bg-[#05A222]/10 text-[#05A222] flex items-center justify-center shrink-0 mb-2">
+                        <Smartphone className="w-4 h-4" />
                       </div>
-                      <div>
-                        <div className="text-xs font-black text-[#14201C]">All Opted-In Contacts</div>
-                        <div className="text-[11px] text-[#5F7069] font-medium">Broadcast to all subscribers</div>
-                      </div>
+                      {targetMode === 'direct' && <CheckCircle2 className="w-4 h-4 text-[#05A222]" />}
                     </div>
-                    {targetAll && <CheckCircle2 className="w-5 h-5 text-[#05A222] shrink-0" />}
+                    <div>
+                      <div className="text-xs font-black text-[#14201C]">Direct Numbers (Quick Test)</div>
+                      <div className="text-[11px] text-[#5F7069] font-medium mt-0.5">Custom numbers list</div>
+                    </div>
                   </div>
 
+                  {/* Mode 2: All Contacts */}
                   <div
-                    onClick={() => setTargetAll(false)}
-                    className={`p-4 rounded-xl border-2 flex items-start justify-between cursor-pointer transition-all ${
-                      !targetAll
+                    onClick={() => setTargetMode('all')}
+                    className={`p-4 rounded-xl border-2 flex flex-col justify-between cursor-pointer transition-all ${
+                      targetMode === 'all'
                         ? 'border-[#05A222] bg-[#E9F9EE] text-[#006736]'
                         : 'border-[#E2EAE6] bg-white hover:bg-[#F6FAF8] text-[#14201C]'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#07CF74]/10 text-[#006736] flex items-center justify-center shrink-0">
-                        <Tag className="w-5 h-5" />
+                    <div className="flex items-start justify-between">
+                      <div className="w-8 h-8 rounded-lg bg-[#05A222]/10 text-[#05A222] flex items-center justify-center shrink-0 mb-2">
+                        <Users className="w-4 h-4" />
                       </div>
-                      <div>
-                        <div className="text-xs font-black text-[#14201C]">Targeted Audience Tags</div>
-                        <div className="text-[11px] text-[#5F7069] font-medium">Filter by specific segments</div>
-                      </div>
+                      {targetMode === 'all' && <CheckCircle2 className="w-4 h-4 text-[#05A222]" />}
                     </div>
-                    {!targetAll && <CheckCircle2 className="w-5 h-5 text-[#05A222] shrink-0" />}
+                    <div>
+                      <div className="text-xs font-black text-[#14201C]">All Saved Contacts</div>
+                      <div className="text-[11px] text-[#5F7069] font-medium mt-0.5">Saare subscribers ko</div>
+                    </div>
+                  </div>
+
+                  {/* Mode 3: Tags */}
+                  <div
+                    onClick={() => setTargetMode('tags')}
+                    className={`p-4 rounded-xl border-2 flex flex-col justify-between cursor-pointer transition-all ${
+                      targetMode === 'tags'
+                        ? 'border-[#05A222] bg-[#E9F9EE] text-[#006736]'
+                        : 'border-[#E2EAE6] bg-white hover:bg-[#F6FAF8] text-[#14201C]'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="w-8 h-8 rounded-lg bg-[#07CF74]/10 text-[#006736] flex items-center justify-center shrink-0 mb-2">
+                        <Tag className="w-4 h-4" />
+                      </div>
+                      {targetMode === 'tags' && <CheckCircle2 className="w-4 h-4 text-[#05A222]" />}
+                    </div>
+                    <div>
+                      <div className="text-xs font-black text-[#14201C]">Target by Tags</div>
+                      <div className="text-[11px] text-[#5F7069] font-medium mt-0.5">VIP, Leads, Customers</div>
+                    </div>
                   </div>
                 </div>
 
-                {!targetAll && (
+                {/* Sub-panels for each mode */}
+                {targetMode === 'direct' && (
+                  <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-bold text-[#14201C]">
+                        Enter WhatsApp Numbers (Comma or Newline separated):
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setDirectNumbersText('917061901464')}
+                        className="text-[11px] font-bold text-[#05A222] hover:underline"
+                      >
+                        + Use Test Number (7061901464)
+                      </button>
+                    </div>
+                    <textarea
+                      rows={3}
+                      value={directNumbersText}
+                      onChange={(e) => setDirectNumbersText(e.target.value)}
+                      placeholder="e.g. 917061901464, 919876543210"
+                      className="w-full text-xs font-mono p-3 rounded-xl border border-[#E2EAE6] bg-white text-[#14201C] focus:border-[#05A222] focus:outline-none"
+                    />
+                    <div className="text-[11px] text-[#5F7069] flex items-center justify-between">
+                      <span>Total Target Numbers: <strong>{parsedDirectNumbers.length}</strong></span>
+                      <span>Format: Country code ke saath (e.g. 91XXXXXXXXXX)</span>
+                    </div>
+                  </div>
+                )}
+
+                {targetMode === 'tags' && (
                   <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6] space-y-2.5">
                     <div className="text-xs font-bold text-[#14201C]">
                       Select Tags to include in this broadcast:
@@ -299,7 +356,11 @@ export const CreateCampaign: React.FC = () => {
               <Button
                 className="w-full mt-6 bg-[#05A222] hover:bg-[#006736] text-white font-bold py-3 rounded-xl shadow-xs"
                 size="lg"
-                disabled={!name.trim() || (!targetAll && selectedTags.length === 0)}
+                disabled={
+                  !name.trim() ||
+                  (targetMode === 'direct' && parsedDirectNumbers.length === 0) ||
+                  (targetMode === 'tags' && selectedTags.length === 0)
+                }
                 onClick={() => setStep(2)}
                 rightIcon={<ChevronRight className="w-4 h-4" />}
               >
@@ -334,6 +395,14 @@ export const CreateCampaign: React.FC = () => {
                         <div className="text-[11px] text-[#5F7069] mt-1 line-clamp-2 font-medium">
                           {tpl.body}
                         </div>
+                        <div className="mt-2 flex items-center gap-2">
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                            {tpl.status}
+                          </span>
+                          <span className="text-[10px] text-[#5F7069] uppercase font-semibold">
+                            {tpl.category}
+                          </span>
+                        </div>
                       </div>
                       {selectedTemplate?.id === tpl.id && (
                         <CheckCircle2 className="w-4 h-4 text-[#05A222] shrink-0 mt-0.5" />
@@ -348,31 +417,34 @@ export const CreateCampaign: React.FC = () => {
                 <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6] space-y-3">
                   <div className="text-xs font-bold text-[#14201C] uppercase tracking-wider flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-[#05A222]" />
-                    <span>Personalize Variables for Each Recipient</span>
+                    <span>Personalize Variables (Values for &#123;&#123;1&#125;&#125;, &#123;&#123;2&#125;&#125;...)</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {foundVars.map((v) => (
                       <div key={v} className="space-y-1">
                         <label className="block text-[11px] font-bold font-mono text-[#14201C]">
-                          Variable &#123;&#123;{v}&#125;&#125;
+                          Variable &#123;&#123;{v}&#125;&#125; Value / Custom Text:
                         </label>
-                        <select
-                          value={variableMappings[v]?.sourceField || 'name'}
+                        <input
+                          type="text"
+                          value={sampleVarValues[v] || ''}
                           onChange={(e) => {
+                            const val = e.target.value;
+                            setSampleVarValues({
+                              ...sampleVarValues,
+                              [v]: val,
+                            });
                             setVariableMappings({
                               ...variableMappings,
                               [v]: {
-                                sourceType: 'contact_field',
-                                sourceField: e.target.value,
+                                sourceType: 'static_text',
+                                sourceField: val,
                               },
                             });
                           }}
+                          placeholder={`Enter value for {{${v}}}`}
                           className="w-full text-xs p-2.5 rounded-xl border border-[#E2EAE6] bg-white text-[#14201C] font-semibold focus:border-[#05A222] focus:outline-none"
-                        >
-                          <option value="name">Contact Full Name (e.g. Alex)</option>
-                          <option value="phoneNumber">Contact Phone Number</option>
-                          <option value="email">Contact Email</option>
-                        </select>
+                        />
                       </div>
                     ))}
                   </div>
@@ -414,12 +486,16 @@ export const CreateCampaign: React.FC = () => {
                   <div>
                     <span className="text-[#5F7069] block font-medium">Audience Reach:</span>
                     <strong className="text-[#14201C]">
-                      {targetAll ? 'All Opted-In Subscribers' : `Tags: ${selectedTags.join(', ')}`}
+                      {targetMode === 'direct'
+                        ? `${parsedDirectNumbers.length} Direct Number(s)`
+                        : targetMode === 'all'
+                        ? 'All Saved Subscribers'
+                        : `Tags: ${selectedTags.join(', ')}`}
                     </strong>
                   </div>
                   <div>
                     <span className="text-[#5F7069] block font-medium">Category:</span>
-                    <strong className="text-[#14201C] uppercase">{selectedTemplate.category}</strong>
+                    <strong className="text-[#05A222] uppercase font-bold">{selectedTemplate.category}</strong>
                   </div>
                 </div>
               </div>
