@@ -97,7 +97,7 @@ export const PublicFooter: React.FC = () => {
       </div>
 
       {/* MAIN TOP SECTION */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
+      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-10 xl:px-14 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8">
           
           {/* Col 1: Brand & Logo (Span 3) */}
@@ -393,8 +393,8 @@ export const PublicFooter: React.FC = () => {
 
 
       {/* DARK FOREST GREEN BOTTOM COPYRIGHT BAR */}
-      <div className="relative z-10 bg-[#013B23] text-white/85 text-xs py-4 px-4 sm:px-8 border-t border-[#006736]">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+      <div className="relative z-10 bg-[#013B23] text-white/85 text-xs py-4 px-4 sm:px-6 lg:px-10 xl:px-14 border-t border-[#006736]">
+        <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
           
           <div className="flex items-center flex-wrap justify-center gap-2 text-[11px] sm:text-xs text-white/80">
             <span>© 2024 {APP_NAME}. All rights reserved.</span>
