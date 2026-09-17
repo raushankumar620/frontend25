@@ -15,6 +15,9 @@ import {
   Activity,
   AlertTriangle,
   Smartphone,
+  Terminal,
+  FileText,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Link } from 'react-router-dom';
@@ -468,28 +471,28 @@ export const Documentation: React.FC = () => {
                   {
                     id: 'curl' as LanguageTab,
                     label: 'cURL',
-                    dotColor: 'bg-amber-400',
+                    icon: <Terminal className="w-3.5 h-3.5 text-amber-400 shrink-0" />,
                     activeClass: 'bg-slate-900 text-white shadow-2xs border border-slate-800',
                     inactiveClass: 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80',
                   },
                   {
                     id: 'node' as LanguageTab,
                     label: 'Node.js',
-                    dotColor: 'bg-emerald-400',
+                    icon: <img src="/icon/node.png" alt="Node.js" className="w-3.5 h-3.5 object-contain shrink-0" />,
                     activeClass: 'bg-emerald-600 text-white shadow-2xs border border-emerald-500',
                     inactiveClass: 'text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50/80',
                   },
                   {
                     id: 'python' as LanguageTab,
                     label: 'Python',
-                    dotColor: 'bg-sky-400',
+                    icon: <img src="/icon/python.png" alt="Python" className="w-3.5 h-3.5 object-contain shrink-0" />,
                     activeClass: 'bg-sky-600 text-white shadow-2xs border border-sky-500',
                     inactiveClass: 'text-sky-700 hover:text-sky-900 hover:bg-sky-50/80',
                   },
                   {
                     id: 'php' as LanguageTab,
                     label: 'PHP',
-                    dotColor: 'bg-purple-400',
+                    icon: <img src="/icon/php.png" alt="PHP" className="w-3.5 h-3.5 object-contain shrink-0" />,
                     activeClass: 'bg-purple-600 text-white shadow-2xs border border-purple-500',
                     inactiveClass: 'text-purple-700 hover:text-purple-900 hover:bg-purple-50/80',
                   },
@@ -503,11 +506,7 @@ export const Documentation: React.FC = () => {
                         isActive ? tab.activeClass : tab.inactiveClass
                       }`}
                     >
-                      <span
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          isActive ? tab.dotColor : 'bg-slate-300'
-                        }`}
-                      />
+                      {tab.icon}
                       <span>{tab.label}</span>
                     </button>
                   );
@@ -519,18 +518,22 @@ export const Documentation: React.FC = () => {
                 <span className="text-[11px] font-bold text-[#5F7069] px-2 font-mono uppercase tracking-wider">
                   Response:
                 </span>
-                {(['raw', 'pretty'] as const).map((mode) => (
+                {[
+                  { id: 'raw' as const, label: 'Raw', icon: <FileText className="w-3.5 h-3.5" /> },
+                  { id: 'pretty' as const, label: 'Pretty', icon: <Sparkles className="w-3.5 h-3.5" /> },
+                ].map((mode) => (
                   <button
-                    key={mode}
+                    key={mode.id}
                     type="button"
-                    onClick={() => setResponseMode(mode)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all cursor-pointer ${
-                      responseMode === mode
+                    onClick={() => setResponseMode(mode.id)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all cursor-pointer ${
+                      responseMode === mode.id
                         ? 'bg-[#006736] text-white shadow-2xs'
                         : 'text-[#5F7069] hover:text-[#14201C]'
                     }`}
                   >
-                    {mode}
+                    {mode.icon}
+                    <span>{mode.label}</span>
                   </button>
                 ))}
               </div>
