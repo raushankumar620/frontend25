@@ -14,13 +14,6 @@ export const AgentLeaderboard: React.FC<AgentLeaderboardProps> = ({ agents, load
     );
   }
 
-
-
-
-
-
-
-
   return (
     <div className="bg-white border border-[#E2EAE6] rounded-2xl p-6 shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-5">
       <div className="flex items-center justify-between">
