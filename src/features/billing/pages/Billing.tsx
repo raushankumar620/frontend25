@@ -30,6 +30,7 @@ import { billingService } from '../../../services/billingService';
 import { useAuthStore } from '../../../store/authStore';
 import { cashfreeService } from '../../../services/cashfreeService';
 import { InvoiceModal } from '../components/InvoiceModal';
+import { AutoPayModal } from '../components/AutoPayModal';
 import type { UsageAndLimits, Subscription, PricingPlan, Invoice } from '../types';
 
 export interface BillingProps {
@@ -64,9 +65,16 @@ export const Billing: React.FC<BillingProps> = ({ embedded = false }) => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
 
+  // AutoPay Modal State
+  const [isAutoPayModalOpen, setIsAutoPayModalOpen] = useState(false);
+
   const handleOpenInvoice = (inv: Invoice) => {
     setSelectedInvoice(inv);
     setIsInvoiceModalOpen(true);
+  };
+
+  const handleAutoPayUpdated = (updatedSub: Subscription) => {
+    setSubscription(updatedSub);
   };
 
   // Real-time Countdown timer state
@@ -463,41 +471,93 @@ export const Billing: React.FC<BillingProps> = ({ embedded = false }) => {
       {/* 3. PAID USERS: Show Active Plan Summary & Resource Metering */}
       {isPaidPlan && (
         <div className="space-y-6">
-          {/* Active Plan Card + Upgrade Action Banner */}
-          <div className="bg-white border border-[#E2EAE6] rounded-3xl p-6 sm:p-7 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-[#5F7069] uppercase tracking-wider">
-                  Current Plan
-                </span>
-                <span className="text-xs bg-[#E9F9EE] text-[#006736] font-black px-2.5 py-0.5 rounded-full border border-[#C4EBD0]">
-                  Active & Verified
-                </span>
+          {/* Active Plan & AutoPay Controls Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* Left: Active Plan Summary */}
+            <div className="lg:col-span-7 bg-white border border-[#E2EAE6] rounded-3xl p-6 sm:p-7 shadow-xs flex flex-col justify-between gap-6">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-[#5F7069] uppercase tracking-wider">
+                    Current Plan
+                  </span>
+                  <span className="text-xs bg-[#E9F9EE] text-[#006736] font-black px-2.5 py-0.5 rounded-full border border-[#C4EBD0]">
+                    Active & Verified
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-[#14201C]">
+                  {planDisplayName}
+                </h3>
+                <div className="flex items-baseline gap-2 pt-1">
+                  <span className="text-2xl font-black text-[#006736] font-mono">
+                    {planDisplayPrice}
+                  </span>
+                  <span className="text-xs text-[#5F7069] font-medium">
+                    • Renews on {formatDate(planEndDate)}
+                  </span>
+                </div>
               </div>
-              <h3 className="text-xl sm:text-2xl font-black text-[#14201C]">
-                {planDisplayName}
-              </h3>
-              <div className="flex items-baseline gap-2 pt-1">
-                <span className="text-2xl font-black text-[#006736] font-mono">
-                  {planDisplayPrice}
-                </span>
-                <span className="text-xs text-[#5F7069] font-medium">
-                  • Renews on {formatDate(planEndDate)}
-                </span>
+
+              <div className="flex items-center gap-3 pt-2">
+                <Button
+                  variant={showUpgradePlans ? 'primary' : 'outline'}
+                  size="md"
+                  onClick={() => setShowUpgradePlans(!showUpgradePlans)}
+                  rightIcon={showUpgradePlans ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  className="text-xs font-bold rounded-xl px-5 py-2.5 cursor-pointer shadow-2xs"
+                >
+                  {showUpgradePlans ? 'Hide Upgrade Options' : 'Upgrade / Change Plan'}
+                </Button>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Button
-                variant={showUpgradePlans ? 'primary' : 'outline'}
-                size="md"
-                onClick={() => setShowUpgradePlans(!showUpgradePlans)}
-                rightIcon={showUpgradePlans ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                className="text-xs font-bold rounded-xl px-5 py-3 cursor-pointer shadow-2xs"
-              >
-                {showUpgradePlans ? 'Hide Upgrade Options' : 'Upgrade / Change Plan'}
-              </Button>
+            {/* Right: AutoPay Mandate & Recurring Billing Card */}
+            <div className="lg:col-span-5 bg-[#F6FAF8] border border-[#E2EAE6] rounded-3xl p-6 sm:p-7 shadow-xs flex flex-col justify-between gap-4">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${subscription?.autoPay?.enabled !== false ? 'bg-[#006736] text-white' : 'bg-amber-600 text-white'}`}>
+                      <Zap className="w-4 h-4" />
+                    </div>
+                    <span className="text-xs font-black text-[#14201C] uppercase tracking-wider">
+                      AutoPay Renewal
+                    </span>
+                  </div>
+
+                  <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border ${subscription?.autoPay?.enabled !== false ? 'bg-[#E9F9EE] text-[#006736] border-[#C4EBD0]' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
+                    {subscription?.autoPay?.enabled !== false ? '⚡ Active & Protected' : '⚠️ Paused'}
+                  </span>
+                </div>
+
+                <p className="text-xs text-[#5F7069] leading-relaxed">
+                  {subscription?.autoPay?.enabled !== false
+                    ? `Automatic renewal scheduled on ${formatDate(planEndDate)} via UPI/Card e-Mandate.`
+                    : 'AutoPay is currently paused. Service will stop unless renewed manually.'}
+                </p>
+
+                <div className="mt-3 p-3 bg-white border border-[#E2EAE6] rounded-xl flex items-center justify-between text-xs font-mono">
+                  <span className="text-[#5F7069] text-[11px]">Mandate ID:</span>
+                  <span className="font-bold text-[#14201C]">
+                    {subscription?.autoPay?.mandateId || 'CF-MND-' + (subscription?.id || '982341').slice(-6)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#E2EAE6]">
+                <span className="text-[11px] text-[#5F7069] font-medium flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#05A222]" /> RBI e-Mandate
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsAutoPayModalOpen(true)}
+                  className="text-xs font-bold rounded-xl bg-white border-[#E2EAE6] text-[#006736] hover:bg-[#E9F9EE] cursor-pointer"
+                >
+                  Manage AutoPay
+                </Button>
+              </div>
             </div>
+
           </div>
 
           {/* Monthly Resource Quotas & Usage Metering */}
@@ -1083,6 +1143,14 @@ export const Billing: React.FC<BillingProps> = ({ embedded = false }) => {
         invoice={selectedInvoice}
         isOpen={isInvoiceModalOpen}
         onClose={() => setIsInvoiceModalOpen(false)}
+      />
+
+      {/* AutoPay & Recurring Mandate Management Modal */}
+      <AutoPayModal
+        isOpen={isAutoPayModalOpen}
+        onClose={() => setIsAutoPayModalOpen(false)}
+        subscription={subscription}
+        onAutoPayUpdated={handleAutoPayUpdated}
       />
     </div>
   );

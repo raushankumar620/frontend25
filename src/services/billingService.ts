@@ -38,6 +38,17 @@ export const billingService = {
   },
 
   /**
+   * Update AutoPay mandate settings (enable / disable / pause)
+   */
+  async updateAutoPay(enabled: boolean, settings?: { status?: string; paymentMethod?: string; maxAmount?: number }): Promise<{ subscription: Subscription; autoPay: any; message: string }> {
+    const res = await apiClient.patch<{ subscription: Subscription; autoPay: any; message: string }>('/billing/subscription/autopay', {
+      enabled,
+      ...settings,
+    });
+    return res.data;
+  },
+
+  /**
    * Resume cancelled subscription
    */
   async resumeSubscription(): Promise<Subscription> {

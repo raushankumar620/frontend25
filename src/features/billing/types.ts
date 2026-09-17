@@ -21,16 +21,27 @@ export interface PricingPlan {
   isActive?: boolean;
 }
 
+export interface AutoPayInfo {
+  enabled: boolean;
+  status: 'ACTIVE' | 'PAUSED' | 'CANCELLED' | 'NOT_CONFIGURED';
+  mandateId?: string;
+  paymentMethod?: string;
+  nextDebitDate?: string;
+  maxAmount?: number;
+  lastUpdated?: string;
+}
+
 export interface Subscription {
   id?: string;
   organizationId: string;
   planCode: string;
-  status: 'TRIALING' | 'ACTIVE' | 'PAST_DUE' | 'CANCELLED';
-  billingCycle: 'monthly' | 'yearly';
+  status: 'TRIALING' | 'ACTIVE' | 'PAST_DUE' | 'CANCELLED' | 'INACTIVE';
+  billingCycle: 'monthly' | 'yearly' | 'quarterly';
   currentPeriodStart: string;
   currentPeriodEnd: string;
   cancelAtPeriodEnd: boolean;
   trialEndsAt?: string;
+  autoPay?: AutoPayInfo;
 }
 
 export interface UsageMetricItem {
