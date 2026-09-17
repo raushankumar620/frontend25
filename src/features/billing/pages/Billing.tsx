@@ -29,6 +29,7 @@ import { ROUTES } from '../../../utils/constants';
 import { billingService } from '../../../services/billingService';
 import { useAuthStore } from '../../../store/authStore';
 import { cashfreeService } from '../../../services/cashfreeService';
+import { InvoiceModal } from '../components/InvoiceModal';
 import type { UsageAndLimits, Subscription, PricingPlan, Invoice } from '../types';
 
 export interface BillingProps {
@@ -58,6 +59,15 @@ export const Billing: React.FC<BillingProps> = ({ embedded = false }) => {
   const [topupAmount, setTopupAmount] = useState<number>(1000);
   const [customAmount, setCustomAmount] = useState<string>('');
   const [isTopupLoading, setIsTopupLoading] = useState(false);
+
+  // Invoice Receipt Modal State
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+
+  const handleOpenInvoice = (inv: Invoice) => {
+    setSelectedInvoice(inv);
+    setIsInvoiceModalOpen(true);
+  };
 
   // Real-time Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
@@ -632,29 +642,41 @@ export const Billing: React.FC<BillingProps> = ({ embedded = false }) => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E2EAE6]/60">
-                    {invoices.slice(0, 5).map((inv) => (
-                      <tr key={inv.id || inv.invoiceNumber} className="hover:bg-[#F6FAF8] transition-colors">
-                        <td className="py-3.5 px-4 font-mono font-bold text-[#14201C]">{inv.invoiceNumber}</td>
-                        <td className="py-3.5 px-4 text-[#5F7069]">{new Date(inv.paidAt || inv.createdAt).toLocaleDateString('en-IN')}</td>
-                        <td className="py-3.5 px-4 text-[#14201C] font-medium">{inv.description || inv.billingReason}</td>
-                        <td className="py-3.5 px-4 font-mono font-bold text-[#14201C]">
-                          ₹{(inv.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                        </td>
-                        <td className="py-3.5 px-4">
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]">
-                            {inv.status}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-4 text-right">
-                          <button
-                            onClick={() => navigate(ROUTES.BILLING_INVOICES || '/billing/invoices')}
-                            className="inline-flex items-center gap-1 text-[#006736] hover:text-[#05A222] font-bold cursor-pointer"
-                          >
-                            <Download className="w-3.5 h-3.5" /> PDF
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {invoices.slice(0, 5).map((inv) => {
+                      const cleanDescription = (inv.description || inv.billingReason || '').replace(/\s*\(\s*undefined\s+Month\(s\)\s*\)/gi, '').trim();
+                      return (
+                        <tr
+                          key={inv.id || inv.invoiceNumber}
+                          onClick={() => handleOpenInvoice(inv)}
+                          className="hover:bg-[#F6FAF8] transition-colors cursor-pointer"
+                        >
+                          <td className="py-3.5 px-4 font-mono font-bold text-[#14201C]">
+                            <div className="flex items-center gap-1.5">
+                              <FileText className="w-3.5 h-3.5 text-[#05A222]" />
+                              <span>{inv.invoiceNumber}</span>
+                            </div>
+                          </td>
+                          <td className="py-3.5 px-4 text-[#5F7069]">{new Date(inv.paidAt || inv.createdAt).toLocaleDateString('en-IN')}</td>
+                          <td className="py-3.5 px-4 text-[#14201C] font-medium">{cleanDescription}</td>
+                          <td className="py-3.5 px-4 font-mono font-bold text-[#14201C]">
+                            ₹{(inv.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]">
+                              {inv.status}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-right" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              onClick={() => handleOpenInvoice(inv)}
+                              className="inline-flex items-center gap-1 text-xs text-[#006736] hover:text-[#05A222] font-bold bg-[#E9F9EE] hover:bg-[#d8f5e1] border border-[#C4EBD0] px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                            >
+                              <Download className="w-3.5 h-3.5" /> PDF / Print
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -1055,6 +1077,13 @@ export const Billing: React.FC<BillingProps> = ({ embedded = false }) => {
           </div>
         </div>
       )}
+
+      {/* Branded Official Invoice Modal (Screen Popup + Instant A4 Print) */}
+      <InvoiceModal
+        invoice={selectedInvoice}
+        isOpen={isInvoiceModalOpen}
+        onClose={() => setIsInvoiceModalOpen(false)}
+      />
     </div>
   );
 

@@ -80,6 +80,7 @@ export const Invoices: React.FC = () => {
               <tbody className="divide-y divide-[#E2EAE6]/60">
                 {invoices.map((inv) => {
                   const isPaid = inv.status === 'PAID';
+                  const cleanDescription = (inv.description || inv.billingReason || '').replace(/\s*\(\s*undefined\s+Month\(s\)\s*\)/gi, '').trim();
                   return (
                     <tr
                       key={inv.id || inv.invoiceNumber}
@@ -93,10 +94,10 @@ export const Invoices: React.FC = () => {
                         </div>
                       </td>
                       <td className="py-4 font-medium text-xs sm:text-sm text-[#14201C]">
-                        {inv.description || inv.billingReason}
+                        {cleanDescription}
                       </td>
                       <td className="py-4 text-xs text-[#5F7069]">
-                        {new Date(inv.paidAt || inv.createdAt).toLocaleDateString()}
+                        {new Date(inv.paidAt || inv.createdAt).toLocaleDateString('en-IN')}
                       </td>
                       <td className="py-4 font-black text-xs sm:text-sm text-slate-900 font-mono">
                         ₹{(inv.amount * (inv.currency === 'USD' ? 80 : 1)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
