@@ -20,7 +20,7 @@ export interface WhatsAppTemplate {
   name: string;
   category: 'MARKETING' | 'UTILITY' | 'AUTHENTICATION';
   language: string;
-  status: 'APPROVED' | 'PENDING' | 'REJECTED' | 'PAUSED';
+  status: 'APPROVED' | 'PENDING' | 'REJECTED' | 'PAUSED' | 'DRAFT';
   header?: {
     type: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
     text?: string;
@@ -29,10 +29,11 @@ export interface WhatsAppTemplate {
   body: string;
   footer?: string;
   buttons?: Array<{
-    type: 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER';
+    type: 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER' | 'COPY_CODE';
     text: string;
     url?: string;
     phoneNumber?: string;
+    code?: string;
   }>;
   createdAt: string;
   updatedAt: string;

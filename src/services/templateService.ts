@@ -11,11 +11,15 @@ export interface CreateTemplatePayload {
   };
   body: string;
   footer?: string;
+  isDraft?: boolean;
+  status?: string;
   buttons?: Array<{
-    type: 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER';
+    type: 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER' | 'COPY_CODE';
     text: string;
     url?: string;
     phoneNumber?: string;
+    code?: string;
+    example?: string[];
   }>;
 }
 
@@ -161,6 +165,7 @@ export const templateService = {
           text: b.text,
           url: b.url,
           phone_number: b.phoneNumber,
+          example: b.example || (b.code ? [b.code] : undefined),
         })),
       });
     }
@@ -170,6 +175,8 @@ export const templateService = {
       category: payload.category,
       language: payload.language || 'en_US',
       components,
+      isDraft: payload.isDraft,
+      status: payload.status,
     });
 
     if (res.success && res.data) {

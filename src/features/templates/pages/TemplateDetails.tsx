@@ -22,7 +22,9 @@ import {
   ChevronLeft,
   Phone,
   Video,
-  CheckCheck
+  CheckCheck,
+  Bookmark,
+  FileEdit
 } from 'lucide-react';
 import { ROUTES } from '../../../utils/constants';
 
@@ -102,6 +104,12 @@ export const TemplateDetails: React.FC = () => {
             <Clock className="w-3.5 h-3.5 text-amber-500 animate-pulse" /> Pending Review
           </span>
         );
+      case 'DRAFT':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300 shadow-2xs">
+            <Bookmark className="w-3.5 h-3.5 text-amber-600" /> Draft
+          </span>
+        );
       case 'REJECTED':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
@@ -161,20 +169,32 @@ export const TemplateDetails: React.FC = () => {
             size="sm"
             onClick={() => setIsConfirmOpen(true)}
             leftIcon={<Trash2 className="w-4 h-4 text-rose-500" />}
-            className="text-xs font-semibold text-rose-600 border-rose-200 hover:bg-rose-50"
+            className="text-xs font-semibold text-rose-600 border-rose-200 hover:bg-rose-50 cursor-pointer"
           >
             Delete
           </Button>
 
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
-            leftIcon={<Zap className="w-4 h-4" />}
-            className="text-xs font-bold bg-[#05A222] hover:bg-[#006736] text-white shadow-xs"
-          >
-            Use in Broadcast Campaign
-          </Button>
+          {template.status === 'DRAFT' ? (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => navigate(`/templates/create?draftId=${template.id}`)}
+              leftIcon={<FileEdit className="w-4 h-4" />}
+              className="text-xs font-bold bg-[#05A222] hover:bg-[#006736] text-white shadow-xs cursor-pointer"
+            >
+              Edit & Submit to Meta
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
+              leftIcon={<Zap className="w-4 h-4" />}
+              className="text-xs font-bold bg-[#05A222] hover:bg-[#006736] text-white shadow-xs cursor-pointer"
+            >
+              Use in Broadcast Campaign
+            </Button>
+          )}
         </div>
       </div>
 

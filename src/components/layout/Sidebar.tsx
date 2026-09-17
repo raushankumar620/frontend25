@@ -11,11 +11,13 @@ import {
   BarChart3,
   Code2,
   Settings,
-  Sparkles,
   PanelLeftClose,
   Crown,
   Check,
   LogOut,
+  ArrowUpRight,
+  Sparkles,
+  X,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { ROUTES, APP_NAME } from '../../utils/constants';
@@ -46,6 +48,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { user, organization, logout } = useAuthStore();
   const [usageData, setUsageData] = useState<any>(null);
   const [channelsCount, setChannelsCount] = useState<number>(1);
+  const [isPlanCardDismissed, setIsPlanCardDismissed] = useState<boolean>(() => {
+    return localStorage.getItem('sidebar_plan_card_dismissed') === 'true';
+  });
 
   useEffect(() => {
     const loadData = async () => {
@@ -88,7 +93,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const userInitial = (orgDisplayName?.[0] || user?.firstName?.[0] || 'A').toUpperCase();
   const userRole = user?.role === 'ORG_ADMIN' || user?.role === 'admin' ? 'Admin' : (user?.role === 'SUPER_ADMIN' ? 'Super Admin' : (user?.role ? String(user.role) : 'Admin'));
   const planName = usageData?.plan?.name || (organization?.plan ? organization.plan.replace(/_/g, ' ') : 'PRO');
-  const planBadge = usageData?.plan?.status ? usageData.plan.status.toUpperCase() : 'PRO';
+  const rawStatus = usageData?.plan?.status ? usageData.plan.status.toUpperCase() : '';
+  const planBadge = rawStatus && !rawStatus.includes('TRAIL') && !rawStatus.includes('TRIAL') ? rawStatus : 'ACTIVE';
 
   // Dynamic limits from live usage / org limits
   const maxChannels = organization?.limits?.maxNumbers || Math.max(channelsCount, 1);
@@ -207,42 +213,132 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* Embedded Plan & Resource Usage Box directly inside Sidebar */}
-        {!collapsed && (
-          <div className="bg-slate-50/90 border border-slate-200/90 rounded-2xl p-3.5 space-y-2.5 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-6.5 h-6.5 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center border border-amber-200 shadow-2xs">
-                  <Crown className="w-3.5 h-3.5 fill-amber-600/20 stroke-[2.2]" />
+        {!collapsed ? (
+          !isPlanCardDismissed ? (
+            <div className="relative overflow-hidden rounded-2xl p-3.5 bg-gradient-to-br from-[#013B23] via-[#006736] to-[#012818] text-white shadow-md border border-[#05A222]/30 space-y-3 transition-all">
+              {/* Background decorative glow */}
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-[#1CD72C]/15 rounded-full blur-xl pointer-events-none" />
+              <div className="absolute -left-6 -bottom-6 w-20 h-20 bg-[#07CF74]/15 rounded-full blur-lg pointer-events-none" />
+
+              {/* Header: Crown + Plan Name + Status + Close Button */}
+              <div className="relative flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="w-8 h-8 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-xs shrink-0">
+                    <Crown className="w-4.5 h-4.5 text-[#6AEB31]" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-xs font-extrabold text-white capitalize tracking-tight truncate">
+                        {planName} Plan
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-[9px] font-bold bg-[#1CD72C]/20 text-[#6AEB31] border border-[#1CD72C]/40 px-1.5 py-0.2 rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#1CD72C] animate-pulse" />
+                        {planBadge}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <span className="text-xs font-bold text-slate-900 capitalize truncate">{planName}</span>
-              </div>
-              <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full uppercase border border-emerald-200">
-                {planBadge}
-              </span>
-            </div>
 
-            {/* Checklist items with Live Backend Data */}
-            <div className="space-y-1.5 pt-0.5 border-t border-slate-200/60">
-              <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
-                <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 stroke-[2.5]" />
-                <span className="truncate">{channelsText}</span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsPlanCardDismissed(true);
+                    localStorage.setItem('sidebar_plan_card_dismissed', 'true');
+                  }}
+                  title="Close Subscription Box"
+                  className="w-5 h-5 rounded-md flex items-center justify-center text-white/60 hover:text-white hover:bg-white/15 transition-colors cursor-pointer shrink-0 -mr-1"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
               </div>
-              <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
-                <Check className="w-3.5 h-3.5 text-purple-600 shrink-0 stroke-[2.5]" />
-                <span className="truncate">{campaignsText}</span>
-              </div>
-              <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-600">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[2.5]" />
-                <span className="truncate">{contactsText}</span>
-              </div>
-            </div>
 
+              {/* Checklist items with Live Backend Data */}
+              <div className="relative space-y-1.5 pt-2 border-t border-white/10 text-[11px] text-white/90 font-medium">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[#C4EBD0] flex items-center gap-1.5 truncate">
+                    <Check className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
+                    <span>Channels</span>
+                  </span>
+                  <span className="font-semibold text-white font-mono text-[11px] shrink-0">
+                    {channelsText}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[#C4EBD0] flex items-center gap-1.5 truncate">
+                    <Check className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
+                    <span>Messages</span>
+                  </span>
+                  <span className="font-semibold text-white font-mono text-[11px] shrink-0">
+                    {campaignsText}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[#C4EBD0] flex items-center gap-1.5 truncate">
+                    <Check className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
+                    <span>Contacts</span>
+                  </span>
+                  <span className="font-semibold text-white font-mono text-[11px] shrink-0">
+                    {contactsText}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => navigate(ROUTES.BILLING)}
+                className="relative w-full py-2 px-3 bg-white/10 hover:bg-white/20 active:bg-white/25 text-white border border-white/20 rounded-xl text-xs font-bold transition-all text-center cursor-pointer shadow-xs flex items-center justify-center gap-1.5 group"
+              >
+                <span>Manage Subscription</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-[#6AEB31] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-gradient-to-r from-[#013B23] via-[#006736] to-[#012818] border border-[#05A222]/30 text-white shadow-xs">
+              <button
+                type="button"
+                onClick={() => navigate(ROUTES.BILLING)}
+                className="flex items-center gap-2.5 text-left hover:opacity-90 transition-opacity cursor-pointer group flex-1 min-w-0"
+              >
+                <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-[#6AEB31] shrink-0 border border-white/15">
+                  <Crown className="w-4 h-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-white capitalize truncate leading-tight">
+                      {planName}
+                    </span>
+                    <span className="text-[9px] font-bold bg-[#1CD72C]/25 text-[#6AEB31] px-1 py-0.2 rounded leading-tight">
+                      {planBadge}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-[#C4EBD0] font-medium block leading-tight mt-0.5 truncate">
+                    Manage Subscription &rarr;
+                  </span>
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsPlanCardDismissed(false);
+                  localStorage.setItem('sidebar_plan_card_dismissed', 'false');
+                }}
+                title="Show Subscription Details"
+                className="w-6 h-6 rounded-lg flex items-center justify-center text-[#C4EBD0] hover:text-white hover:bg-white/15 transition-colors cursor-pointer shrink-0 ml-1"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#6AEB31]" />
+              </button>
+            </div>
+          )
+        ) : (
+          <div className="flex justify-center">
             <button
               type="button"
-              onClick={() => navigate('/settings?tab=billing')}
-              className="w-full mt-1 py-1.5 px-2 bg-white hover:bg-slate-100/90 text-slate-700 hover:text-slate-900 border border-slate-200 rounded-xl text-[11px] font-bold transition-all text-center cursor-pointer shadow-2xs"
+              onClick={() => navigate(ROUTES.BILLING)}
+              title={`Subscription: ${planName} (${planBadge}) - Click to Manage`}
+              className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#013B23] to-[#006736] text-[#6AEB31] flex items-center justify-center shadow-xs border border-[#05A222]/30 hover:scale-105 transition-transform cursor-pointer"
             >
-              Manage Subscription
+              <Crown className="w-5 h-5" />
             </button>
           </div>
         )}
@@ -275,7 +371,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ) : (
           <div className="bg-slate-50/90 border border-slate-200/90 rounded-2xl p-2.5 flex items-center justify-between gap-2 transition-all">
             <div
-              onClick={() => navigate('/settings?tab=account')}
+              onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}
               className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-80 transition-opacity flex-1"
               title="Click to view Account Profile"
             >
