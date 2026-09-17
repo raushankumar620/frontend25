@@ -313,15 +313,20 @@ curl_close($ch);`,
 
       {/* Section 1: Authentication */}
       {(selectedSection === 'all' || selectedSection === 'auth') && (
-        <div className="bg-white border border-[#E2EAE6] p-6 rounded-3xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0 font-bold">
-              1
+        <div className="bg-white border border-[#E2EAE6] hover:border-[#C4EBD0] transition-all p-5 sm:p-6 rounded-2xl shadow-[0_4px_20px_rgba(1,59,35,0.03)] space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="w-7 h-7 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#006736] font-extrabold text-xs">
+                01
+              </span>
+              <div>
+                <h4 className="text-base font-bold text-[#14201C]">API Authentication</h4>
+                <p className="text-xs text-[#5F7069]">Pass your secret API key in request headers</p>
+              </div>
             </div>
-            <div>
-              <h4 className="text-base font-bold text-[#14201C]">Authentication</h4>
-              <p className="text-xs text-[#5F7069]">Pass your secret API key in request headers</p>
-            </div>
+            <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]">
+              Required for all requests
+            </span>
           </div>
 
           <p className="text-xs text-[#5F7069] leading-relaxed">
@@ -329,11 +334,13 @@ curl_close($ch);`,
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-3 bg-[#14201C] rounded-xl font-mono text-xs text-[#6AEB31] border border-[#2B3A34]">
-              x-api-key: wmsg_live_98a7s6d••••••••••••••
+            <div className="p-3.5 bg-[#0F1A17] rounded-xl font-mono text-xs text-[#6AEB31] border border-[#21352E] shadow-inner flex items-center justify-between">
+              <span>x-api-key: wmsg_live_98a7s6d••••••••••••••</span>
+              <span className="text-[10px] text-[#5F7069] font-sans font-medium">Header</span>
             </div>
-            <div className="p-3 bg-[#14201C] rounded-xl font-mono text-xs text-[#6AEB31] border border-[#2B3A34]">
-              Authorization: Bearer wmsg_live_98a7s6d••••••••••
+            <div className="p-3.5 bg-[#0F1A17] rounded-xl font-mono text-xs text-[#6AEB31] border border-[#21352E] shadow-inner flex items-center justify-between">
+              <span>Authorization: Bearer wmsg_live_98a7s6d••••••••••</span>
+              <span className="text-[10px] text-[#5F7069] font-sans font-medium">Bearer</span>
             </div>
           </div>
         </div>
@@ -341,18 +348,19 @@ curl_close($ch);`,
 
       {/* Section 2: Send WhatsApp Text Message */}
       {(selectedSection === 'all' || selectedSection === 'text') && (
-        <div className="bg-white border border-[#E2EAE6] p-6 rounded-3xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0 font-bold">
-                2
-              </div>
+        <div className="bg-white border border-[#E2EAE6] hover:border-[#C4EBD0] transition-all p-5 sm:p-6 rounded-2xl shadow-[0_4px_20px_rgba(1,59,35,0.03)] space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E2EAE6]">
+            <div className="flex items-center gap-3">
+              <span className="w-7 h-7 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#006736] font-extrabold text-xs">
+                02
+              </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md font-mono font-bold text-[10px] bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]">
+                  <span className="px-2 py-0.5 rounded-md font-mono font-black text-[10px] bg-[#05A222] text-white shadow-2xs">
                     POST
                   </span>
-                  <h4 className="text-base font-bold text-[#14201C]">/api/v1/messages (Text Message)</h4>
+                  <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/messages</code>
+                  <span className="text-xs text-[#5F7069] font-medium hidden md:inline">(Text Message)</span>
                 </div>
                 <p className="text-xs text-[#5F7069] mt-0.5">Send a real-time conversational text message</p>
               </div>
@@ -363,32 +371,42 @@ curl_close($ch);`,
               variant="outline"
               onClick={() => handleCopy('text', textSnippets[activeLang])}
               leftIcon={copiedSection === 'text' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-              className="text-xs font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE]"
+              className="text-xs font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE] h-8 px-3"
             >
-              {copiedSection === 'text' ? 'Copied' : 'Copy'}
+              {copiedSection === 'text' ? 'Copied Code' : 'Copy Code'}
             </Button>
           </div>
 
-          <pre className="p-4 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
-            {textSnippets[activeLang]}
-          </pre>
+          <div className="rounded-xl overflow-hidden border border-[#21352E] bg-[#0F1A17] shadow-inner">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#09110F] border-b border-[#21352E] text-xs font-mono text-[#8B9D96]">
+              <span className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]/80"></span>
+                <span>Payload Example ({activeLang.toUpperCase()})</span>
+              </span>
+              <span className="text-[11px] text-[#5F7069]">Content-Type: application/json</span>
+            </div>
+            <pre className="p-4 font-mono text-xs text-[#6AEB31] overflow-x-auto leading-relaxed">
+              {textSnippets[activeLang]}
+            </pre>
+          </div>
         </div>
       )}
 
       {/* Section 3: Send Template Message */}
       {(selectedSection === 'all' || selectedSection === 'template') && (
-        <div className="bg-white border border-[#E2EAE6] p-6 rounded-3xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0 font-bold">
-                3
-              </div>
+        <div className="bg-white border border-[#E2EAE6] hover:border-[#C4EBD0] transition-all p-5 sm:p-6 rounded-2xl shadow-[0_4px_20px_rgba(1,59,35,0.03)] space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E2EAE6]">
+            <div className="flex items-center gap-3">
+              <span className="w-7 h-7 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#006736] font-extrabold text-xs">
+                03
+              </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md font-mono font-bold text-[10px] bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]">
+                  <span className="px-2 py-0.5 rounded-md font-mono font-black text-[10px] bg-[#05A222] text-white shadow-2xs">
                     POST
                   </span>
-                  <h4 className="text-base font-bold text-[#14201C]">/api/v1/messages (Approved HSM Template)</h4>
+                  <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/messages</code>
+                  <span className="text-xs text-[#5F7069] font-medium hidden md:inline">(Approved HSM Template)</span>
                 </div>
                 <p className="text-xs text-[#5F7069] mt-0.5">Dispatches pre-approved Meta WhatsApp templates outside 24h window</p>
               </div>
@@ -399,32 +417,42 @@ curl_close($ch);`,
               variant="outline"
               onClick={() => handleCopy('template', templateSnippets[activeLang])}
               leftIcon={copiedSection === 'template' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-              className="text-xs font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE]"
+              className="text-xs font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE] h-8 px-3"
             >
-              {copiedSection === 'template' ? 'Copied' : 'Copy'}
+              {copiedSection === 'template' ? 'Copied Code' : 'Copy Code'}
             </Button>
           </div>
 
-          <pre className="p-4 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
-            {templateSnippets[activeLang]}
-          </pre>
+          <div className="rounded-xl overflow-hidden border border-[#21352E] bg-[#0F1A17] shadow-inner">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#09110F] border-b border-[#21352E] text-xs font-mono text-[#8B9D96]">
+              <span className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]/80"></span>
+                <span>HSM Template Example ({activeLang.toUpperCase()})</span>
+              </span>
+              <span className="text-[11px] text-[#5F7069]">Meta Cloud Verified</span>
+            </div>
+            <pre className="p-4 font-mono text-xs text-[#6AEB31] overflow-x-auto leading-relaxed">
+              {templateSnippets[activeLang]}
+            </pre>
+          </div>
         </div>
       )}
 
       {/* Section 4: Create Customer Contact */}
       {(selectedSection === 'all' || selectedSection === 'contact') && (
-        <div className="bg-white border border-[#E2EAE6] p-6 rounded-3xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0 font-bold">
-                4
-              </div>
+        <div className="bg-white border border-[#E2EAE6] hover:border-[#C4EBD0] transition-all p-5 sm:p-6 rounded-2xl shadow-[0_4px_20px_rgba(1,59,35,0.03)] space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E2EAE6]">
+            <div className="flex items-center gap-3">
+              <span className="w-7 h-7 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#006736] font-extrabold text-xs">
+                04
+              </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md font-mono font-bold text-[10px] bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]">
+                  <span className="px-2 py-0.5 rounded-md font-mono font-black text-[10px] bg-[#05A222] text-white shadow-2xs">
                     POST
                   </span>
-                  <h4 className="text-base font-bold text-[#14201C]">/api/v1/contacts (Create / Upsert Contact)</h4>
+                  <code className="text-sm font-bold text-[#14201C] font-mono">/api/v1/contacts</code>
+                  <span className="text-xs text-[#5F7069] font-medium hidden md:inline">(Create / Upsert Contact)</span>
                 </div>
                 <p className="text-xs text-[#5F7069] mt-0.5">Sync customer lead information, tags, and CRM custom fields</p>
               </div>
@@ -435,56 +463,84 @@ curl_close($ch);`,
               variant="outline"
               onClick={() => handleCopy('contact', contactSnippets[activeLang])}
               leftIcon={copiedSection === 'contact' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-              className="text-xs font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE]"
+              className="text-xs font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE] h-8 px-3"
             >
-              {copiedSection === 'contact' ? 'Copied' : 'Copy'}
+              {copiedSection === 'contact' ? 'Copied Code' : 'Copy Code'}
             </Button>
           </div>
 
-          <pre className="p-4 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
-            {contactSnippets[activeLang]}
-          </pre>
+          <div className="rounded-xl overflow-hidden border border-[#21352E] bg-[#0F1A17] shadow-inner">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#09110F] border-b border-[#21352E] text-xs font-mono text-[#8B9D96]">
+              <span className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]/80"></span>
+                <span>Contact Payload ({activeLang.toUpperCase()})</span>
+              </span>
+              <span className="text-[11px] text-[#5F7069]">CRM Sync API</span>
+            </div>
+            <pre className="p-4 font-mono text-xs text-[#6AEB31] overflow-x-auto leading-relaxed">
+              {contactSnippets[activeLang]}
+            </pre>
+          </div>
         </div>
       )}
 
-      {/* Error Codes Reference Table */}
+      {/* HTTP Status & Error Codes Reference Table */}
       {(selectedSection === 'all' || selectedSection === 'errors') && (
-        <div className="bg-white border border-[#E2EAE6] p-6 rounded-3xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4">
-          <h4 className="text-base font-bold text-[#14201C]">HTTP Status & Error Codes</h4>
-          <div className="overflow-x-auto">
+        <div className="bg-white border border-[#E2EAE6] p-5 sm:p-6 rounded-2xl shadow-[0_4px_20px_rgba(1,59,35,0.03)] space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-base font-bold text-[#14201C]">HTTP Status & Error Codes</h4>
+              <p className="text-xs text-[#5F7069] mt-0.5">Standard HTTP response status codes returned by WhatsAppMSG API</p>
+            </div>
+            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#F8FAFC] text-[#5F7069] border border-[#E2EAE6]">
+              RFC 7231
+            </span>
+          </div>
+
+          <div className="overflow-x-auto border border-[#E2EAE6] rounded-xl">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-[#E2EAE6] text-[#5F7069] uppercase text-[10px]">
-                  <th className="py-2">Code</th>
-                  <th className="py-2">Status</th>
-                  <th className="py-2">Description</th>
+                <tr className="bg-[#F8FAFC] border-b border-[#E2EAE6] text-[#5F7069] uppercase text-[11px] font-bold">
+                  <th className="px-4 py-3">Code</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Description</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E2EAE6] font-mono">
-                <tr>
-                  <td className="py-2.5 font-bold text-[#006736]">200 / 201</td>
-                  <td className="py-2.5 text-[#14201C]">Success</td>
-                  <td className="py-2.5 font-sans text-[#5F7069]">Request completed and message/resource created</td>
+              <tbody className="divide-y divide-[#E2EAE6] font-mono text-xs">
+                <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td className="px-4 py-3 font-extrabold text-[#006736]">
+                    <span className="px-2 py-0.5 rounded bg-[#E9F9EE] border border-[#C4EBD0]">200 / 201</span>
+                  </td>
+                  <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Success</td>
+                  <td className="px-4 py-3 font-sans text-[#5F7069]">Request completed successfully and message or resource was created.</td>
                 </tr>
-                <tr>
-                  <td className="py-2.5 font-bold text-amber-600">400</td>
-                  <td className="py-2.5 text-[#14201C]">Bad Request</td>
-                  <td className="py-2.5 font-sans text-[#5F7069]">Missing required parameters or malformed payload</td>
+                <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td className="px-4 py-3 font-extrabold text-amber-600">
+                    <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200">400</span>
+                  </td>
+                  <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Bad Request</td>
+                  <td className="px-4 py-3 font-sans text-[#5F7069]">Missing required parameters or malformed JSON payload.</td>
                 </tr>
-                <tr>
-                  <td className="py-2.5 font-bold text-rose-600">401</td>
-                  <td className="py-2.5 text-[#14201C]">Unauthorized</td>
-                  <td className="py-2.5 font-sans text-[#5F7069]">API Key is invalid, inactive, or expired</td>
+                <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td className="px-4 py-3 font-extrabold text-rose-600">
+                    <span className="px-2 py-0.5 rounded bg-rose-50 border border-rose-200">401</span>
+                  </td>
+                  <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Unauthorized</td>
+                  <td className="px-4 py-3 font-sans text-[#5F7069]">API Key is invalid, inactive, revoked, or expired.</td>
                 </tr>
-                <tr>
-                  <td className="py-2.5 font-bold text-rose-600">403</td>
-                  <td className="py-2.5 text-[#14201C]">Forbidden</td>
-                  <td className="py-2.5 font-sans text-[#5F7069]">Key lacks required scope or client IP is not whitelisted</td>
+                <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td className="px-4 py-3 font-extrabold text-rose-600">
+                    <span className="px-2 py-0.5 rounded bg-rose-50 border border-rose-200">403</span>
+                  </td>
+                  <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Forbidden</td>
+                  <td className="px-4 py-3 font-sans text-[#5F7069]">Key lacks required permissions scope or client IP is not whitelisted.</td>
                 </tr>
-                <tr>
-                  <td className="py-2.5 font-bold text-amber-600">429</td>
-                  <td className="py-2.5 text-[#14201C]">Rate Limited</td>
-                  <td className="py-2.5 font-sans text-[#5F7069]">Exceeded requests per minute quota. Back off and retry.</td>
+                <tr className="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td className="px-4 py-3 font-extrabold text-amber-600">
+                    <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200">429</span>
+                  </td>
+                  <td className="px-4 py-3 font-bold text-[#14201C] font-sans">Rate Limited</td>
+                  <td className="px-4 py-3 font-sans text-[#5F7069]">Exceeded requests per minute quota. Implement exponential backoff and retry.</td>
                 </tr>
               </tbody>
             </table>
