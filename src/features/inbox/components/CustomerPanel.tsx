@@ -1,8 +1,7 @@
 import React from 'react';
 import type { Conversation } from '../../../types/message';
 import { Avatar } from '../../../components/ui/Avatar';
-import { Phone, Mail, Building, Tag, ShoppingBag, Plus } from 'lucide-react';
-import { Button } from '../../../components/ui/Button';
+import { Phone, Mail, Building, Tag, ShoppingBag, Plus, ShieldCheck } from 'lucide-react';
 
 export interface CustomerPanelProps {
   conversation: Conversation;
@@ -10,78 +9,80 @@ export interface CustomerPanelProps {
 
 export const CustomerPanel: React.FC<CustomerPanelProps> = ({ conversation }) => {
   return (
-    <div className="w-full h-full bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 p-4 overflow-y-auto space-y-6">
-      {/* Profile summary */}
-      <div className="flex flex-col items-center text-center pb-4 border-b border-slate-100 dark:border-slate-800">
-        <Avatar name={conversation.contactName} size="xl" status="online" className="mb-3" />
-        <h3 className="text-sm font-bold text-slate-900 dark:text-white">{conversation.contactName}</h3>
-        <p className="text-xs text-slate-400 mt-0.5">{conversation.contactPhone}</p>
-        <span className="mt-2 text-[10px] bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+    <div className="w-full h-full bg-white border-l border-[#E2EAE6] p-4 overflow-y-auto space-y-5 custom-scrollbar select-none">
+      {/* Profile Summary Card */}
+      <div className="flex flex-col items-center text-center pb-4 border-b border-[#F0F5F2]">
+        <Avatar name={conversation.contactName || conversation.contactPhone} size="xl" status="online" className="mb-2.5 ring-4 ring-[#E9F9EE]" />
+        <h3 className="text-sm font-black text-[#14201C] leading-tight">
+          {conversation.contactName || conversation.contactPhone}
+        </h3>
+        <p className="text-xs text-[#5F7069] mt-0.5 font-medium">{conversation.contactPhone}</p>
+        <span className="mt-2 text-[10.5px] bg-[#E9F9EE] text-[#006736] font-bold px-2.5 py-0.5 rounded-full border border-[#C4EBD0] flex items-center gap-1">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#05A222]" />
           WhatsApp Opted In
         </span>
       </div>
 
       {/* Contact Details */}
-      <div className="space-y-3 text-xs">
-        <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Contact Info</h4>
-        <div className="flex items-center gap-2.5 text-slate-600 dark:text-slate-300">
-          <Phone className="w-3.5 h-3.5 text-slate-400" />
+      <div className="space-y-2.5 text-xs">
+        <h4 className="text-[11px] font-bold text-[#8A9993] uppercase tracking-wider">Contact Info</h4>
+        <div className="flex items-center gap-2.5 text-[#14201C] font-medium p-2 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6]">
+          <Phone className="w-3.5 h-3.5 text-[#006736]" />
           <span>{conversation.contactPhone}</span>
         </div>
-        <div className="flex items-center gap-2.5 text-slate-600 dark:text-slate-300">
-          <Mail className="w-3.5 h-3.5 text-slate-400" />
-          <span>david.miller@apextech.io</span>
+        <div className="flex items-center gap-2.5 text-[#5F7069] font-medium p-2 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6]">
+          <Mail className="w-3.5 h-3.5 text-[#8A9993]" />
+          <span className="truncate">customer@contact.whatsapp</span>
         </div>
-        <div className="flex items-center gap-2.5 text-slate-600 dark:text-slate-300">
-          <Building className="w-3.5 h-3.5 text-slate-400" />
-          <span>ApexTech Solutions</span>
+        <div className="flex items-center gap-2.5 text-[#5F7069] font-medium p-2 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6]">
+          <Building className="w-3.5 h-3.5 text-[#8A9993]" />
+          <span>Direct WhatsApp Lead</span>
         </div>
       </div>
 
       {/* CRM Tags */}
       <div className="space-y-2 text-xs">
         <div className="flex items-center justify-between">
-          <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-            <Tag className="w-3 h-3" />
+          <h4 className="text-[11px] font-bold text-[#8A9993] uppercase tracking-wider flex items-center gap-1.5">
+            <Tag className="w-3 h-3 text-[#006736]" />
             Tags
           </h4>
-          <button className="text-emerald-500 hover:text-emerald-600 text-[11px] font-medium flex items-center gap-0.5">
+          <button className="text-[#006736] hover:text-[#05A222] text-[11px] font-bold flex items-center gap-0.5 cursor-pointer">
             <Plus className="w-3 h-3" /> Add
           </button>
         </div>
         <div className="flex flex-wrap gap-1.5">
-          {conversation.tags.map((tag, idx) => (
-            <span
-              key={idx}
-              className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-medium"
-            >
-              {tag}
-            </span>
-          ))}
+          {conversation.tags && conversation.tags.length > 0 ? (
+            conversation.tags.map((tag, idx) => (
+              <span
+                key={idx}
+                className="px-2.5 py-1 rounded-lg bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0] text-[10.5px] font-bold"
+              >
+                {tag}
+              </span>
+            ))
+          ) : (
+            <span className="text-[11px] text-[#8A9993] italic">No tags assigned</span>
+          )}
         </div>
       </div>
 
       {/* Commercial Summary */}
-      <div className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-100 dark:border-slate-800 space-y-2">
-        <div className="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-white">
-          <ShoppingBag className="w-4 h-4 text-emerald-500" />
-          <span>Commercial Attributes</span>
+      <div className="bg-[#F6FAF8] p-3.5 rounded-2xl border border-[#E2EAE6] space-y-2.5">
+        <div className="flex items-center gap-2 text-xs font-bold text-[#14201C]">
+          <ShoppingBag className="w-4 h-4 text-[#006736]" />
+          <span>Live Metadata</span>
         </div>
-        <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 pt-1">
-          <span>Total Orders</span>
-          <span className="font-semibold text-slate-800 dark:text-slate-200">14 Orders</span>
+        <div className="flex justify-between text-xs text-[#5F7069] pt-1 border-t border-[#E2EAE6]">
+          <span>Channel</span>
+          <span className="font-bold text-[#14201C]">WhatsApp Cloud API</span>
         </div>
-        <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
-          <span>Lifetime Value</span>
-          <span className="font-bold text-emerald-600 dark:text-emerald-400">$4,890.00</span>
+        <div className="flex justify-between text-xs text-[#5F7069]">
+          <span>Status</span>
+          <span className="font-bold text-[#05A222] capitalize">{conversation.status}</span>
         </div>
-      </div>
-
-      <div className="pt-2">
-        <Button variant="outline" size="sm" className="w-full">
-          Open Full CRM Profile
-        </Button>
       </div>
     </div>
   );
 };
+

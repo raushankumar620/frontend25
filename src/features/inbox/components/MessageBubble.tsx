@@ -15,12 +15,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
   return (
     <div
       className={clsx(
-        'flex flex-col max-w-[80%] sm:max-w-[70%]',
+        'flex flex-col max-w-[85%] sm:max-w-[70%]',
         isOutbound ? 'ml-auto items-end' : 'mr-auto items-start'
       )}
     >
       {isBot && (
-        <span className="flex items-center gap-1 text-[10px] text-indigo-400 font-semibold mb-1 mr-1">
+        <span className="flex items-center gap-1 text-[10px] text-[#006736] font-bold mb-1 mr-1.5 bg-[#E9F9EE] px-2 py-0.5 rounded-full border border-[#C4EBD0]">
           <Bot className="w-3 h-3" />
           AI Auto-Reply
         </span>
@@ -28,34 +28,37 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
 
       <div
         className={clsx(
-          'rounded-2xl px-5 py-3 text-sm sm:text-[15px] shadow-xs relative leading-relaxed break-words',
+          'px-4 py-2.5 text-sm sm:text-[14.5px] leading-relaxed break-words relative shadow-2xs transition-all',
           isOutbound
-            ? 'bg-[#05A222] text-white rounded-br-xs'
-            : 'bg-white text-[#1F2A26] border border-[#E2EAE6] rounded-bl-xs'
+            ? 'bg-[#006736] text-white rounded-2xl rounded-tr-xs'
+            : 'bg-white text-[#14201C] border border-[#E2EAE6] rounded-2xl rounded-tl-xs shadow-[0_2px_8px_rgba(0,0,0,0.02)]'
         )}
       >
         {message.mediaUrl && (
           <img
             src={message.mediaUrl}
             alt="media attachment"
-            className="rounded-xl mb-2.5 max-h-56 object-cover w-full"
+            className="rounded-xl mb-2 max-h-60 object-cover w-full shadow-xs"
           />
         )}
-        <p className="whitespace-pre-wrap font-normal">{message.content}</p>
+        <p className="whitespace-pre-wrap font-normal selection:bg-emerald-200 selection:text-emerald-900">
+          {message.content}
+        </p>
 
+        {/* Timestamp & Delivery status footer */}
         <div
           className={clsx(
-            'flex items-center justify-end gap-1.5 mt-1.5 text-xs font-medium',
-            isOutbound ? 'text-emerald-100' : 'text-[#8A9993]'
+            'flex items-center justify-end gap-1 mt-1 text-[11px] font-medium select-none',
+            isOutbound ? 'text-emerald-100/90' : 'text-[#8A9993]'
           )}
         >
           <span>{formatTime(message.timestamp)}</span>
           {isOutbound && (
-            <span>
+            <span className="inline-flex items-center">
               {message.status === 'read' ? (
-                <CheckCheck className="w-4 h-4 text-white" />
+                <CheckCheck className="w-3.5 h-3.5 text-[#34B7F1]" />
               ) : (
-                <Check className="w-4 h-4" />
+                <Check className="w-3.5 h-3.5 text-emerald-100/80" />
               )}
             </span>
           )}
@@ -64,3 +67,4 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     </div>
   );
 };
+
