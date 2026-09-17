@@ -4,6 +4,7 @@ import {
   Check,
   Server,
   ArrowRight,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Link } from 'react-router-dom';
@@ -11,6 +12,225 @@ import { ROUTES } from '../../../utils/constants';
 
 type LanguageTab = 'curl' | 'node' | 'python' | 'php';
 type SectionFilter = 'all' | 'auth' | 'text' | 'template' | 'contact' | 'errors';
+
+/**
+ * Postman-style JSON Syntax Highlighter
+ * Keys: Crimson Red (#A31515)
+ * Strings: Emerald Green (#006736)
+ * Numbers: Royal Blue (#005CC5)
+ * Booleans: Purple (#7C3AED)
+ * Null: Slate Gray (#64748B)
+ * Punctuation: Dark Slate (#475569)
+ */
+const highlightPostmanJson = (jsonString: string): string => {
+  const escaped = jsonString
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  return escaped.replace(
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?|[{}[\],])/g,
+    (match) => {
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          const keyName = match.slice(0, -1);
+          return `<span class="text-[#A31515] font-bold">${keyName}</span><span class="text-[#64748B]">:</span>`;
+        } else {
+          return `<span class="text-[#006736] font-medium">${match}</span>`;
+        }
+      } else if (/true|false/.test(match)) {
+        return `<span class="text-[#7C3AED] font-bold">${match}</span>`;
+      } else if (/null/.test(match)) {
+        return `<span class="text-[#64748B] font-bold italic">${match}</span>`;
+      } else if (/[0-9]+/.test(match)) {
+        return `<span class="text-[#005CC5] font-bold">${match}</span>`;
+      } else if (/[{}[\],]/.test(match)) {
+        return `<span class="text-[#475569] font-medium">${match}</span>`;
+      }
+      return match;
+    }
+  );
+};
+
+/**
+ * Postman-style Request Code Highlighter
+ */
+const highlightPostmanCode = (code: string, lang: LanguageTab): string => {
+  const escaped = code
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  if (lang === 'curl') {
+    return escaped
+      // JSON keys inside curl body
+      .replace(
+        /"([a-zA-Z0-9_]+)"\s*:/g,
+        '<span class="text-[#A31515] font-bold">"$1"</span><span class="text-[#64748B]">:</span>'
+      )
+      // Strings in quotes
+      .replace(/(["'])(?:(?=(\\?))\2[\s\S])*?\1/g, (match) => {
+        if (match.includes('http://') || match.includes('https://')) {
+          return `<span class="text-[#005CC5] font-semibold underline decoration-[#005CC5]/30">${match}</span>`;
+        }
+        if (match.includes('x-api-key') || match.includes('Content-Type')) {
+          return `<span class="text-[#006736] font-bold">${match}</span>`;
+        }
+        return `<span class="text-[#006736] font-medium">${match}</span>`;
+      })
+      // Command & Verbs
+      .replace(/\b(curl)\b/g, '<span class="text-[#7C3AED] font-bold">$1</span>')
+      .replace(/\b(POST|GET|PATCH|DELETE)\b/g, '<span class="text-[#05A222] font-black">$1</span>')
+      .replace(/(-X|-H|-d)\b/g, '<span class="text-[#D97706] font-bold">$1</span>');
+  }
+
+  // Node, Python, PHP
+  return escaped
+    .replace(/(#.*|\/\/.*)/g, '<span class="text-[#94A3B8] italic">$1</span>')
+    .replace(
+      /\b(import|from|const|let|var|await|async|function|return|def|echo|curl_init|curl_setopt_array|curl_setopt|curl_exec|curl_close|json_encode)\b/g,
+      '<span class="text-[#7C3AED] font-bold">$1</span>'
+    )
+    .replace(
+      /"([a-zA-Z0-9_]+)"\s*:/g,
+      '<span class="text-[#A31515] font-bold">"$1"</span><span class="text-[#64748B]">:</span>'
+    )
+    .replace(/(["'])(?:(?=(\\?))\2[\s\S])*?\1/g, (match) => {
+      if (match.includes('http://') || match.includes('https://')) {
+        return `<span class="text-[#005CC5] font-semibold underline decoration-[#005CC5]/30">${match}</span>`;
+      }
+      return `<span class="text-[#006736] font-medium">${match}</span>`;
+    })
+    .replace(/\b(true|false)\b/g, '<span class="text-[#7C3AED] font-bold">$1</span>')
+    .replace(/\b(null)\b/g, '<span class="text-[#64748B] font-bold italic">$1</span>')
+    .replace(/\b(axios|requests|CURLOPT_[A-Z_]+)\b/g, '<span class="text-[#005CC5] font-bold">$1</span>');
+};
+
+/**
+ * Interactive Postman Response Viewer Component
+ */
+interface PostmanResponseViewerProps {
+  statusCode: number;
+  statusText: string;
+  timeMs: number;
+  sizeBytes: number;
+  jsonBody: string;
+}
+
+const PostmanResponseViewer: React.FC<PostmanResponseViewerProps> = ({
+  statusCode,
+  statusText,
+  timeMs,
+  sizeBytes,
+  jsonBody,
+}) => {
+  const [activeMode, setActiveMode] = useState<'pretty' | 'raw'>('pretty');
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(jsonBody);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const isSuccess = statusCode >= 200 && statusCode < 300;
+
+  return (
+    <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-white shadow-2xs">
+      {/* Postman Style Response Header Bar */}
+      <div className="flex flex-wrap items-center justify-between px-3.5 py-2.5 bg-[#F8FAFC] border-b border-[#E2EAE6] gap-2 text-xs">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-bold text-[#5F7069] uppercase tracking-wider font-mono">Response:</span>
+            <span
+              className={`px-2 py-0.5 rounded-md font-mono font-bold text-[11px] flex items-center gap-1 ${
+                isSuccess
+                  ? 'bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]'
+                  : 'bg-rose-50 text-rose-700 border border-rose-200'
+              }`}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${isSuccess ? 'bg-[#05A222]' : 'bg-rose-600'}`}></span>
+              {statusCode} {statusText}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 text-[11px] text-[#5F7069] font-mono">
+            <span>
+              Time: <strong className="text-[#006736]">{timeMs} ms</strong>
+            </span>
+            <span>•</span>
+            <span>
+              Size: <strong className="text-[#14201C]">{sizeBytes} B</strong>
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Pretty / Raw Mode Switch */}
+          <div className="flex items-center bg-white border border-[#E2EAE6] rounded-lg p-0.5 text-[11px]">
+            <button
+              type="button"
+              onClick={() => setActiveMode('pretty')}
+              className={`px-2 py-0.5 rounded cursor-pointer font-bold transition-all ${
+                activeMode === 'pretty'
+                  ? 'bg-[#006736] text-white shadow-2xs'
+                  : 'text-[#5F7069] hover:text-[#14201C]'
+              }`}
+            >
+              Pretty
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveMode('raw')}
+              className={`px-2 py-0.5 rounded cursor-pointer font-bold transition-all ${
+                activeMode === 'raw'
+                  ? 'bg-[#006736] text-white shadow-2xs'
+                  : 'text-[#5F7069] hover:text-[#14201C]'
+              }`}
+            >
+              Raw
+            </button>
+          </div>
+
+          <span className="text-[11px] font-mono font-bold px-2 py-0.5 bg-[#E9F9EE] border border-[#C4EBD0] rounded text-[#006736]">
+            JSON
+          </span>
+
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="flex items-center gap-1 px-2 py-1 rounded bg-white hover:bg-[#E9F9EE] text-[#006736] border border-[#E2EAE6] text-[11px] font-bold transition-colors cursor-pointer"
+            title="Copy Response JSON"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-[#05A222]" />
+                <span>Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" />
+                <span>Copy</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Postman Style JSON Response Body */}
+      <div className="bg-white p-4 overflow-x-auto font-mono text-xs leading-relaxed text-[#0F172A]">
+        {activeMode === 'pretty' ? (
+          <pre
+            dangerouslySetInnerHTML={{ __html: highlightPostmanJson(jsonBody) }}
+            className="font-mono text-xs leading-relaxed"
+          />
+        ) : (
+          <pre className="font-mono text-xs text-[#0F172A] leading-relaxed">{jsonBody}</pre>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const Documentation: React.FC = () => {
   const [activeLang, setActiveLang] = useState<LanguageTab>('curl');
@@ -114,7 +334,8 @@ const { data } = await axios.post(
   },
   {
     headers: {
-      'x-api-key': 'wmsg_live_your_api_key_here'
+      'x-api-key': 'wmsg_live_your_api_key_here',
+      'Content-Type': 'application/json'
     }
   }
 );`,
@@ -128,7 +349,10 @@ res = requests.post(
         "email": "sarah@acme.com",
         "tags": ["VIP-Customer", "Product-Qualified"]
     },
-    headers={"x-api-key": "wmsg_live_your_api_key_here"}
+    headers={
+        "x-api-key": "wmsg_live_your_api_key_here",
+        "Content-Type": "application/json"
+    }
 )
 print(res.json())`,
         php: `<?php
@@ -136,7 +360,8 @@ $ch = curl_init("https://api.whatsappmsg.com/api/v1/contacts");
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
   "name" => "Sarah Jenkins",
   "phoneNumber" => "+15559876543",
-  "tags" => ["VIP-Customer"]
+  "email" => "sarah@acme.com",
+  "tags" => ["VIP-Customer", "Product-Qualified"]
 ]));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
   "x-api-key: wmsg_live_your_api_key_here",
@@ -188,7 +413,10 @@ const { data } = await axios.post(
     }
   },
   {
-    headers: { 'x-api-key': 'wmsg_live_your_api_key_here' }
+    headers: {
+      'x-api-key': 'wmsg_live_your_api_key_here',
+      'Content-Type': 'application/json'
+    }
   }
 );`,
       python: `import requests
@@ -231,6 +459,57 @@ curl_close($ch);`,
   const templateSnippets = getSnippets('send_template');
   const contactSnippets = getSnippets('create_contact');
 
+  // Realistic Postman Sample Responses
+  const sampleAuthErrorResponse = `{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Invalid or missing API key in request header"
+  }
+}`;
+
+  const sampleTextSuccessResponse = `{
+  "success": true,
+  "message": "Message queued for delivery",
+  "data": {
+    "messageId": "wmsg_msg_98a7s6d5f4g3",
+    "to": "+15551234567",
+    "type": "text",
+    "status": "queued",
+    "cost": 1,
+    "createdAt": "2026-09-17T10:15:30.000Z"
+  }
+}`;
+
+  const sampleTemplateSuccessResponse = `{
+  "success": true,
+  "message": "Template message dispatched successfully",
+  "data": {
+    "messageId": "wmsg_msg_tpl_4891bca78e",
+    "to": "+15551234567",
+    "templateName": "order_confirmation_v1",
+    "status": "sent",
+    "wamid": "wamid.HBgLMTU1NTEyMzQ1NjcVAgARGBI5...",
+    "createdAt": "2026-09-17T10:18:45.000Z"
+  }
+}`;
+
+  const sampleContactSuccessResponse = `{
+  "success": true,
+  "message": "Contact created successfully",
+  "data": {
+    "contactId": "cnt_99a88b77cc",
+    "name": "Sarah Jenkins",
+    "phoneNumber": "+15559876543",
+    "email": "sarah@acme.com",
+    "tags": [
+      "VIP-Customer",
+      "Product-Qualified"
+    ],
+    "createdAt": "2026-09-17T10:20:00.000Z"
+  }
+}`;
+
   return (
     <div className="space-y-6 max-w-5xl">
       {/* Compact Top Header & Filter Box */}
@@ -241,7 +520,7 @@ curl_close($ch);`,
               WhatsApp Business REST API Reference
             </h3>
             <p className="text-xs text-[#5F7069] mt-0.5">
-              Comprehensive guides and copy-paste code snippets for integrating WhatsApp messaging into any backend service.
+              Comprehensive guides, Postman response previews, and copy-paste code snippets for integrating WhatsApp messaging.
             </p>
           </div>
 
@@ -334,14 +613,29 @@ curl_close($ch);`,
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-3.5 bg-[#F8FAFC] rounded-xl font-mono text-xs text-[#0F172A] border border-[#E2EAE6] shadow-2xs flex items-center justify-between">
-              <span className="text-[#006736] font-bold">x-api-key: <span className="text-[#1E293B] font-medium">wmsg_live_98a7s6d••••••••••••••</span></span>
-              <span className="text-[10px] text-[#64748B] font-sans font-semibold bg-white px-2 py-0.5 rounded border border-[#E2EAE6]">Header</span>
+            <div className="p-3.5 bg-white rounded-xl font-mono text-xs text-[#0F172A] border border-[#E2EAE6] shadow-2xs flex items-center justify-between">
+              <span className="text-[#A31515] font-bold">x-api-key: <span className="text-[#006736] font-medium">wmsg_live_98a7s6d••••••••••••••</span></span>
+              <span className="text-[10px] text-[#64748B] font-sans font-semibold bg-[#F8FAFC] px-2 py-0.5 rounded border border-[#E2EAE6]">Header</span>
             </div>
-            <div className="p-3.5 bg-[#F8FAFC] rounded-xl font-mono text-xs text-[#0F172A] border border-[#E2EAE6] shadow-2xs flex items-center justify-between">
-              <span className="text-[#006736] font-bold">Authorization: <span className="text-[#1E293B] font-medium">Bearer wmsg_live_98a7s6d••••••••••</span></span>
-              <span className="text-[10px] text-[#64748B] font-sans font-semibold bg-white px-2 py-0.5 rounded border border-[#E2EAE6]">Bearer</span>
+            <div className="p-3.5 bg-white rounded-xl font-mono text-xs text-[#0F172A] border border-[#E2EAE6] shadow-2xs flex items-center justify-between">
+              <span className="text-[#A31515] font-bold">Authorization: <span className="text-[#006736] font-medium">Bearer wmsg_live_98a7s6d••••••••••</span></span>
+              <span className="text-[10px] text-[#64748B] font-sans font-semibold bg-[#F8FAFC] px-2 py-0.5 rounded border border-[#E2EAE6]">Bearer</span>
             </div>
+          </div>
+
+          {/* Sample 401 Unauthorized Postman Response */}
+          <div className="space-y-1.5 pt-2">
+            <span className="text-xs font-bold text-[#5F7069] flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#006736]" />
+              Response on Missing / Invalid Key (Postman Preview)
+            </span>
+            <PostmanResponseViewer
+              statusCode={401}
+              statusText="Unauthorized"
+              timeMs={48}
+              sizeBytes={168}
+              jsonBody={sampleAuthErrorResponse}
+            />
           </div>
         </div>
       )}
@@ -377,17 +671,36 @@ curl_close($ch);`,
             </Button>
           </div>
 
+          {/* Request Payload */}
           <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC] shadow-2xs">
             <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono text-[#475569]">
               <span className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]"></span>
-                <span className="font-semibold">Payload Example ({activeLang.toUpperCase()})</span>
+                <span className="font-semibold">Request Payload ({activeLang.toUpperCase()})</span>
               </span>
               <span className="text-[11px] text-[#64748B]">Content-Type: application/json</span>
             </div>
-            <pre className="p-4 font-mono text-xs text-[#0F172A] overflow-x-auto leading-relaxed bg-white">
-              {textSnippets[activeLang]}
-            </pre>
+            <div className="p-4 bg-white overflow-x-auto">
+              <pre
+                dangerouslySetInnerHTML={{ __html: highlightPostmanCode(textSnippets[activeLang], activeLang) }}
+                className="font-mono text-xs leading-relaxed text-[#0F172A]"
+              />
+            </div>
+          </div>
+
+          {/* Postman Response 200 OK */}
+          <div className="space-y-1.5 pt-1">
+            <span className="text-xs font-bold text-[#5F7069] flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#006736]" />
+              Response (200 OK - Postman Output)
+            </span>
+            <PostmanResponseViewer
+              statusCode={200}
+              statusText="OK"
+              timeMs={128}
+              sizeBytes={284}
+              jsonBody={sampleTextSuccessResponse}
+            />
           </div>
         </div>
       )}
@@ -423,17 +736,36 @@ curl_close($ch);`,
             </Button>
           </div>
 
+          {/* Request Payload */}
           <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC] shadow-2xs">
             <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono text-[#475569]">
               <span className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]"></span>
-                <span className="font-semibold">HSM Template Example ({activeLang.toUpperCase()})</span>
+                <span className="font-semibold">HSM Template Request ({activeLang.toUpperCase()})</span>
               </span>
               <span className="text-[11px] text-[#64748B]">Meta Cloud Verified</span>
             </div>
-            <pre className="p-4 font-mono text-xs text-[#0F172A] overflow-x-auto leading-relaxed bg-white">
-              {templateSnippets[activeLang]}
-            </pre>
+            <div className="p-4 bg-white overflow-x-auto">
+              <pre
+                dangerouslySetInnerHTML={{ __html: highlightPostmanCode(templateSnippets[activeLang], activeLang) }}
+                className="font-mono text-xs leading-relaxed text-[#0F172A]"
+              />
+            </div>
+          </div>
+
+          {/* Postman Response 200 OK */}
+          <div className="space-y-1.5 pt-1">
+            <span className="text-xs font-bold text-[#5F7069] flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#006736]" />
+              Response (200 OK - Postman Output)
+            </span>
+            <PostmanResponseViewer
+              statusCode={200}
+              statusText="OK"
+              timeMs={164}
+              sizeBytes={342}
+              jsonBody={sampleTemplateSuccessResponse}
+            />
           </div>
         </div>
       )}
@@ -469,17 +801,36 @@ curl_close($ch);`,
             </Button>
           </div>
 
+          {/* Request Payload */}
           <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-[#F8FAFC] shadow-2xs">
             <div className="flex items-center justify-between px-4 py-2 bg-[#F1F5F9] border-b border-[#E2EAE6] text-xs font-mono text-[#475569]">
               <span className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]"></span>
-                <span className="font-semibold">Contact Payload ({activeLang.toUpperCase()})</span>
+                <span className="font-semibold">Contact Request ({activeLang.toUpperCase()})</span>
               </span>
               <span className="text-[11px] text-[#64748B]">CRM Sync API</span>
             </div>
-            <pre className="p-4 font-mono text-xs text-[#0F172A] overflow-x-auto leading-relaxed bg-white">
-              {contactSnippets[activeLang]}
-            </pre>
+            <div className="p-4 bg-white overflow-x-auto">
+              <pre
+                dangerouslySetInnerHTML={{ __html: highlightPostmanCode(contactSnippets[activeLang], activeLang) }}
+                className="font-mono text-xs leading-relaxed text-[#0F172A]"
+              />
+            </div>
+          </div>
+
+          {/* Postman Response 201 Created */}
+          <div className="space-y-1.5 pt-1">
+            <span className="text-xs font-bold text-[#5F7069] flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#006736]" />
+              Response (201 Created - Postman Output)
+            </span>
+            <PostmanResponseViewer
+              statusCode={201}
+              statusText="Created"
+              timeMs={112}
+              sizeBytes={318}
+              jsonBody={sampleContactSuccessResponse}
+            />
           </div>
         </div>
       )}
@@ -550,3 +901,4 @@ curl_close($ch);`,
     </div>
   );
 };
+

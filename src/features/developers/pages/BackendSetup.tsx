@@ -15,6 +15,50 @@ import { ROUTES } from '../../../utils/constants';
 
 type EnvSubFilter = 'all' | 'vars' | 'table' | 'steps' | 'flow' | 'files' | 'security' | 'code' | 'checklist';
 
+const highlightPostmanEnv = (envText: string): string => {
+  const escaped = envText
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  return escaped
+    .split('\n')
+    .map((line) => {
+      if (line.startsWith('#')) {
+        return `<span class="text-[#94A3B8] italic font-medium">${line}</span>`;
+      }
+      if (line.includes('=')) {
+        const [key, ...vals] = line.split('=');
+        const val = vals.join('=');
+        return `<span class="text-[#A31515] font-bold">${key}</span><span class="text-[#64748B]">=</span><span class="text-[#006736] font-medium">${val}</span>`;
+      }
+      return line;
+    })
+    .join('\n');
+};
+
+const highlightPostmanJs = (codeText: string): string => {
+  const escaped = codeText
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  return escaped
+    .replace(/(#.*|\/\/.*)/g, '<span class="text-[#94A3B8] italic">$1</span>')
+    .replace(
+      /\b(import|from|const|let|var|await|async|function|return|export|default|process)\b/g,
+      '<span class="text-[#7C3AED] font-bold">$1</span>'
+    )
+    .replace(
+      /"([a-zA-Z0-9_]+)"\s*:/g,
+      '<span class="text-[#A31515] font-bold">"$1"</span><span class="text-[#64748B]">:</span>'
+    )
+    .replace(/(["'])(?:(?=(\\?))\2[\s\S])*?\1/g, (match) => {
+      return `<span class="text-[#006736] font-medium">${match}</span>`;
+    })
+    .replace(/\b(axios|whatsappmsg|console)\b/g, '<span class="text-[#005CC5] font-bold">$1</span>');
+};
+
 export const BackendSetup: React.FC = () => {
   const [selectedEnvTab, setSelectedEnvTab] = useState<EnvSubFilter>('all');
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
@@ -181,9 +225,12 @@ console.log(response.data);`;
               </span>
               <span className="text-[11px] text-[#64748B]">UTF-8 Text</span>
             </div>
-            <pre className="p-4 font-mono text-xs text-[#0F172A] overflow-x-auto leading-relaxed bg-white">
-              {envVariablesCode}
-            </pre>
+            <div className="p-4 bg-white overflow-x-auto">
+              <pre
+                dangerouslySetInnerHTML={{ __html: highlightPostmanEnv(envVariablesCode) }}
+                className="font-mono text-xs text-[#0F172A] leading-relaxed"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -384,9 +431,12 @@ console.log(response.data);`;
                 {copiedSection === 'env_example' ? 'Copied' : 'Copy'}
               </Button>
             </div>
-            <pre className="p-3.5 bg-white rounded-2xl font-mono text-xs text-[#0F172A] overflow-x-auto border border-[#E2EAE6] shadow-2xs leading-relaxed">
-              {envExampleCode}
-            </pre>
+            <div className="p-3.5 bg-white rounded-2xl overflow-x-auto border border-[#E2EAE6] shadow-2xs">
+              <pre
+                dangerouslySetInnerHTML={{ __html: highlightPostmanEnv(envExampleCode) }}
+                className="font-mono text-xs text-[#0F172A] leading-relaxed"
+              />
+            </div>
           </div>
 
           {/* 6. .gitignore */}
@@ -406,9 +456,12 @@ console.log(response.data);`;
                 {copiedSection === 'gitignore' ? 'Copied' : 'Copy'}
               </Button>
             </div>
-            <pre className="p-3.5 bg-white rounded-2xl font-mono text-xs text-[#0F172A] overflow-x-auto border border-[#E2EAE6] shadow-2xs leading-relaxed">
-              {gitignoreCode}
-            </pre>
+            <div className="p-3.5 bg-white rounded-2xl overflow-x-auto border border-[#E2EAE6] shadow-2xs">
+              <pre
+                dangerouslySetInnerHTML={{ __html: highlightPostmanEnv(gitignoreCode) }}
+                className="font-mono text-xs text-[#0F172A] leading-relaxed"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -473,9 +526,12 @@ console.log(response.data);`;
                 {copiedSection === 'node_client' ? 'Copied' : 'Copy'}
               </Button>
             </div>
-            <pre className="p-4 bg-white rounded-2xl font-mono text-xs text-[#0F172A] overflow-x-auto border border-[#E2EAE6] shadow-2xs leading-relaxed">
-              {nodeClientCode}
-            </pre>
+            <div className="p-4 bg-white rounded-2xl overflow-x-auto border border-[#E2EAE6] shadow-2xs">
+              <pre
+                dangerouslySetInnerHTML={{ __html: highlightPostmanJs(nodeClientCode) }}
+                className="font-mono text-xs text-[#0F172A] leading-relaxed"
+              />
+            </div>
 
             <div className="flex items-center justify-between pt-2">
               <span className="text-xs font-semibold text-[#5F7069]">Example API Request</span>
@@ -489,9 +545,12 @@ console.log(response.data);`;
                 {copiedSection === 'node_req' ? 'Copied' : 'Copy'}
               </Button>
             </div>
-            <pre className="p-4 bg-white rounded-2xl font-mono text-xs text-[#0F172A] overflow-x-auto border border-[#E2EAE6] shadow-2xs leading-relaxed">
-              {nodeExampleRequestCode}
-            </pre>
+            <div className="p-4 bg-white rounded-2xl overflow-x-auto border border-[#E2EAE6] shadow-2xs">
+              <pre
+                dangerouslySetInnerHTML={{ __html: highlightPostmanJs(nodeExampleRequestCode) }}
+                className="font-mono text-xs text-[#0F172A] leading-relaxed"
+              />
+            </div>
           </div>
         </div>
       )}
