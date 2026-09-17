@@ -404,23 +404,53 @@ export const Documentation: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center gap-1 bg-[#F6FAF8] p-1 rounded-xl border border-[#E2EAE6]">
                 {[
-                  { id: 'curl', label: 'cURL' },
-                  { id: 'node', label: 'Node.js' },
-                  { id: 'python', label: 'Python' },
-                  { id: 'php', label: 'PHP' },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveLang(tab.id as LanguageTab)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      activeLang === tab.id
-                        ? 'bg-[#05A222] text-white shadow-2xs'
-                        : 'text-[#5F7069] hover:text-[#14201C]'
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
+                  {
+                    id: 'curl' as LanguageTab,
+                    label: 'cURL',
+                    dotColor: 'bg-amber-400',
+                    activeClass: 'bg-slate-900 text-white shadow-2xs border border-slate-800',
+                    inactiveClass: 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80',
+                  },
+                  {
+                    id: 'node' as LanguageTab,
+                    label: 'Node.js',
+                    dotColor: 'bg-emerald-400',
+                    activeClass: 'bg-emerald-600 text-white shadow-2xs border border-emerald-500',
+                    inactiveClass: 'text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50/80',
+                  },
+                  {
+                    id: 'python' as LanguageTab,
+                    label: 'Python',
+                    dotColor: 'bg-sky-400',
+                    activeClass: 'bg-sky-600 text-white shadow-2xs border border-sky-500',
+                    inactiveClass: 'text-sky-700 hover:text-sky-900 hover:bg-sky-50/80',
+                  },
+                  {
+                    id: 'php' as LanguageTab,
+                    label: 'PHP',
+                    dotColor: 'bg-purple-400',
+                    activeClass: 'bg-purple-600 text-white shadow-2xs border border-purple-500',
+                    inactiveClass: 'text-purple-700 hover:text-purple-900 hover:bg-purple-50/80',
+                  },
+                ].map((tab) => {
+                  const isActive = activeLang === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveLang(tab.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        isActive ? tab.activeClass : tab.inactiveClass
+                      }`}
+                    >
+                      <span
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          isActive ? tab.dotColor : 'bg-slate-300'
+                        }`}
+                      />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Global Response Mode Filter: RAW (default) / PRETTY */}
