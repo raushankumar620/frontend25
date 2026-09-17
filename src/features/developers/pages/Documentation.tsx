@@ -2,20 +2,19 @@ import React, { useState } from 'react';
 import {
   Copy,
   Check,
-  ShieldAlert,
-  CheckCircle2,
+  Server,
   ArrowRight,
 } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../../../utils/constants';
 
-type LanguageTab = 'curl' | 'node' | 'python' | 'php' | 'backend';
-type SectionFilter = 'all' | 'auth' | 'env' | 'text' | 'template' | 'contact' | 'errors';
-type EnvSubFilter = 'all' | 'vars' | 'table' | 'steps' | 'flow' | 'files' | 'security' | 'code' | 'checklist';
+type LanguageTab = 'curl' | 'node' | 'python' | 'php';
+type SectionFilter = 'all' | 'auth' | 'text' | 'template' | 'contact' | 'errors';
 
 export const Documentation: React.FC = () => {
   const [activeLang, setActiveLang] = useState<LanguageTab>('curl');
   const [selectedSection, setSelectedSection] = useState<SectionFilter>('all');
-  const [selectedEnvTab, setSelectedEnvTab] = useState<EnvSubFilter>('all');
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
 
   const handleCopy = (id: string, code: string) => {
@@ -23,54 +22,6 @@ export const Documentation: React.FC = () => {
     setCopiedSection(id);
     setTimeout(() => setCopiedSection(null), 2000);
   };
-
-  const envVariablesCode = `# WhatsAppMSG API Configuration
-WMSG_API_BASE_URL=https://api.whatsappmsg.com/api/v1
-WMSG_API_KEY=wmsg_live_your_api_key_here
-
-# WhatsApp Business Configuration
-WMSG_PHONE_NUMBER_ID=your_phone_number_id
-WMSG_WABA_ID=your_waba_id
-
-# Webhook Configuration
-WMSG_WEBHOOK_SECRET=your_webhook_secret
-
-# Your Application Configuration
-APP_BASE_URL=https://yourdomain.com
-PORT=5000`;
-
-  const envExampleCode = `WMSG_API_BASE_URL=https://api.whatsappmsg.com/api/v1
-WMSG_API_KEY=
-WMSG_PHONE_NUMBER_ID=
-WMSG_WABA_ID=
-WMSG_WEBHOOK_SECRET=
-
-APP_BASE_URL=http://localhost:5000
-PORT=5000`;
-
-  const gitignoreCode = `.env
-.env.*
-!.env.example`;
-
-  const nodeClientCode = `import axios from "axios";
-
-const whatsappmsg = axios.create({
-  baseURL: process.env.WMSG_API_BASE_URL,
-  headers: {
-    "x-api-key": process.env.WMSG_API_KEY,
-    "Content-Type": "application/json",
-  },
-});
-
-export default whatsappmsg;`;
-
-  const nodeExampleRequestCode = `const response = await whatsappmsg.post("/messages", {
-  to: "+15551234567",
-  type: "text",
-  text: "Hello from my application!",
-});
-
-console.log(response.data);`;
 
   const getSnippets = (type: 'send_text' | 'send_template' | 'create_contact') => {
     if (type === 'send_text') {
@@ -137,26 +88,6 @@ curl_setopt_array($curl, [
 $response = curl_exec($curl);
 curl_close($curl);
 echo $response;`,
-        backend: `// Backend Service (.env integration)
-import axios from 'axios';
-
-// Reads WMSG_API_BASE_URL and WMSG_API_KEY from process.env
-const whatsappmsg = axios.create({
-  baseURL: process.env.WMSG_API_BASE_URL,
-  headers: {
-    'x-api-key': process.env.WMSG_API_KEY,
-    'Content-Type': 'application/json',
-  },
-});
-
-export const sendWhatsAppText = async (to, text) => {
-  const { data } = await whatsappmsg.post('/messages', {
-    to,
-    type: 'text',
-    text,
-  });
-  return data;
-};`,
       };
     }
 
@@ -213,26 +144,6 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 ]);
 $out = curl_exec($ch);
 curl_close($ch);`,
-        backend: `// Backend Lead Sync (.env integration)
-import axios from 'axios';
-
-const whatsappmsg = axios.create({
-  baseURL: process.env.WMSG_API_BASE_URL,
-  headers: {
-    'x-api-key': process.env.WMSG_API_KEY,
-    'Content-Type': 'application/json',
-  },
-});
-
-export const syncCustomerContact = async (customerData) => {
-  const { data } = await whatsappmsg.post('/contacts', {
-    name: customerData.name,
-    phoneNumber: customerData.phoneNumber,
-    email: customerData.email,
-    tags: customerData.tags || ['Customer'],
-  });
-  return data;
-};`,
       };
     }
 
@@ -313,34 +224,6 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
 curl_setopt($ch, CURLOPT_HTTPHEADER, ["x-api-key: wmsg_live_your_api_key_here", "Content-Type: application/json"]);
 $out = curl_exec($ch);
 curl_close($ch);`,
-      backend: `// Backend Template Dispatch (.env integration)
-import axios from 'axios';
-
-const whatsappmsg = axios.create({
-  baseURL: process.env.WMSG_API_BASE_URL,
-  headers: {
-    'x-api-key': process.env.WMSG_API_KEY,
-    'Content-Type': 'application/json',
-  },
-});
-
-export const sendOrderNotification = async (to, customerName, orderId) => {
-  const { data } = await whatsappmsg.post('/messages', {
-    to,
-    type: 'template',
-    template: {
-      name: 'order_confirmation_v1',
-      language: { code: 'en_US' },
-      components: [
-        {
-          type: 'body',
-          parameters: [{ type: 'text', text: customerName }, { type: 'text', text: orderId }],
-        },
-      ],
-    },
-  });
-  return data;
-};`,
     };
   };
 
@@ -349,91 +232,76 @@ export const sendOrderNotification = async (to, customerName, orderId) => {
   const contactSnippets = getSnippets('create_contact');
 
   return (
-    <div className="space-y-8 max-w-5xl">
+    <div className="space-y-6 max-w-5xl">
       {/* Top Header */}
-      <div>
-        <h3 className="text-2xl font-black text-[#14201C] tracking-tight">
-          WhatsApp Business REST API Reference
-        </h3>
-        <p className="text-xs sm:text-sm text-[#5F7069] mt-1 font-medium">
-          Comprehensive guides and copy-paste code snippets for integrating WhatsApp messaging into any backend service.
-        </p>
+      <div className="bg-white border border-[#E2EAE6] p-6 rounded-3xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-2xl font-black text-[#14201C] tracking-tight">
+              WhatsApp Business REST API Reference
+            </h3>
+            <p className="text-xs sm:text-sm text-[#5F7069] mt-1 font-medium">
+              Comprehensive guides and copy-paste code snippets for integrating WhatsApp messaging into any backend service.
+            </p>
+          </div>
+
+          <Link to={ROUTES.DEVELOPERS_BACKEND_SETUP} className="shrink-0">
+            <Button
+              size="sm"
+              variant="outline"
+              leftIcon={<Server className="w-3.5 h-3.5 text-[#05A222]" />}
+              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+              className="text-xs font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE]"
+            >
+              Backend (.env) Setup
+            </Button>
+          </Link>
+        </div>
+
+        {/* Section Filter Tabs */}
+        <div className="pt-2 border-t border-[#E2EAE6]/60 flex flex-wrap items-center gap-1.5">
+          {[
+            { id: 'all', label: 'All Endpoints' },
+            { id: 'auth', label: '1. Authentication' },
+            { id: 'text', label: '2. Send Text Message' },
+            { id: 'template', label: '3. Send Template' },
+            { id: 'contact', label: '4. Create Contact' },
+            { id: 'errors', label: 'HTTP Status Codes' },
+          ].map((sec) => (
+            <button
+              key={sec.id}
+              onClick={() => setSelectedSection(sec.id as SectionFilter)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                selectedSection === sec.id
+                  ? 'bg-[#006736] text-white shadow-xs font-bold'
+                  : 'text-[#5F7069] hover:text-[#14201C] bg-[#F8FAFC] border border-[#E2EAE6] hover:bg-white'
+              }`}
+            >
+              {sec.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Topic / Section Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-[#F8FAFC] border border-[#E2EAE6] rounded-2xl">
-        {[
-          { id: 'all', label: 'All Guides' },
-          { id: 'env', label: '2. Backend Environment (.env)', badge: 'Setup' },
-          { id: 'auth', label: '1. Authentication' },
-          { id: 'text', label: '3. Send Text Message' },
-          { id: 'template', label: '4. Send Template' },
-          { id: 'contact', label: '5. Create Contact' },
-          { id: 'errors', label: 'HTTP Status Codes' },
-        ].map((sec) => (
-          <button
-            key={sec.id}
-            onClick={() => setSelectedSection(sec.id as SectionFilter)}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              selectedSection === sec.id
-                ? 'bg-[#006736] text-white shadow-xs'
-                : 'text-[#5F7069] hover:text-[#14201C] hover:bg-white'
-            }`}
-          >
-            <span>{sec.label}</span>
-            {sec.badge && (
-              <span
-                className={`text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider ${
-                  selectedSection === sec.id
-                    ? 'bg-[#05A222] text-white'
-                    : 'bg-[#E9F9EE] text-[#006736]'
-                }`}
-              >
-                {sec.badge}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Language & Backend Environment Filter Bar */}
+      {/* Language Selector Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2EAE6] pb-3">
-        <div className="flex items-center gap-1.5 bg-[#F6FAF8] p-1 rounded-xl border border-[#E2EAE6] flex-wrap">
+        <div className="flex items-center gap-1.5 bg-[#F6FAF8] p-1 rounded-xl border border-[#E2EAE6]">
           {[
             { id: 'curl', label: 'cURL' },
             { id: 'node', label: 'Node.js / Axios' },
             { id: 'python', label: 'Python (Requests)' },
             { id: 'php', label: 'PHP' },
-            { id: 'backend', label: 'Backend (.env Setup)', badge: 'Config' },
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => {
-                setActiveLang(tab.id as LanguageTab);
-                if (tab.id === 'backend') {
-                  setSelectedSection('env');
-                } else if (selectedSection === 'env') {
-                  setSelectedSection('all');
-                }
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              onClick={() => setActiveLang(tab.id as LanguageTab)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeLang === tab.id
                   ? 'bg-[#05A222] text-white shadow-2xs'
                   : 'text-[#5F7069] hover:text-[#14201C]'
               }`}
             >
-              <span>{tab.label}</span>
-              {tab.badge && (
-                <span
-                  className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
-                    activeLang === tab.id
-                      ? 'bg-[#006736] text-white'
-                      : 'bg-[#E9F9EE] text-[#006736]'
-                  }`}
-                >
-                  {tab.badge}
-                </span>
-              )}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -471,415 +339,13 @@ export const sendOrderNotification = async (to, customerName, orderId) => {
         </div>
       )}
 
-      {/* Section 2: Backend Environment Setup */}
-      {(selectedSection === 'all' || selectedSection === 'env') && (
-        <div className="bg-white border border-[#E2EAE6] p-6 rounded-3xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E2EAE6]">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0 font-bold">
-                2
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h4 className="text-base font-bold text-[#14201C]">Backend Environment Setup</h4>
-                  <span className="px-2 py-0.5 rounded-md font-mono font-bold text-[10px] bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]">
-                    .env Config
-                  </span>
-                </div>
-                <p className="text-xs text-[#5F7069]">Configure your backend environment with the credentials required to connect your application with WhatsAppMSG API.</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Sub-Filter Tabs inside Backend Environment Setup */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-[#F8FAFC] border border-[#E2EAE6] rounded-xl">
-            {[
-              { id: 'all', label: 'All Setup' },
-              { id: 'vars', label: '.env Variables' },
-              { id: 'table', label: 'Credentials Mapping' },
-              { id: 'steps', label: 'Step Guide' },
-              { id: 'flow', label: 'Integration Flow' },
-              { id: 'files', label: '.example & .gitignore' },
-              { id: 'security', label: 'Security Rules' },
-              { id: 'code', label: 'Node.js Setup' },
-              { id: 'checklist', label: 'Checklist' },
-            ].map((subTab) => (
-              <button
-                key={subTab.id}
-                onClick={() => setSelectedEnvTab(subTab.id as EnvSubFilter)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  selectedEnvTab === subTab.id
-                    ? 'bg-[#05A222] text-white shadow-2xs font-bold'
-                    : 'text-[#64748B] hover:text-[#0F172A] hover:bg-white'
-                }`}
-              >
-                {subTab.label}
-              </button>
-            ))}
-          </div>
-
-        {/* 1. Environment Variables */}
-        {(selectedEnvTab === 'all' || selectedEnvTab === 'vars') && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h5 className="text-sm font-bold text-[#14201C]">Environment Variables</h5>
-                <p className="text-xs text-[#5F7069]">Add the following configuration to your backend <code className="text-[#006736] font-mono bg-[#E9F9EE] px-1 py-0.2 rounded font-bold">.env</code> file before making API requests.</p>
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleCopy('env_vars', envVariablesCode)}
-                leftIcon={copiedSection === 'env_vars' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-                className="text-xs font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE]"
-              >
-                {copiedSection === 'env_vars' ? 'Copied' : 'Copy'}
-              </Button>
-            </div>
-
-            <pre className="p-4 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
-              {envVariablesCode}
-            </pre>
-          </div>
-        )}
-
-        {/* 2. Portal Credentials vs Developer Configuration Table */}
-        {(selectedEnvTab === 'all' || selectedEnvTab === 'table') && (
-          <div className="space-y-3">
-            <h5 className="text-sm font-bold text-[#14201C]">Portal Credentials vs Developer Configuration</h5>
-            <div className="overflow-x-auto border border-[#E2EAE6] rounded-2xl bg-white shadow-xs">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-[#F8FAFC] border-b border-[#E2EAE6] text-[#64748B] font-semibold text-[11px] tracking-wide">
-                  <tr>
-                    <th className="px-4 py-3">Variable</th>
-                    <th className="px-4 py-3">Provided By</th>
-                    <th className="px-4 py-3">Developer Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#E2EAE6] text-[#1E293B]">
-                  <tr>
-                    <td className="px-4 py-3 font-mono font-bold text-[#006736]">WMSG_API_BASE_URL</td>
-                    <td className="px-4 py-3 font-medium text-[#64748B]">WhatsAppMSG Portal / Developer Docs</td>
-                    <td className="px-4 py-3 font-semibold text-[#0F172A]">Add to <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">.env</code></td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-mono font-bold text-[#006736]">WMSG_API_KEY</td>
-                    <td className="px-4 py-3 font-medium text-[#64748B]">WhatsAppMSG Portal → API Keys</td>
-                    <td className="px-4 py-3 font-semibold text-[#0F172A]">Copy generated API key</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-mono font-bold text-[#006736]">WMSG_PHONE_NUMBER_ID</td>
-                    <td className="px-4 py-3 font-medium text-[#64748B]">WhatsAppMSG Portal → WhatsApp Account</td>
-                    <td className="px-4 py-3 font-semibold text-[#0F172A]">Copy into <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">.env</code> if required</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-mono font-bold text-[#006736]">WMSG_WABA_ID</td>
-                    <td className="px-4 py-3 font-medium text-[#64748B]">WhatsAppMSG Portal → WhatsApp Account</td>
-                    <td className="px-4 py-3 font-semibold text-[#0F172A]">Copy into <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">.env</code> if required</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-mono font-bold text-[#006736]">WMSG_WEBHOOK_SECRET</td>
-                    <td className="px-4 py-3 font-medium text-[#64748B]">WhatsAppMSG Portal → Webhook Configuration</td>
-                    <td className="px-4 py-3 font-semibold text-[#0F172A]">Copy into <code className="bg-slate-100 px-1 py-0.5 rounded font-mono">.env</code></td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-mono font-bold text-[#006736]">APP_BASE_URL</td>
-                    <td className="px-4 py-3 font-medium text-[#64748B]">Developer</td>
-                    <td className="px-4 py-3 font-semibold text-[#0F172A]">Configure own application URL</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-mono font-bold text-[#006736]">PORT</td>
-                    <td className="px-4 py-3 font-medium text-[#64748B]">Developer</td>
-                    <td className="px-4 py-3 font-semibold text-[#0F172A]">Configure own backend port</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* 3. Get Your WhatsAppMSG Credentials (Numbered Steps) */}
-        {(selectedEnvTab === 'all' || selectedEnvTab === 'steps') && (
-          <div className="space-y-3">
-            <h5 className="text-sm font-bold text-[#14201C]">Get Your WhatsAppMSG Credentials</h5>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2EAE6] space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#05A222] text-white text-[10px] font-bold flex items-center justify-center">1</span>
-                  <h6 className="text-xs font-bold text-[#0F172A]">Login to Portal</h6>
-                </div>
-                <p className="text-[11px] text-[#64748B] pl-7">Sign in to your WhatsAppMSG business account.</p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2EAE6] space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#05A222] text-white text-[10px] font-bold flex items-center justify-center">2</span>
-                  <h6 className="text-xs font-bold text-[#0F172A]">Open API Settings</h6>
-                </div>
-                <p className="text-[11px] text-[#64748B] pl-7">Open Developer / API section from your dashboard.</p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2EAE6] space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#05A222] text-white text-[10px] font-bold flex items-center justify-center">3</span>
-                  <h6 className="text-xs font-bold text-[#0F172A]">Generate API Key</h6>
-                </div>
-                <p className="text-[11px] text-[#64748B] pl-7">Create a new live API key for your application.</p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2EAE6] space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#05A222] text-white text-[10px] font-bold flex items-center justify-center">4</span>
-                  <h6 className="text-xs font-bold text-[#0F172A]">Copy Credentials</h6>
-                </div>
-                <p className="text-[11px] text-[#64748B] pl-7">Copy API key & WhatsApp Business IDs.</p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2EAE6] space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#05A222] text-white text-[10px] font-bold flex items-center justify-center">5</span>
-                  <h6 className="text-xs font-bold text-[#0F172A]">Add to .env</h6>
-                </div>
-                <p className="text-[11px] text-[#64748B] pl-7">Paste credentials into your backend environment file.</p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2EAE6] space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#05A222] text-white text-[10px] font-bold flex items-center justify-center">6</span>
-                  <h6 className="text-xs font-bold text-[#0F172A]">Restart Server</h6>
-                </div>
-                <p className="text-[11px] text-[#64748B] pl-7">Restart your backend server to load new variables.</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 4. Portal → Backend Connection Flow */}
-        {(selectedEnvTab === 'all' || selectedEnvTab === 'flow') && (
-          <div className="space-y-3">
-            <h5 className="text-sm font-bold text-[#14201C]">Portal → Backend Connection Flow</h5>
-            <div className="p-4 bg-[#F8FAFC] rounded-2xl border border-[#E2EAE6]">
-              <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-semibold">
-                <span className="px-3 py-1.5 rounded-xl bg-white border border-[#E2EAE6] text-[#0F172A] shadow-2xs font-bold">
-                  WhatsAppMSG Portal
-                </span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#05A222]" />
-                <span className="px-3 py-1.5 rounded-xl bg-white border border-[#E2EAE6] text-[#64748B]">
-                  Developer / API Settings
-                </span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#05A222]" />
-                <span className="px-3 py-1.5 rounded-xl bg-white border border-[#E2EAE6] text-[#64748B]">
-                  Generate API Key
-                </span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#05A222]" />
-                <span className="px-3 py-1.5 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] text-[#006736] font-bold">
-                  Backend .env
-                </span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#05A222]" />
-                <span className="px-3 py-1.5 rounded-xl bg-white border border-[#E2EAE6] text-[#0F172A] font-bold">
-                  Developer Backend
-                </span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#05A222]" />
-                <span className="px-3 py-1.5 rounded-xl bg-[#006736] text-white font-bold shadow-2xs">
-                  WhatsAppMSG API
-                </span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#05A222]" />
-                <span className="px-3 py-1.5 rounded-xl bg-[#05A222] text-white font-bold shadow-2xs">
-                  WhatsApp
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 5 & 6: .env.example & .gitignore */}
-        {(selectedEnvTab === 'all' || selectedEnvTab === 'files') && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* 5. .env.example */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h5 className="text-xs font-bold text-[#14201C]">.env.example</h5>
-                  <p className="text-[11px] text-[#64748B]">Use as a safe template for your project. Never commit real keys.</p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleCopy('env_example', envExampleCode)}
-                  leftIcon={copiedSection === 'env_example' ? <Check className="w-3 h-3 text-[#05A222]" /> : <Copy className="w-3 h-3" />}
-                  className="text-[11px] font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE] px-2.5 py-1"
-                >
-                  {copiedSection === 'env_example' ? 'Copied' : 'Copy'}
-                </Button>
-              </div>
-              <pre className="p-3.5 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
-                {envExampleCode}
-              </pre>
-            </div>
-
-            {/* 6. .gitignore */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h5 className="text-xs font-bold text-[#14201C]">.gitignore</h5>
-                  <p className="text-[11px] text-[#64748B]">Keep your real .env file out of version control.</p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleCopy('gitignore', gitignoreCode)}
-                  leftIcon={copiedSection === 'gitignore' ? <Check className="w-3 h-3 text-[#05A222]" /> : <Copy className="w-3 h-3" />}
-                  className="text-[11px] font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE] px-2.5 py-1"
-                >
-                  {copiedSection === 'gitignore' ? 'Copied' : 'Copy'}
-                </Button>
-              </div>
-              <pre className="p-3.5 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
-                {gitignoreCode}
-              </pre>
-            </div>
-          </div>
-        )}
-
-        {/* 7. Security Warning Card */}
-        {(selectedEnvTab === 'all' || selectedEnvTab === 'security') && (
-          <div className="p-5 rounded-2xl bg-[#FFF8E6] border border-[#FFE299] space-y-3">
-            <div className="flex items-center gap-2.5 text-[#9A6B00]">
-              <ShieldAlert className="w-5 h-5 shrink-0 text-[#D99A00]" />
-              <h5 className="text-sm font-bold text-[#9A6B00]">Keep Your API Key Secret</h5>
-            </div>
-            <p className="text-xs text-[#1F2A26] font-medium leading-relaxed">
-              Your <code className="font-mono bg-white px-1.5 py-0.5 rounded border border-[#FFE299] font-bold text-[#9A6B00]">WMSG_API_KEY</code> is a private server credential. Store it only in your backend environment and never expose it to clients.
-            </p>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-[#5F7069] font-medium list-disc pl-4">
-              <li>Never expose the API key in React/Vite frontend code.</li>
-              <li>Never put the API key in browser JavaScript.</li>
-              <li>Never store the API key inside a mobile application.</li>
-              <li>Never commit <code className="font-mono">.env</code> to GitHub.</li>
-              <li>Never share production API keys publicly.</li>
-              <li>Never return the API key from a frontend API response.</li>
-            </ul>
-
-            <div className="pt-2 border-t border-[#FFE299]/60">
-              <span className="text-[11px] font-bold text-[#9A6B00] uppercase tracking-wider">Recommended Architecture:</span>
-              <div className="mt-1.5 flex items-center gap-2 text-xs font-mono font-bold text-[#14201C] flex-wrap">
-                <span className="px-2.5 py-1 bg-white rounded-lg border border-[#FFE299]">Frontend</span>
-                <span>→</span>
-                <span className="px-2.5 py-1 bg-white rounded-lg border border-[#FFE299]">Your Backend</span>
-                <span>→</span>
-                <span className="px-2.5 py-1 bg-[#E9F9EE] text-[#006736] rounded-lg border border-[#C4EBD0]">WMSG_API_KEY</span>
-                <span>→</span>
-                <span className="px-2.5 py-1 bg-[#05A222] text-white rounded-lg">WhatsAppMSG API</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 8. Node.js Backend Configuration */}
-        {(selectedEnvTab === 'all' || selectedEnvTab === 'code') && (
-          <div className="space-y-3">
-            <h5 className="text-sm font-bold text-[#14201C]">Node.js Backend Configuration</h5>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-[#5F7069]">Axios Instance Client Setup</span>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleCopy('node_client', nodeClientCode)}
-                  leftIcon={copiedSection === 'node_client' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-                  className="text-xs font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE]"
-                >
-                  {copiedSection === 'node_client' ? 'Copied' : 'Copy'}
-                </Button>
-              </div>
-              <pre className="p-4 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
-                {nodeClientCode}
-              </pre>
-
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-xs font-semibold text-[#5F7069]">Example API Request</span>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleCopy('node_req', nodeExampleRequestCode)}
-                  leftIcon={copiedSection === 'node_req' ? <Check className="w-3.5 h-3.5 text-[#05A222]" /> : <Copy className="w-3.5 h-3.5" />}
-                  className="text-xs font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE]"
-                >
-                  {copiedSection === 'node_req' ? 'Copied' : 'Copy'}
-                </Button>
-              </div>
-              <pre className="p-4 bg-[#14201C] rounded-2xl font-mono text-xs text-[#6AEB31] overflow-x-auto border border-[#2B3A34] shadow-inner leading-relaxed">
-                {nodeExampleRequestCode}
-              </pre>
-              <p className="text-xs text-[#5F7069] font-medium">
-                The backend reads the WhatsAppMSG credentials from environment variables and uses the API key to authenticate requests.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* 9. Developer Setup Checklist */}
-        {(selectedEnvTab === 'all' || selectedEnvTab === 'checklist') && (
-          <div className="p-5 rounded-2xl bg-white border border-[#E2EAE6] space-y-3 shadow-2xs">
-            <div className="flex items-center gap-2 text-[#006736]">
-              <CheckCircle2 className="w-4 h-4 text-[#05A222]" />
-              <h5 className="text-sm font-bold text-[#0F172A]">Before Your First API Request</h5>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium text-[#1E293B]">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="rounded text-[#05A222] focus:ring-[#05A222]" />
-                <span>WhatsAppMSG account is active</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="rounded text-[#05A222] focus:ring-[#05A222]" />
-                <span>WhatsApp number is connected</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="rounded text-[#05A222] focus:ring-[#05A222]" />
-                <span>API key has been generated</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="rounded text-[#05A222] focus:ring-[#05A222]" />
-                <span>API Base URL is configured</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="rounded text-[#05A222] focus:ring-[#05A222]" />
-                <span>Required WhatsApp Business IDs are configured</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="rounded text-[#05A222] focus:ring-[#05A222]" />
-                <span><code className="font-mono bg-slate-100 px-1 py-0.5 rounded text-[11px]">.env</code> file is created</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="rounded text-[#05A222] focus:ring-[#05A222]" />
-                <span><code className="font-mono bg-slate-100 px-1 py-0.5 rounded text-[11px]">.env</code> is added to <code className="font-mono bg-slate-100 px-1 py-0.5 rounded text-[11px]">.gitignore</code></span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="rounded text-[#05A222] focus:ring-[#05A222]" />
-                <span>API key is stored only on the backend</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="rounded text-[#05A222] focus:ring-[#05A222]" />
-                <span>Backend has been restarted</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" defaultChecked className="rounded text-[#05A222] focus:ring-[#05A222]" />
-                <span>Test API request is ready</span>
-              </label>
-            </div>
-          </div>
-        )}
-      </div>
-    )}
-
-      {/* Section 3: Send WhatsApp Text Message */}
+      {/* Section 2: Send WhatsApp Text Message */}
       {(selectedSection === 'all' || selectedSection === 'text') && (
         <div className="bg-white border border-[#E2EAE6] p-6 rounded-3xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0 font-bold">
-                3
+                2
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -909,13 +375,13 @@ export const sendOrderNotification = async (to, customerName, orderId) => {
         </div>
       )}
 
-      {/* Section 4: Send Template Message */}
+      {/* Section 3: Send Template Message */}
       {(selectedSection === 'all' || selectedSection === 'template') && (
         <div className="bg-white border border-[#E2EAE6] p-6 rounded-3xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0 font-bold">
-                4
+                3
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -945,13 +411,13 @@ export const sendOrderNotification = async (to, customerName, orderId) => {
         </div>
       )}
 
-      {/* Section 5: Create Customer Contact */}
+      {/* Section 4: Create Customer Contact */}
       {(selectedSection === 'all' || selectedSection === 'contact') && (
         <div className="bg-white border border-[#E2EAE6] p-6 rounded-3xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0 font-bold">
-                5
+                4
               </div>
               <div>
                 <div className="flex items-center gap-2">
