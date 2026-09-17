@@ -55,11 +55,36 @@ export const PublicFooter: React.FC = () => {
   };
 
   const socialIcons = [
-    { name: 'LinkedIn', icon: LinkedInIcon, url: 'https://www.linkedin.com/company/whatsapmsg/' },
-    { name: 'X', icon: XTwitterIcon, url: 'https://twitter.com/whatsapmsg' },
-    { name: 'YouTube', icon: YouTubeIcon, url: 'https://www.youtube.com/@whatsapmsg' },
-    { name: 'Instagram', icon: InstagramIcon, url: 'https://www.instagram.com/whatsapmsg/' },
-    { name: 'Facebook', icon: FacebookIcon, url: 'https://www.facebook.com/whatsapmsg' },
+    { 
+      name: 'LinkedIn', 
+      icon: LinkedInIcon, 
+      url: 'https://www.linkedin.com/company/whatsapmsg/',
+      colorClass: 'bg-[#0A66C2]/10 border-[#0A66C2]/25 text-[#0A66C2] hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2] hover:shadow-[0_4px_14px_rgba(10,102,194,0.4)]',
+    },
+    { 
+      name: 'X', 
+      icon: XTwitterIcon, 
+      url: 'https://twitter.com/whatsapmsg',
+      colorClass: 'bg-black/5 border-black/20 text-black hover:bg-black hover:text-white hover:border-black hover:shadow-[0_4px_14px_rgba(0,0,0,0.35)]',
+    },
+    { 
+      name: 'YouTube', 
+      icon: YouTubeIcon, 
+      url: 'https://www.youtube.com/@whatsapmsg',
+      colorClass: 'bg-[#FF0000]/10 border-[#FF0000]/25 text-[#FF0000] hover:bg-[#FF0000] hover:text-white hover:border-[#FF0000] hover:shadow-[0_4px_14px_rgba(255,0,0,0.4)]',
+    },
+    { 
+      name: 'Instagram', 
+      icon: InstagramIcon, 
+      url: 'https://www.instagram.com/whatsapmsg/',
+      colorClass: 'bg-[#E1306C]/10 border-[#E1306C]/25 text-[#E1306C] hover:bg-gradient-to-tr hover:from-[#F58529] hover:via-[#DD2A7B] hover:to-[#8134AF] hover:text-white hover:border-transparent hover:shadow-[0_4px_14px_rgba(225,48,108,0.4)]',
+    },
+    { 
+      name: 'Facebook', 
+      icon: FacebookIcon, 
+      url: 'https://www.facebook.com/whatsapmsg',
+      colorClass: 'bg-[#1877F2]/10 border-[#1877F2]/25 text-[#1877F2] hover:bg-[#1877F2] hover:text-white hover:border-[#1877F2] hover:shadow-[0_4px_14px_rgba(24,119,242,0.4)]',
+    },
   ];
 
   return (
@@ -104,20 +129,12 @@ export const PublicFooter: React.FC = () => {
           <div className="lg:col-span-3 space-y-4">
             
             {/* Logo */}
-            <Link to={ROUTES.HOME} className="inline-flex items-center gap-2.5 group">
+            <Link to={ROUTES.HOME} className="inline-flex items-center group">
               <img 
-                src="/images/whatsapplogoshort.png" 
-                alt="WhatsAppMSG Logo" 
-                className="w-10 h-10 object-contain drop-shadow-xs transition-transform group-hover:scale-105"
+                src="/images/seo/main_logo.png" 
+                alt={APP_NAME} 
+                className="h-10 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
               />
-              <div className="flex flex-col">
-                <span className="text-2xl font-black tracking-tight text-[#14201C] leading-none">
-                  WhatsApp<span className="text-[#05A222]">MSG</span>
-                </span>
-                <span className="text-[11px] font-semibold text-[#5F7069] tracking-wider mt-0.5">
-                  Automate. Engage. Grow.
-                </span>
-              </div>
             </Link>
 
             {/* Description */}
@@ -134,7 +151,8 @@ export const PublicFooter: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Follow on ${item.name}`}
-                  className="w-9 h-9 rounded-full bg-[#EBF7EE] border border-[#C4EBD0] text-[#006736] flex items-center justify-center hover:bg-[#05A222] hover:text-white hover:border-[#05A222] transition-all duration-200 shadow-2xs hover:scale-110 active:scale-95 cursor-pointer"
+                  title={item.name}
+                  className={`w-9 h-9 rounded-full border flex items-center justify-center transition-all duration-200 shadow-2xs hover:scale-110 active:scale-95 cursor-pointer ${item.colorClass}`}
                 >
                   <item.icon className="w-4 h-4" />
                 </a>
