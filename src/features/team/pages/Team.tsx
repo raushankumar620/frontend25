@@ -333,18 +333,8 @@ export const Team: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight flex items-center gap-2.5">
-            <Users className="w-7 h-7 text-[#05A222]" />
-            Team & Role Permissions
-          </h2>
-          <p className="text-sm text-[#5F7069] mt-1 font-medium">
-            Manage your organization members, assign roles, and grant access to specific dashboard modules.
-          </p>
-        </div>
-
+      {/* Top action button */}
+      <div className="flex items-center justify-end gap-3 mb-6">
         <Button
           variant="primary"
           size="md"

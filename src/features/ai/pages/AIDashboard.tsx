@@ -70,58 +70,43 @@ export const AIDashboard: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
-        <div>
-          <div className="flex items-center gap-2 text-[#006736] text-xs sm:text-sm font-bold uppercase tracking-wider mb-1.5">
-            <Sparkles className="w-4 h-4 text-[#05A222]" />
-            <span>Generative AI Engine & Conversational Router</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] dark:text-white tracking-tight">
-            WhatsApp AI Personas & Smart Routing
-          </h2>
-          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
-            Deploy multi-tenant autonomous AI agents with context memory, live RAG retrieval, and instant human handoff.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3 flex-wrap">
-          <Button
-            variant="outline"
-            size="md"
-            onClick={() => navigate(ROUTES.AI_HANDOFF)}
-            leftIcon={<Users className="w-4 h-4" />}
-            className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
-          >
-            Human Handoff
-          </Button>
-          <Button
-            variant="outline"
-            size="md"
-            onClick={() => navigate(ROUTES.AI_TOOLS)}
-            leftIcon={<Wrench className="w-4 h-4" />}
-            className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
-          >
-            Action Tools
-          </Button>
-          <Button
-            variant="outline"
-            size="md"
-            onClick={() => navigate(ROUTES.AI_KNOWLEDGE_BASE)}
-            leftIcon={<BookOpen className="w-4 h-4" />}
-            className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
-          >
-            Knowledge Base
-          </Button>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => navigate(ROUTES.AI_AGENT)}
-            leftIcon={<Plus className="w-4 h-4" />}
-            className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm bg-[#05A222] hover:bg-[#006736] text-[#14201C] hover:text-white"
-          >
-            Create AI Agent
-          </Button>
-        </div>
+      <div className="flex items-center justify-end gap-3 flex-wrap mb-6">
+        <Button
+          variant="outline"
+          size="md"
+          onClick={() => navigate(ROUTES.AI_HANDOFF)}
+          leftIcon={<Users className="w-4 h-4" />}
+          className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
+        >
+          Human Handoff
+        </Button>
+        <Button
+          variant="outline"
+          size="md"
+          onClick={() => navigate(ROUTES.AI_TOOLS)}
+          leftIcon={<Wrench className="w-4 h-4" />}
+          className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
+        >
+          Action Tools
+        </Button>
+        <Button
+          variant="outline"
+          size="md"
+          onClick={() => navigate(ROUTES.AI_KNOWLEDGE_BASE)}
+          leftIcon={<BookOpen className="w-4 h-4" />}
+          className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
+        >
+          Knowledge Base
+        </Button>
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => navigate(ROUTES.AI_AGENT)}
+          leftIcon={<Plus className="w-4 h-4" />}
+          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm bg-[#05A222] hover:bg-[#006736] text-white"
+        >
+          Create AI Agent
+        </Button>
       </div>
 
       {/* Metrics Row */}

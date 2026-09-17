@@ -74,16 +74,7 @@ export const WhatsAppNumbers: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">
-            Connected WhatsApp Numbers
-          </h2>
-          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
-            Meta Cloud Business API phone numbers connected to your WABA account.
-          </p>
-        </div>
-
+      <div className="flex items-center justify-end gap-3 mb-6">
         <Button
           variant="primary"
           size="md"

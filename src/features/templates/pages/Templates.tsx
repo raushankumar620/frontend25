@@ -12,7 +12,6 @@ import {
   Clock,
   AlertCircle,
   RefreshCw,
-  Layers,
   Bookmark,
   FileEdit,
   Trash2,
@@ -388,45 +387,9 @@ export const Templates: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* Header section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight flex items-center gap-2.5">
-            <Layers className="w-7 h-7 text-[#05A222]" />
-            WhatsApp Message Templates
-          </h2>
-          <p className="text-sm sm:text-base text-[#5F7069] mt-1 font-medium">
-            Meta-approved HSM message templates and saved drafts for outbound WhatsApp campaigns and notifications.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="md"
-            onClick={handleSync}
-            isLoading={isSyncing}
-            leftIcon={<RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />}
-            className="text-xs sm:text-sm font-bold rounded-xl border-[#C4EBD0] text-[#006736] hover:bg-[#E9F9EE] cursor-pointer"
-          >
-            Sync with Meta
-          </Button>
-
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => navigate(ROUTES.CREATE_TEMPLATE)}
-            leftIcon={<Plus className="w-4 h-4" />}
-            className="text-xs sm:text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-xs bg-[#05A222] hover:bg-[#006736] text-white cursor-pointer"
-          >
-            Create New Template
-          </Button>
-        </div>
-      </div>
-
       {/* Sync / Action feedback notification */}
       {syncFeedback && (
-        <div className="mb-6 p-4 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] text-[#006736] text-xs sm:text-sm font-bold flex items-center justify-between shadow-xs">
+        <div className="mb-4 p-3.5 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] text-[#006736] text-xs sm:text-sm font-bold flex items-center justify-between shadow-xs">
           <span>{syncFeedback}</span>
           <button onClick={() => setSyncFeedback(null)} className="text-[#05A222] hover:underline font-bold cursor-pointer">
             Dismiss
@@ -434,10 +397,10 @@ export const Templates: React.FC = () => {
         </div>
       )}
 
-      {/* Status Filter Tabs & Layout Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 mb-4 border-b border-[#E2EAE6]">
+      {/* Top Filter Tabs & Action Toolbar */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 mb-4 border-b border-[#E2EAE6]">
         {/* Status Filter Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
           {[
             { key: 'ALL', label: 'All Templates' },
             { key: 'APPROVED', label: 'Approved' },
@@ -448,7 +411,7 @@ export const Templates: React.FC = () => {
             <button
               key={tab.key}
               onClick={() => setSelectedStatus(tab.key)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+              className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                 selectedStatus === tab.key
                   ? 'bg-[#05A222] text-white shadow-xs'
                   : 'bg-white text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8] border border-[#E2EAE6]'
@@ -470,44 +433,68 @@ export const Templates: React.FC = () => {
           ))}
         </div>
 
-        {/* View Mode Switcher (Grid vs Table) */}
-        <div className="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200 self-end sm:self-auto shrink-0">
-          <button
-            type="button"
-            onClick={() => handleViewModeChange('grid')}
-            title="Grid / Card View"
-            className={`p-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-              viewMode === 'grid'
-                ? 'bg-white text-[#006736] shadow-2xs'
-                : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
-            }`}
+        {/* Action Buttons & View Switcher */}
+        <div className="flex items-center gap-2 shrink-0 self-end lg:self-auto">
+          {/* View Mode Switcher (Grid vs Table) */}
+          <div className="flex items-center gap-1 bg-slate-100/80 p-0.5 rounded-xl border border-slate-200 shrink-0">
+            <button
+              type="button"
+              onClick={() => handleViewModeChange('grid')}
+              title="Grid / Card View"
+              className={`p-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                viewMode === 'grid'
+                  ? 'bg-white text-[#006736] shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline text-xs">Cards</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleViewModeChange('table')}
+              title="Table / List View"
+              className={`p-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                viewMode === 'table'
+                  ? 'bg-white text-[#006736] shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
+              }`}
+            >
+              <List className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline text-xs">Table</span>
+            </button>
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSync}
+            isLoading={isSyncing}
+            leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />}
+            className="text-xs font-bold rounded-xl border-[#C4EBD0] text-[#006736] hover:bg-[#E9F9EE] cursor-pointer"
           >
-            <LayoutGrid className="w-4 h-4" />
-            <span className="hidden sm:inline text-xs">Cards</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => handleViewModeChange('table')}
-            title="Table / List View"
-            className={`p-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-              viewMode === 'table'
-                ? 'bg-white text-[#006736] shadow-2xs'
-                : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
-            }`}
+            Sync with Meta
+          </Button>
+
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => navigate(ROUTES.CREATE_TEMPLATE)}
+            leftIcon={<Plus className="w-3.5 h-3.5" />}
+            className="text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs bg-[#05A222] hover:bg-[#006736] text-white cursor-pointer"
           >
-            <List className="w-4 h-4" />
-            <span className="hidden sm:inline text-xs">Table</span>
-          </button>
+            Create New Template
+          </Button>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-5">
         <div className="max-w-md w-full">
           <SearchBar value={query} onChange={setQuery} placeholder="Search templates by name, body, category..." />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           <span className="text-xs font-bold text-[#5F7069] uppercase mr-1">Category:</span>
           {(['ALL', 'MARKETING', 'UTILITY', 'AUTHENTICATION'] as const).map((cat) => (
             <button

@@ -91,37 +91,26 @@ export const Dashboard: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* Top Banner / Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-6">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">
-            WhatsApp Business Overview
-          </h2>
-          <p className="text-sm sm:text-base text-[#5F7069] mt-1 font-medium">
-            Real-time delivery lifecycle, customer reach, and campaign analytics.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="md"
-            onClick={() => navigate(ROUTES.CREATE_TEMPLATE)}
-            leftIcon={<Plus className="w-4 h-4" />}
-            className="text-sm font-semibold px-4 py-2.5 rounded-xl border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] cursor-pointer"
-          >
-            New Template
-          </Button>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
-            leftIcon={<Zap className="w-4 h-4" />}
-            className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm cursor-pointer"
-          >
-            Launch Broadcast
-          </Button>
-        </div>
+      {/* Top Actions */}
+      <div className="flex items-center justify-end gap-3 mb-6">
+        <Button
+          variant="outline"
+          size="md"
+          onClick={() => navigate(ROUTES.CREATE_TEMPLATE)}
+          leftIcon={<Plus className="w-4 h-4" />}
+          className="text-sm font-semibold px-4 py-2.5 rounded-xl border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] cursor-pointer"
+        >
+          New Template
+        </Button>
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
+          leftIcon={<Zap className="w-4 h-4" />}
+          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm cursor-pointer"
+        >
+          Launch Broadcast
+        </Button>
       </div>
 
       {/* 8 Primary KPI Metrics (Top 2 Rows) */}

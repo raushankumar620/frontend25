@@ -234,43 +234,34 @@ export const Contacts: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">Contacts & Audience</h2>
-          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
-            Manage your customer database, audience tags, bulk CSV imports, and WhatsApp opt-ins.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="md"
-            onClick={() => setIsImportModalOpen(true)}
-            leftIcon={<Upload className="w-4 h-4" />}
-            className="text-sm font-semibold rounded-xl"
-          >
-            Import CSV
-          </Button>
-          <Button
-            variant="outline"
-            size="md"
-            onClick={handleExportCSV}
-            leftIcon={<Download className="w-4 h-4" />}
-            className="text-sm font-semibold rounded-xl"
-          >
-            Export
-          </Button>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => setIsAddModalOpen(true)}
-            leftIcon={<Plus className="w-4 h-4" />}
-            className="text-sm font-bold rounded-xl shadow-sm"
-          >
-            Add Contact
-          </Button>
-        </div>
+      <div className="flex items-center justify-end gap-3 mb-6">
+        <Button
+          variant="outline"
+          size="md"
+          onClick={() => setIsImportModalOpen(true)}
+          leftIcon={<Upload className="w-4 h-4" />}
+          className="text-sm font-semibold rounded-xl"
+        >
+          Import CSV
+        </Button>
+        <Button
+          variant="outline"
+          size="md"
+          onClick={handleExportCSV}
+          leftIcon={<Download className="w-4 h-4" />}
+          className="text-sm font-semibold rounded-xl"
+        >
+          Export
+        </Button>
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => setIsAddModalOpen(true)}
+          leftIcon={<Plus className="w-4 h-4" />}
+          className="text-sm font-bold rounded-xl shadow-sm"
+        >
+          Add Contact
+        </Button>
       </div>
 
       {/* Filter and Tag Pills */}

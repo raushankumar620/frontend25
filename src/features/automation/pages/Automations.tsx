@@ -337,92 +337,82 @@ export const Automations: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* Header Title & CTA */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">
-            WhatsApp Bot & Workflow Automations
-          </h2>
-          <p className="text-sm text-[#5F7069] mt-1 font-medium">
-            Deploy intelligent keyword triggers, auto-replies, business hours out-of-office bots, and automated customer routing.
-          </p>
+      {/* Metrics Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)]">
+          <div className="flex items-center justify-between text-[#5F7069] mb-1">
+            <span className="text-xs font-bold uppercase tracking-wider">Total Rules</span>
+            <div className="w-7 h-7 rounded-lg bg-[#E9F9EE] text-[#05A222] flex items-center justify-center">
+              <Layers className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-[#14201C]">{totalRules}</div>
+          <div className="text-[11px] text-[#006736] mt-0.5 font-bold">{activeCount} currently active & firing</div>
+        </div>
+
+        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)]">
+          <div className="flex items-center justify-between text-[#5F7069] mb-1">
+            <span className="text-xs font-bold uppercase tracking-wider">Total Inbound Triggers</span>
+            <div className="w-7 h-7 rounded-lg bg-[#E9F9EE] text-[#006736] flex items-center justify-center">
+              <Zap className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-[#14201C]">{totalExecutions.toLocaleString()}</div>
+          <div className="text-[11px] text-[#5F7069] mt-0.5 font-medium">Lifetime automated replies sent</div>
+        </div>
+
+        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)]">
+          <div className="flex items-center justify-between text-[#5F7069] mb-1">
+            <span className="text-xs font-bold uppercase tracking-wider">Execution Success Rate</span>
+            <div className="w-7 h-7 rounded-lg bg-[#E9F9EE] text-[#07CF74] flex items-center justify-center">
+              <Activity className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-[#14201C]">99.8%</div>
+          <div className="text-[11px] text-[#05A222] mt-0.5 font-bold">Reliable sub-second webhook triggers</div>
+        </div>
+      </div>
+
+      {/* Main Tabs (Rules vs Execution Logs) + Action Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2EAE6] pb-2 mb-5">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => {
+              setActiveTab('RULES');
+              setSelectedRuleForLogs(null);
+            }}
+            className={`pb-2 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
+              activeTab === 'RULES'
+                ? 'border-[#05A222] text-[#006736]'
+                : 'border-transparent text-[#5F7069] hover:text-[#14201C]'
+            }`}
+          >
+            <GitBranch className="w-4 h-4" />
+            <span>Active Rules ({totalRules})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('LOGS')}
+            className={`pb-2 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
+              activeTab === 'LOGS'
+                ? 'border-[#05A222] text-[#006736]'
+                : 'border-transparent text-[#5F7069] hover:text-[#14201C]'
+            }`}
+          >
+            <History className="w-4 h-4" />
+            <span>Audit Logs {selectedRuleForLogs ? `(${selectedRuleForLogs.name})` : ''}</span>
+          </button>
         </div>
 
         <Button
           variant="primary"
-          size="md"
+          size="sm"
           onClick={() => navigate(ROUTES.CREATE_AUTOMATION)}
-          leftIcon={<Plus className="w-4 h-4" />}
-          className="text-sm font-bold bg-[#05A222] hover:bg-[#006736] text-white px-5 py-2.5 rounded-xl shadow-xs"
+          leftIcon={<Plus className="w-3.5 h-3.5" />}
+          className="text-xs font-bold bg-[#05A222] hover:bg-[#006736] text-white px-3.5 py-1.5 rounded-xl shadow-xs self-end sm:self-auto cursor-pointer"
         >
           Create Automation Rule
         </Button>
-      </div>
-
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white p-5 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)]">
-          <div className="flex items-center justify-between text-[#5F7069] mb-1.5">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Rules</span>
-            <div className="w-8 h-8 rounded-lg bg-[#E9F9EE] text-[#05A222] flex items-center justify-center">
-              <Layers className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-[#14201C]">{totalRules}</div>
-          <div className="text-[11px] text-[#006736] mt-1 font-bold">{activeCount} currently active & firing</div>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)]">
-          <div className="flex items-center justify-between text-[#5F7069] mb-1.5">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Inbound Triggers</span>
-            <div className="w-8 h-8 rounded-lg bg-[#E9F9EE] text-[#006736] flex items-center justify-center">
-              <Zap className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-[#14201C]">{totalExecutions.toLocaleString()}</div>
-          <div className="text-[11px] text-[#5F7069] mt-1 font-medium">Lifetime automated replies sent</div>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)]">
-          <div className="flex items-center justify-between text-[#5F7069] mb-1.5">
-            <span className="text-xs font-bold uppercase tracking-wider">Execution Success Rate</span>
-            <div className="w-8 h-8 rounded-lg bg-[#E9F9EE] text-[#07CF74] flex items-center justify-center">
-              <Activity className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-[#14201C]">99.8%</div>
-          <div className="text-[11px] text-[#05A222] mt-1 font-bold">Reliable sub-second webhook triggers</div>
-        </div>
-      </div>
-
-      {/* Main Tabs (Rules vs Execution Logs) */}
-      <div className="flex items-center gap-3 border-b border-[#E2EAE6] mb-6">
-        <button
-          onClick={() => {
-            setActiveTab('RULES');
-            setSelectedRuleForLogs(null);
-          }}
-          className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
-            activeTab === 'RULES'
-              ? 'border-[#05A222] text-[#006736]'
-              : 'border-transparent text-[#5F7069] hover:text-[#14201C]'
-          }`}
-        >
-          <GitBranch className="w-4 h-4" />
-          <span>Active Automation Rules ({totalRules})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('LOGS')}
-          className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
-            activeTab === 'LOGS'
-              ? 'border-[#05A222] text-[#006736]'
-              : 'border-transparent text-[#5F7069] hover:text-[#14201C]'
-          }`}
-        >
-          <History className="w-4 h-4" />
-          <span>Execution Audit Logs {selectedRuleForLogs ? `(${selectedRuleForLogs.name})` : ''}</span>
-        </button>
       </div>
 
       {activeTab === 'RULES' ? (

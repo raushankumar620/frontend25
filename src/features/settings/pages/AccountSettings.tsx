@@ -245,24 +245,16 @@ export const AccountSettings: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="space-y-7 pb-14">
-        {/* Header Title */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Settings</h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Configure your application settings, WhatsApp channels, and preferences
-            </p>
-          </div>
-          <div className="flex items-center gap-2.5 self-start sm:self-auto">
-            <button
-              onClick={() => handleTabChange('whatsapp')}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-2xs transition-colors cursor-pointer"
-            >
-              <Headphones className="w-4 h-4 text-emerald-600" />
-              <span>Support</span>
-            </button>
-          </div>
+      <div className="space-y-6 pb-14">
+        {/* Top Action Controls */}
+        <div className="flex items-center justify-end">
+          <button
+            onClick={() => handleTabChange('whatsapp')}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-2xs transition-colors cursor-pointer"
+          >
+            <Headphones className="w-4 h-4 text-emerald-600" />
+            <span>Support</span>
+          </button>
         </div>
 
         {/* Horizontal Navigation Tabs with Sleek Modern Professional Styling */}

@@ -87,56 +87,45 @@ export const Analytics: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight">
-            Comprehensive Business Analytics
-          </h2>
-          <p className="text-sm sm:text-base text-[#5F7069] mt-1.5 font-medium">
-            Real-time delivery rates, SLA response metrics, campaign ROI, and AI containment deflection.
-          </p>
+      {/* Top action controls */}
+      <div className="flex items-center justify-end gap-3 flex-wrap mb-6">
+        {/* Range Switcher */}
+        <div className="flex items-center gap-1.5 bg-[#F6FAF8] border border-[#E2EAE6] p-1 rounded-xl text-sm font-semibold">
+          {(['7d', '30d', '90d'] as const).map((r) => (
+            <button
+              key={r}
+              onClick={() => setRange(r)}
+              className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                range === r
+                  ? 'bg-white text-[#006736] shadow-xs border border-[#E2EAE6]'
+                  : 'text-[#5F7069] hover:text-[#14201C]'
+              }`}
+            >
+              {r.toUpperCase()}
+            </button>
+          ))}
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Range Switcher */}
-          <div className="flex items-center gap-1.5 bg-[#F6FAF8] border border-[#E2EAE6] p-1 rounded-xl text-sm font-semibold">
-            {(['7d', '30d', '90d'] as const).map((r) => (
-              <button
-                key={r}
-                onClick={() => setRange(r)}
-                className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-                  range === r
-                    ? 'bg-white text-[#006736] shadow-xs border border-[#E2EAE6]'
-                    : 'text-[#5F7069] hover:text-[#14201C]'
-                }`}
-              >
-                {r.toUpperCase()}
-              </button>
-            ))}
-          </div>
+        {/* Refresh Button */}
+        <button
+          onClick={loadData}
+          disabled={loading}
+          className="p-2.5 rounded-xl border border-[#E2EAE6] bg-white text-[#5F7069] hover:text-[#006736] hover:bg-[#F6FAF8] transition-colors cursor-pointer"
+          title="Refresh Data"
+        >
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#006736]' : ''}`} />
+        </button>
 
-          {/* Refresh Button */}
-          <button
-            onClick={loadData}
-            disabled={loading}
-            className="p-2.5 rounded-xl border border-[#E2EAE6] bg-white text-[#5F7069] hover:text-[#006736] hover:bg-[#F6FAF8] transition-colors cursor-pointer"
-            title="Refresh Data"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#006736]' : ''}`} />
-          </button>
-
-          {/* Export CSV Button */}
-          <Button
-            variant="outline"
-            size="md"
-            onClick={() => setIsExportModalOpen(true)}
-            leftIcon={<Download className="w-4 h-4" />}
-            className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
-          >
-            Export CSV Report
-          </Button>
-        </div>
+        {/* Export CSV Button */}
+        <Button
+          variant="outline"
+          size="md"
+          onClick={() => setIsExportModalOpen(true)}
+          leftIcon={<Download className="w-4 h-4" />}
+          className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
+        >
+          Export CSV Report
+        </Button>
       </div>
 
       {/* Primary KPI Cards */}

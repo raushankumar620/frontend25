@@ -261,15 +261,28 @@ export const Campaigns: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-8">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14201C] tracking-tight flex items-center gap-2.5">
-            <Send className="w-7 h-7 text-[#05A222]" />
-            WhatsApp Broadcast Campaigns
-          </h2>
-          <p className="text-sm sm:text-base text-[#5F7069] mt-1 font-medium">
-            Schedule and launch bulk personalized HSM template messages with high deliverability and analytics.
-          </p>
+      {/* Unified Search, Filter & Action Bar */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+          <div className="max-w-md w-full">
+            <SearchBar value={query} onChange={setQuery} placeholder="Search campaigns by name or template..." />
+          </div>
+
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            {(['ALL', 'RUNNING', 'SCHEDULED', 'COMPLETED', 'PAUSED', 'DRAFT'] as const).map((st) => (
+              <button
+                key={st}
+                onClick={() => setSelectedStatus(st)}
+                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                  selectedStatus === st
+                    ? 'bg-[#05A222] text-white shadow-xs'
+                    : 'bg-white text-[#14201C] border border-[#E2EAE6] hover:bg-[#F6FAF8]'
+                }`}
+              >
+                {st}
+              </button>
+            ))}
+          </div>
         </div>
 
         <Button
@@ -277,33 +290,10 @@ export const Campaigns: React.FC = () => {
           size="md"
           onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
           leftIcon={<Plus className="w-4 h-4" />}
-          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-xs bg-[#05A222] hover:bg-[#006736] text-white"
+          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-xs bg-[#05A222] hover:bg-[#006736] text-white shrink-0 whitespace-nowrap cursor-pointer"
         >
           New Broadcast Campaign
         </Button>
-      </div>
-
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
-        <div className="max-w-md w-full">
-          <SearchBar value={query} onChange={setQuery} placeholder="Search campaigns by name or template..." />
-        </div>
-
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-          {(['ALL', 'RUNNING', 'SCHEDULED', 'COMPLETED', 'PAUSED', 'DRAFT'] as const).map((st) => (
-            <button
-              key={st}
-              onClick={() => setSelectedStatus(st)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                selectedStatus === st
-                  ? 'bg-[#05A222] text-white shadow-xs'
-                  : 'bg-white text-[#14201C] border border-[#E2EAE6] hover:bg-[#F6FAF8]'
-              }`}
-            >
-              {st}
-            </button>
-          ))}
-        </div>
       </div>
 
       <Table columns={columns} data={filtered} isLoading={isLoading} />
