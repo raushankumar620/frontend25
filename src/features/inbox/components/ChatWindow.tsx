@@ -92,35 +92,41 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   return (
     <div className="w-full h-full flex flex-col bg-[#F0F2F5]/60 relative">
       {/* WhatsApp Chat Top Header */}
-      <div className="h-18 px-5 bg-white border-b border-[#E2EAE6] flex items-center justify-between z-10 shrink-0 shadow-2xs">
-        {/* Left: Contact Info */}
-        <div className="flex items-center gap-3.5 min-w-0">
+      <div className="h-16 px-5 bg-white border-b border-[#E2EAE6] flex items-center justify-between z-10 shrink-0 shadow-2xs">
+        {/* Left: Contact Info - Single Sleek Row */}
+        <div className="flex items-center gap-3 min-w-0">
           <Avatar name={conversation.contactName || conversation.contactPhone} size="md" status="online" />
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-sm sm:text-base font-bold text-[#14201C] leading-tight truncate">
-                {conversation.contactName || conversation.contactPhone}
-              </h3>
-              <span className="text-[10px] text-[#006736] bg-[#E9F9EE] px-2 py-0.5 rounded-full font-bold border border-[#C4EBD0] flex items-center gap-1 shrink-0">
-                <ShieldCheck className="w-3 h-3 text-[#05A222]" />
-                WhatsApp
+          <div className="flex items-center gap-2.5 min-w-0 flex-wrap">
+            <h3 className="text-sm sm:text-base font-bold text-[#14201C] leading-none truncate">
+              {conversation.contactName || conversation.contactPhone}
+            </h3>
+
+            {conversation.contactPhone && (
+              <span className="text-xs text-[#5F7069] font-medium shrink-0 bg-[#F6FAF8] px-2 py-0.5 rounded-md border border-[#E2EAE6]">
+                +{conversation.contactPhone.replace(/^\+/, '')}
               </span>
-              {conversation.status === 'resolved' && (
-                <span className="text-[10px] text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md font-bold shrink-0">
-                  Resolved
-                </span>
-              )}
-              {isHandoffRequested && (
-                <span className="text-[10px] text-rose-700 bg-rose-100 px-2 py-0.5 rounded-md font-bold animate-pulse shrink-0">
-                  Handoff Requested
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-[#5F7069] mt-0.5 font-medium flex items-center gap-1.5 truncate">
-              <span>{conversation.contactPhone}</span>
-              <span className="w-1 h-1 rounded-full bg-[#05A222]" />
-              <span className="text-[#05A222] text-[11px] font-bold">Online</span>
-            </p>
+            )}
+
+            <span className="text-[10px] text-[#006736] bg-[#E9F9EE] px-2 py-0.5 rounded-full font-bold border border-[#C4EBD0] flex items-center gap-1 shrink-0">
+              <ShieldCheck className="w-3 h-3 text-[#05A222]" />
+              WhatsApp
+            </span>
+
+            <span className="flex items-center gap-1 text-[#05A222] text-[11px] font-bold shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#05A222] animate-pulse" />
+              Online
+            </span>
+
+            {conversation.status === 'resolved' && (
+              <span className="text-[10px] text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md font-bold shrink-0">
+                Resolved
+              </span>
+            )}
+            {isHandoffRequested && (
+              <span className="text-[10px] text-rose-700 bg-rose-100 px-2 py-0.5 rounded-md font-bold animate-pulse shrink-0">
+                Handoff Requested
+              </span>
+            )}
           </div>
         </div>
 
