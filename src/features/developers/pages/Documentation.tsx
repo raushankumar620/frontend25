@@ -233,14 +233,14 @@ curl_close($ch);`,
 
   return (
     <div className="space-y-6 max-w-5xl">
-      {/* Top Header */}
-      <div className="bg-white border border-[#E2EAE6] p-6 rounded-3xl shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Compact Top Header & Filter Box */}
+      <div className="bg-white border border-[#E2EAE6] p-3.5 sm:p-4 rounded-2xl shadow-xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-2xl font-black text-[#14201C] tracking-tight">
+            <h3 className="text-base sm:text-lg font-extrabold text-[#14201C] tracking-tight">
               WhatsApp Business REST API Reference
             </h3>
-            <p className="text-xs sm:text-sm text-[#5F7069] mt-1 font-medium">
+            <p className="text-xs text-[#5F7069] mt-0.5">
               Comprehensive guides and copy-paste code snippets for integrating WhatsApp messaging into any backend service.
             </p>
           </div>
@@ -251,7 +251,7 @@ curl_close($ch);`,
               variant="outline"
               leftIcon={<Server className="w-3.5 h-3.5 text-[#05A222]" />}
               rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-              className="text-xs font-bold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE]"
+              className="text-xs font-semibold text-[#006736] border-[#E2EAE6] hover:bg-[#E9F9EE] px-3 py-1.5 h-8"
             >
               Backend (.env) Setup
             </Button>
@@ -259,7 +259,7 @@ curl_close($ch);`,
         </div>
 
         {/* Section Filter Tabs */}
-        <div className="pt-2 border-t border-[#E2EAE6]/60 flex flex-wrap items-center gap-1.5">
+        <div className="pt-2 border-t border-[#E2EAE6]/70 flex flex-wrap items-center gap-1.5">
           {[
             { id: 'all', label: 'All Endpoints' },
             { id: 'auth', label: '1. Authentication' },
@@ -271,9 +271,9 @@ curl_close($ch);`,
             <button
               key={sec.id}
               onClick={() => setSelectedSection(sec.id as SectionFilter)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 selectedSection === sec.id
-                  ? 'bg-[#006736] text-white shadow-xs font-bold'
+                  ? 'bg-[#006736] text-white shadow-2xs font-bold'
                   : 'text-[#5F7069] hover:text-[#14201C] bg-[#F8FAFC] border border-[#E2EAE6] hover:bg-white'
               }`}
             >
