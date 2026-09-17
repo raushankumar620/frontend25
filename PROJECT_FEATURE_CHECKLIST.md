@@ -36,4 +36,7 @@
 | **32** | **Developers** | API Key Generation & Public Send API | **[ ] To Test** | Bearer auth & docs |
 | **33** | **Settings** | Meta WABA, Phone Number ID & Token Config | **[ ] To Test** | Cloud API integration |
 | **34** | **Settings** | Meta Webhook Verify Token Handshake | **[x] Done** | GET endpoint verified |
-| **35** | **Settings** | Organization Branding & Workspace Profile | **[ ] To Test** | Logo & business info |
+| **36** | **Billing & Subscriptions** | Dedicated Sidebar Tab (`/billing`) | **[x] Done** | Active highlight & access control |
+| **37** | **Billing & Subscriptions** | 7-Day Free Trial Card with 4-Box Countdown Timer | **[x] Done** | Days, Hours, Minutes, Secs live ticker |
+| **38** | **Billing & Subscriptions** | Reference UI Plans Grid (₹1,599 / ₹2,599 / ₹15,999) | **[x] Done** | Monthly/Yearly toggle & Most Popular badge |
+| **39** | **Billing & Subscriptions** | Cashfree PG In-App Checkout & Verified Activation | **[x] Done** | Modal payment & GST invoice auto-generation |

@@ -19,6 +19,8 @@ import {
   Sparkles,
   X,
   UserPlus,
+  CreditCard,
+  Headphones,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { ROUTES, APP_NAME } from '../../utils/constants';
@@ -87,6 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: 'Automations', path: ROUTES.AUTOMATIONS, icon: GitBranch, color: '#0891B2', bgColor: '#ECFEFF', permissionKey: 'automations' },
     { label: 'AI Agents', path: ROUTES.AI_DASHBOARD, icon: Bot, highlight: true, color: '#9333EA', bgColor: '#FAF5FF', permissionKey: 'ai_agents' },
     { label: 'Analytics', path: ROUTES.ANALYTICS, icon: BarChart3, color: '#4F46E5', bgColor: '#EEF2FF', permissionKey: 'analytics' },
+    { label: 'Billing & Subscription', path: ROUTES.BILLING, icon: CreditCard, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'billing' },
     { label: 'Developers API', path: ROUTES.DEVELOPERS_DASHBOARD, icon: Code2, color: '#0D9488', bgColor: '#F0FDFA', permissionKey: 'developers' },
     { label: 'Team', path: ROUTES.TEAM, icon: UserPlus, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'team' },
     { label: 'Settings', path: ROUTES.ACCOUNT_SETTINGS, icon: Settings, color: '#64748B', bgColor: '#F8FAFC', permissionKey: 'settings' },
@@ -357,6 +360,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
         ))}
+        {/* Support Help Card */}
+        {!collapsed && (
+          <div className="p-3.5 bg-[#F6FAF8] border border-[#E2EAE6] rounded-2xl space-y-2 text-center">
+            <div className="w-8 h-8 rounded-full bg-[#E9F9EE] text-[#006736] flex items-center justify-center mx-auto border border-[#C4EBD0]">
+              <Headphones className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-[#14201C]">Need Help?</div>
+              <div className="text-[11px] text-[#5F7069] mt-0.5">Our team is here to help you.</div>
+            </div>
+            <a
+              href="mailto:support@whatsappmsg.com"
+              className="block w-full py-1.5 px-3 bg-white hover:bg-slate-50 text-[#14201C] border border-[#E2EAE6] rounded-xl text-xs font-bold transition-all text-center cursor-pointer shadow-2xs"
+            >
+              Contact Support
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Account / User Footer Directly in Sidebar */}

@@ -89,7 +89,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ invoice, isOpen, onC
               </span>
               <div className="font-bold text-[#14201C] text-sm">Customer Organization</div>
               <div className="text-[#5F7069]">WhatsApp Cloud API Client Account</div>
-              <div className="text-[#5F7069]">Payment Method: Credit Card / Stripe</div>
+              <div className="text-[#5F7069]">Payment Gateway: Cashfree PG (UPI / Cards / NetBanking)</div>
             </div>
 
             <div className="p-4 bg-[#F6FAF8] border border-[#E2EAE6] rounded-2xl space-y-1">
@@ -98,11 +98,11 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ invoice, isOpen, onC
               </span>
               <div className="flex justify-between">
                 <span className="text-[#5F7069]">Billing Category:</span>
-                <strong className="text-[#14201C]">{invoice.billingReason}</strong>
+                <strong className="text-[#14201C]">{invoice.billingReason || 'Subscription'}</strong>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#5F7069]">Currency:</span>
-                <strong className="text-[#14201C]">{invoice.currency} (USD)</strong>
+                <strong className="text-[#14201C]">{invoice.currency || 'INR'}</strong>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#5F7069]">Payment Status:</span>
@@ -129,10 +129,10 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ invoice, isOpen, onC
                       <td className="py-3.5 px-4 font-bold text-[#14201C]">{item.description}</td>
                       <td className="py-3.5 px-4 text-center text-[#5F7069]">{item.quantity || 1}</td>
                       <td className="py-3.5 px-4 text-right text-[#5F7069]">
-                        ${item.amount.toFixed(2)}
+                        ₹{item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </td>
                       <td className="py-3.5 px-4 text-right font-black text-[#14201C]">
-                        ${(item.amount * (item.quantity || 1)).toFixed(2)}
+                        ₹{(item.amount * (item.quantity || 1)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </td>
                     </tr>
                   ))
@@ -143,10 +143,10 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ invoice, isOpen, onC
                     </td>
                     <td className="py-3.5 px-4 text-center text-[#5F7069]">1</td>
                     <td className="py-3.5 px-4 text-right text-[#5F7069]">
-                      ${invoice.amount.toFixed(2)}
+                      ₹{invoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </td>
                     <td className="py-3.5 px-4 text-right font-black text-[#14201C]">
-                      ${invoice.amount.toFixed(2)}
+                      ₹{invoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </td>
                   </tr>
                 )}
@@ -163,13 +163,13 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ invoice, isOpen, onC
 
             <div className="space-y-1.5 text-right">
               <div className="text-xs text-[#5F7069]">
-                Subtotal: <span className="font-bold text-[#14201C]">${invoice.amount.toFixed(2)}</span>
+                Subtotal: <span className="font-bold text-[#14201C]">₹{invoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
               <div className="text-xs text-[#5F7069]">
-                Tax / VAT (0%): <span className="font-bold text-[#14201C]">$0.00</span>
+                Tax / GST (Included): <span className="font-bold text-[#14201C]">₹0.00</span>
               </div>
-              <div className="text-base sm:text-lg font-black text-[#14201C]">
-                Total Paid: <span className="text-[#006736]">${invoice.amount.toFixed(2)} {invoice.currency}</span>
+              <div className="text-base sm:lg font-black text-[#14201C]">
+                Total Paid: <span className="text-[#006736]">₹{invoice.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })} {invoice.currency || 'INR'}</span>
               </div>
             </div>
           </div>

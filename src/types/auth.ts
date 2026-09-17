@@ -28,6 +28,13 @@ export interface Organization {
   name: string;
   slug: string;
   plan: string;
+  planStatus?: 'ACTIVE' | 'TRIAL' | 'EXPIRED' | 'SUSPENDED' | 'CANCELLED' | string;
+  trialStartsAt?: string;
+  trialEndsAt?: string;
+  isTrialActive?: boolean;
+  isTrialUsed?: boolean;
+  planStartsAt?: string;
+  planEndsAt?: string;
   status: 'ACTIVE' | 'SUSPENDED' | 'CANCELLED';
   branding?: OrganizationBranding;
   settings?: OrganizationSettings;
