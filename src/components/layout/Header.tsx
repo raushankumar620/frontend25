@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Search,
   Menu,
   Zap,
   ShieldCheck,
@@ -12,10 +11,197 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { Avatar } from '../ui/Avatar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
 import { useAuthStore } from '../../store/authStore';
 import { NotificationDropdown } from '../notifications/NotificationDropdown';
+
+const ROUTE_HEADER_MAP: Array<{
+  pattern: RegExp | string;
+  title: string;
+  subtitle: string;
+}> = [
+  {
+    pattern: '/billing/invoices',
+    title: 'Invoices & Tax Receipts',
+    subtitle: 'View, print, and download official GST tax invoices.',
+  },
+  {
+    pattern: '/billing/plans',
+    title: 'Subscription Plans',
+    subtitle: 'Choose and upgrade the perfect plan for your business.',
+  },
+  {
+    pattern: '/billing',
+    title: 'Billing & Subscription',
+    subtitle: 'Manage your subscription, view invoices and upgrade your plan.',
+  },
+  {
+    pattern: '/app',
+    title: 'Overview Dashboard',
+    subtitle: 'Real-time WhatsApp engagement metrics, active numbers & quick stats.',
+  },
+  {
+    pattern: '/inbox',
+    title: 'Live Team Inbox',
+    subtitle: 'Unified WhatsApp conversations, agent routing & customer support.',
+  },
+  {
+    pattern: '/campaigns/create',
+    title: 'Create Broadcast Campaign',
+    subtitle: 'Configure message templates, audience filters, and schedule broadcasts.',
+  },
+  {
+    pattern: /^\/campaigns\/[a-zA-Z0-9_-]+$/,
+    title: 'Campaign Analytics & Delivery',
+    subtitle: 'Live dispatch status, message read rates, and subscriber responses.',
+  },
+  {
+    pattern: '/campaigns',
+    title: 'Broadcast Campaigns',
+    subtitle: 'Send high-delivery bulk WhatsApp broadcasts and track performance.',
+  },
+  {
+    pattern: '/templates/create',
+    title: 'Create WhatsApp Template',
+    subtitle: 'Design and submit Meta-compliant marketing and utility templates.',
+  },
+  {
+    pattern: /^\/templates\/[a-zA-Z0-9_-]+$/,
+    title: 'Template Details',
+    subtitle: 'Review template components, variables, and Meta approval status.',
+  },
+  {
+    pattern: '/templates',
+    title: 'Message Templates',
+    subtitle: 'Sync and manage official Meta approved WhatsApp templates.',
+  },
+  {
+    pattern: /^\/contacts\/[a-zA-Z0-9_-]+$/,
+    title: 'Contact Profile & History',
+    subtitle: 'Subscriber timeline, tags, custom attributes and message logs.',
+  },
+  {
+    pattern: '/contacts',
+    title: 'Contacts & Audience',
+    subtitle: 'Organize subscribers, tags, attributes, and custom segments.',
+  },
+  {
+    pattern: '/automations/create',
+    title: 'Create Visual Workflow',
+    subtitle: 'Design keyword-based bots, triggers, and automated customer journeys.',
+  },
+  {
+    pattern: '/automations',
+    title: 'Flow Automations',
+    subtitle: 'Build interactive visual workflows and auto-reply sequences.',
+  },
+  {
+    pattern: '/ai/agent',
+    title: 'AI Agent Configuration',
+    subtitle: 'Define agent persona, tone, instruction prompts, and fallbacks.',
+  },
+  {
+    pattern: '/ai/knowledge-base',
+    title: 'AI Knowledge Base',
+    subtitle: 'Upload product catalogs, PDFs, and FAQs for smart AI answers.',
+  },
+  {
+    pattern: '/ai/tools',
+    title: 'AI Custom Tools & Actions',
+    subtitle: 'Connect external webhooks and CRM integrations for AI execution.',
+  },
+  {
+    pattern: '/ai/handoff',
+    title: 'Human Agent Handoff',
+    subtitle: 'Set up rules for when AI transfers chat conversations to human agents.',
+  },
+  {
+    pattern: '/ai/settings',
+    title: 'AI Model & Token Settings',
+    subtitle: 'Tune temperature, context window limits, and Gemini AI parameters.',
+  },
+  {
+    pattern: '/ai',
+    title: 'AI Agents & Automation',
+    subtitle: 'Deploy intelligent AI chatbots powered by Gemini and WhatsApp.',
+  },
+  {
+    pattern: '/whatsapp/connect',
+    title: 'Connect WhatsApp Account',
+    subtitle: 'Link your Meta Business Account, WABA ID, and Phone Number.',
+  },
+  {
+    pattern: /^\/whatsapp\/numbers\/[a-zA-Z0-9_-]+$/,
+    title: 'WhatsApp Number Settings',
+    subtitle: 'Quality rating, messaging tier limits, and webhook status.',
+  },
+  {
+    pattern: '/whatsapp/numbers',
+    title: 'Connected Phone Numbers',
+    subtitle: 'Manage WhatsApp Business API phone numbers and status.',
+  },
+  {
+    pattern: '/analytics',
+    title: 'Analytics & Reports',
+    subtitle: 'Track delivery rates, read metrics, conversion rates, and ROI.',
+  },
+  {
+    pattern: '/team/roles',
+    title: 'Roles & Permissions',
+    subtitle: 'Configure granular RBAC permissions for agents, managers and admins.',
+  },
+  {
+    pattern: '/team',
+    title: 'Team Members',
+    subtitle: 'Manage team seats, agent assignments and access permissions.',
+  },
+  {
+    pattern: '/settings/account',
+    title: 'Profile & Account Settings',
+    subtitle: 'Manage your profile details, password security, and notifications.',
+  },
+  {
+    pattern: '/settings/business',
+    title: 'Organization Profile',
+    subtitle: 'Business identity, WhatsApp profile info, address and branding.',
+  },
+  {
+    pattern: '/settings/security',
+    title: 'Security & Two-Factor Auth',
+    subtitle: 'Manage active sessions, audit activity, and 2FA authentication.',
+  },
+  {
+    pattern: '/developers/api-keys',
+    title: 'Developer API Keys',
+    subtitle: 'Generate and manage secure REST API keys for programmatic access.',
+  },
+  {
+    pattern: '/developers/webhooks',
+    title: 'Inbound Webhooks',
+    subtitle: 'Configure HTTP callbacks for real-time delivery and incoming messages.',
+  },
+  {
+    pattern: '/developers/logs',
+    title: 'API Request Logs',
+    subtitle: 'Inspect real-time API traffic, payloads, response codes, and latency.',
+  },
+  {
+    pattern: '/developers/docs',
+    title: 'API Documentation',
+    subtitle: 'Interactive endpoints reference, SDKs, and code examples.',
+  },
+  {
+    pattern: '/developers',
+    title: 'Developer Platform',
+    subtitle: 'APIs, webhooks, sandbox testing and developer infrastructure.',
+  },
+  {
+    pattern: '/notifications',
+    title: 'Notifications & Alerts',
+    subtitle: 'System alerts, broadcast summaries, and team activity logs.',
+  },
+];
 
 export interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -29,6 +215,7 @@ export const Header: React.FC<HeaderProps> = ({
   subtitle,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, organization, logout } = useAuthStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -63,34 +250,53 @@ export const Header: React.FC<HeaderProps> = ({
   const orgName = organization?.name || user?.organizationName || 'WhatsApp Workspace';
   const orgPlan = organization?.plan ? organization.plan.replace(/_/g, ' ') : 'FREE TRIAL';
 
+  // Determine active header title and subtitle
+  let activeTitle = title;
+  let activeSubtitle = subtitle;
+
+  if (!activeTitle) {
+    const currentPath = location.pathname;
+    const match = ROUTE_HEADER_MAP.find((item) => {
+      if (typeof item.pattern === 'string') {
+        return item.pattern === currentPath;
+      }
+      return item.pattern.test(currentPath);
+    });
+
+    if (match) {
+      activeTitle = match.title;
+      activeSubtitle = match.subtitle;
+    } else {
+      // Default fallback based on path segment
+      const segment = currentPath.split('/').filter(Boolean)[0] || 'app';
+      activeTitle = segment.charAt(0).toUpperCase() + segment.slice(1);
+      activeSubtitle = 'Manage and configure your WhatsApp Cloud workspace.';
+    }
+  }
+
   return (
     <header className="h-[72px] sm:h-20 bg-white border-b border-[#E2EAE6] px-5 sm:px-8 flex items-center justify-between z-20 shrink-0 shadow-xs">
-      {/* Left: Mobile trigger & Page Title */}
-      <div className="flex items-center gap-4">
+      {/* Left: Mobile trigger & Page Title + Subtitle */}
+      <div className="flex items-center gap-3.5 min-w-0 pr-4">
         {onToggleSidebar && (
           <button
             onClick={onToggleSidebar}
-            className="lg:hidden p-2.5 rounded-xl text-[#5F7069] hover:bg-[#F6FAF8] hover:text-[#14201C] transition-colors cursor-pointer"
+            className="lg:hidden p-2 rounded-xl text-[#5F7069] hover:bg-[#F6FAF8] hover:text-[#14201C] transition-colors cursor-pointer shrink-0"
             aria-label="Toggle sidebar menu"
           >
-            <Menu className="w-6 h-6" />
+            <Menu className="w-5 h-5" />
           </button>
         )}
-        {title ? (
-          <div>
-            <h1 className="text-lg sm:text-xl font-bold text-[#14201C]">{title}</h1>
-            {subtitle && <p className="text-sm text-[#5F7069]">{subtitle}</p>}
-          </div>
-        ) : (
-          <div className="relative hidden md:flex items-center">
-            <Search className="w-4.5 h-4.5 text-[#8A9993] absolute left-3.5 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search contacts, messages, templates (Ctrl + K)..."
-              className="w-80 lg:w-96 bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#1F2A26] placeholder-[#8A9993] focus:outline-none focus:ring-2 focus:ring-[#05A222]/20 focus:border-[#05A222] transition-colors font-medium"
-            />
-          </div>
-        )}
+        <div className="min-w-0">
+          <h1 className="text-base sm:text-lg font-black text-[#14201C] tracking-tight truncate leading-tight">
+            {activeTitle}
+          </h1>
+          {activeSubtitle && (
+            <p className="text-[11px] sm:text-xs text-[#5F7069] truncate font-medium mt-0.5 hidden sm:block">
+              {activeSubtitle}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Right: Status badge, Notification, User menu */}

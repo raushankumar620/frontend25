@@ -338,38 +338,27 @@ export const Billing: React.FC<BillingProps> = ({ embedded = false }) => {
 
   const mainContent = (
     <div className="w-full space-y-6 pb-12 animate-in fade-in duration-200">
-      {/* 1. Header with View Payment History */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl sm:text-[28px] font-black text-[#14201C] tracking-tight">
-            Billing & Subscription
-          </h2>
-          <p className="text-sm text-[#5F7069] mt-0.5 font-medium">
-            Manage your subscription, view invoices and upgrade your plan.
-          </p>
-        </div>
+      {/* Top Action Bar (Wallet & Payment History) */}
+      <div className="flex items-center justify-end gap-3">
+        <Button
+          variant="outline"
+          size="md"
+          onClick={() => setIsTopupModalOpen(true)}
+          leftIcon={<Wallet className="w-4 h-4 text-[#006736]" />}
+          className="text-xs font-bold border-[#E2EAE6] text-[#14201C] hover:bg-[#F6FAF8] rounded-xl px-4 py-2.5 cursor-pointer shadow-2xs"
+        >
+          Wallet: ₹{(usageData?.creditsBalance || (usageData?.metrics as any)?.metaBalance?.balance || 0).toLocaleString('en-IN')}
+        </Button>
 
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="md"
-            onClick={() => setIsTopupModalOpen(true)}
-            leftIcon={<Wallet className="w-4 h-4 text-[#006736]" />}
-            className="text-xs font-bold border-[#E2EAE6] text-[#14201C] hover:bg-[#F6FAF8] rounded-xl px-4 py-2.5 cursor-pointer shadow-2xs"
-          >
-            Wallet: ₹{(usageData?.creditsBalance || (usageData?.metrics as any)?.metaBalance?.balance || 0).toLocaleString('en-IN')}
-          </Button>
-
-          <Button
-            variant="outline"
-            size="md"
-            onClick={() => navigate(ROUTES.BILLING_INVOICES || '/billing/invoices')}
-            leftIcon={<Receipt className="w-4 h-4 text-[#006736]" />}
-            className="text-xs font-bold border-[#E2EAE6] text-[#14201C] hover:bg-[#F6FAF8] rounded-xl px-4 py-2.5 cursor-pointer shadow-2xs"
-          >
-            View Payment History
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          size="md"
+          onClick={() => navigate(ROUTES.BILLING_INVOICES || '/billing/invoices')}
+          leftIcon={<Receipt className="w-4 h-4 text-[#006736]" />}
+          className="text-xs font-bold border-[#E2EAE6] text-[#14201C] hover:bg-[#F6FAF8] rounded-xl px-4 py-2.5 cursor-pointer shadow-2xs"
+        >
+          View Payment History
+        </Button>
       </div>
 
       {/* 2. Top Banner Card (Active Paid Plan vs Trial vs Pending Connection) */}
