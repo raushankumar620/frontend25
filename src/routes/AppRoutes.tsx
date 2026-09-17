@@ -15,6 +15,9 @@ import { Pricing } from '../features/public/pages/Pricing';
 import { Solutions } from '../features/public/pages/Solutions';
 import { About } from '../features/public/pages/About';
 import { Contact } from '../features/public/pages/Contact';
+import { PrivacyPolicy } from '../features/public/pages/PrivacyPolicy';
+import { TermsOfService } from '../features/public/pages/TermsOfService';
+import { SecurityPolicy } from '../features/public/pages/SecurityPolicy';
 import { NotFound } from '../features/public/pages/NotFound';
 
 // Auth Pages
@@ -116,6 +119,9 @@ export const AppRoutes: React.FC = () => {
         <Route path={ROUTES.PUBLIC_SOLUTIONS} element={<Solutions />} />
         <Route path={ROUTES.PUBLIC_ABOUT} element={<About />} />
         <Route path={ROUTES.PUBLIC_CONTACT} element={<Contact />} />
+        <Route path={ROUTES.PUBLIC_PRIVACY} element={<PrivacyPolicy />} />
+        <Route path={ROUTES.PUBLIC_TERMS} element={<TermsOfService />} />
+        <Route path={ROUTES.PUBLIC_SECURITY} element={<SecurityPolicy />} />
       </Route>
 
       {/* Super Admin Dedicated Login Route */}

@@ -130,6 +130,63 @@ export const pageSeoData: Record<string, PageSeoItem> = {
     ],
     schemas: ['breadcrumbs'],
   },
+  privacy: {
+    id: 'privacy',
+    title: 'Privacy Policy — Data Security & Meta Cloud API Compliance | WhatsAppMSG',
+    description:
+      'Read the WhatsAppMSG Privacy Policy to understand how we protect customer data, maintain WhatsApp Cloud API security, and uphold GDPR & CCPA privacy standards.',
+    path: '/privacy',
+    keywords: [
+      'WhatsAppMSG privacy policy',
+      'WhatsApp Cloud API data security',
+      'GDPR WhatsApp compliance',
+      'Meta Business API data handling',
+    ],
+    ogType: 'website',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Privacy Policy', path: '/privacy' },
+    ],
+    schemas: ['breadcrumbs'],
+  },
+  terms: {
+    id: 'terms',
+    title: 'Terms of Service — Platform Usage & WhatsApp Messaging Agreement | WhatsAppMSG',
+    description:
+      'Review WhatsAppMSG Terms of Service, acceptable messaging standards, Meta Cloud API policies, subscription terms, and enterprise SLA commitments.',
+    path: '/terms',
+    keywords: [
+      'WhatsAppMSG terms of service',
+      'WhatsApp Business API terms',
+      'WhatsApp marketing acceptable use policy',
+      'Meta Cloud SLA',
+    ],
+    ogType: 'website',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Terms of Service', path: '/terms' },
+    ],
+    schemas: ['breadcrumbs'],
+  },
+  security: {
+    id: 'security',
+    title: 'Enterprise Security & Compliance — Architecture & Encryption | WhatsAppMSG',
+    description:
+      'Discover how WhatsAppMSG protects your enterprise messaging with TLS 1.3 encryption, SOC 2 aligned controls, 99.99% uptime SLA, and direct Meta Cloud infrastructure.',
+    path: '/security',
+    keywords: [
+      'WhatsAppMSG security',
+      'WhatsApp API encryption',
+      'Meta Cloud API security standards',
+      'enterprise messaging compliance',
+    ],
+    ogType: 'website',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Security', path: '/security' },
+    ],
+    schemas: ['breadcrumbs'],
+  },
   notFound: {
     id: 'notFound',
     title: 'Page Not Found | WhatsAppMSG',

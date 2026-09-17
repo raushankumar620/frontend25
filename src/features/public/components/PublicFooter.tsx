@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ShieldCheck, 
   Mail, 
-  X, 
-  Lock, 
-  FileText, 
-  Check
+  Lock
 } from 'lucide-react';
 import { ROUTES, APP_NAME } from '../../../utils/constants';
 
@@ -68,15 +65,6 @@ const SOCIAL_LINKS = [
 ];
 
 export const PublicFooter: React.FC = () => {
-  // Interactive Legal Modal State
-  const [legalModalOpen, setLegalModalOpen] = useState(false);
-  const [legalModalTab, setLegalModalTab] = useState<'privacy' | 'terms' | 'security'>('privacy');
-
-  const openLegalModal = (tab: 'privacy' | 'terms' | 'security') => {
-    setLegalModalTab(tab);
-    setLegalModalOpen(true);
-  };
-
   return (
     <footer className="bg-[#F8FAF9] border-t border-[#E2EAE6] text-[#4A5D54]">
       
@@ -175,14 +163,13 @@ export const PublicFooter: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <a 
-                  href="#status" 
-                  onClick={(e) => { e.preventDefault(); openLegalModal('security'); }} 
+                <Link 
+                  to={ROUTES.PUBLIC_SECURITY} 
                   className="text-[#5F7069] hover:text-[#006736] transition-colors flex items-center gap-1.5"
                 >
                   <span className="w-2 h-2 rounded-full bg-[#05A222]"></span>
-                  Status (99.99%)
-                </a>
+                  <span>Status & Security</span>
+                </Link>
               </li>
             </ul>
           </div>
@@ -204,39 +191,27 @@ export const PublicFooter: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => openLegalModal('privacy')}
-                  className="text-[#5F7069] hover:text-[#006736] transition-colors cursor-pointer text-left"
-                >
+                <Link to={ROUTES.PUBLIC_PRIVACY} className="text-[#5F7069] hover:text-[#006736] transition-colors">
                   Privacy Policy
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => openLegalModal('terms')}
-                  className="text-[#5F7069] hover:text-[#006736] transition-colors cursor-pointer text-left"
-                >
+                <Link to={ROUTES.PUBLIC_TERMS} className="text-[#5F7069] hover:text-[#006736] transition-colors">
                   Terms of Service
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => openLegalModal('security')}
-                  className="text-[#5F7069] hover:text-[#006736] transition-colors cursor-pointer text-left flex items-center gap-1"
-                >
+                <Link to={ROUTES.PUBLIC_SECURITY} className="text-[#5F7069] hover:text-[#006736] transition-colors flex items-center gap-1">
                   <Lock className="w-3.5 h-3.5 text-[#05A222]" />
-                  <span>Security</span>
-                </button>
+                  <span>Security & Compliance</span>
+                </Link>
               </li>
             </ul>
           </div>
 
         </div>
 
-        {/* BOTTOM LINE: COPYRIGHT, VIBRANT SOCIAL MEDIA ICONS, AND LEGAL LINKS */}
+        {/* BOTTOM LINE: COPYRIGHT, VIBRANT SOCIAL MEDIA ICONS, AND DIRECT PAGE LINKS */}
         <div className="mt-10 pt-6 border-t border-[#E2EAE6] flex flex-col sm:flex-row items-center justify-between gap-4">
           
           {/* Left: Copyright */}
@@ -261,161 +236,32 @@ export const PublicFooter: React.FC = () => {
             ))}
           </div>
 
-          {/* Right: Quick Legal Links */}
+          {/* Right: Dedicated Full Page Legal Links */}
           <div className="flex items-center gap-3 text-xs font-semibold text-[#5F7069]">
-            <button
-              type="button"
-              onClick={() => openLegalModal('privacy')}
-              className="hover:text-[#006736] transition-colors cursor-pointer"
+            <Link
+              to={ROUTES.PUBLIC_PRIVACY}
+              className="hover:text-[#006736] transition-colors"
             >
               Privacy Policy
-            </button>
+            </Link>
             <span className="text-[#BAC7C0]">•</span>
-            <button
-              type="button"
-              onClick={() => openLegalModal('terms')}
-              className="hover:text-[#006736] transition-colors cursor-pointer"
+            <Link
+              to={ROUTES.PUBLIC_TERMS}
+              className="hover:text-[#006736] transition-colors"
             >
               Terms of Service
-            </button>
+            </Link>
             <span className="text-[#BAC7C0]">•</span>
-            <button
-              type="button"
-              onClick={() => openLegalModal('security')}
-              className="hover:text-[#006736] transition-colors cursor-pointer"
+            <Link
+              to={ROUTES.PUBLIC_SECURITY}
+              className="hover:text-[#006736] transition-colors"
             >
               Security
-            </button>
+            </Link>
           </div>
 
         </div>
       </div>
-
-      {/* INTERACTIVE LEGAL MODAL */}
-      {legalModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-hidden shadow-2xl border border-[#D6E4DC] flex flex-col animate-scaleUp">
-            
-            {/* Modal Header */}
-            <div className="px-6 py-5 border-b border-[#E2EAE6] flex items-center justify-between bg-[#F8FBFA]">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#E9F9EE] text-[#006736] flex items-center justify-center">
-                  {legalModalTab === 'privacy' && <FileText className="w-4 h-4" />}
-                  {legalModalTab === 'terms' && <Check className="w-4 h-4" />}
-                  {legalModalTab === 'security' && <Lock className="w-4 h-4" />}
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-[#14201C]">
-                    {legalModalTab === 'privacy' && 'WhatsAppMSG Privacy Policy'}
-                    {legalModalTab === 'terms' && 'Terms of Service'}
-                    {legalModalTab === 'security' && 'Enterprise Security & Compliance'}
-                  </h3>
-                  <p className="text-xs text-[#5F7069]">Official compliance for WhatsApp Cloud API</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setLegalModalOpen(false)}
-                className="w-8 h-8 rounded-xl bg-[#E2EAE6]/50 hover:bg-[#E2EAE6] text-[#5F7069] flex items-center justify-center transition-colors cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Modal Navigation Tabs */}
-            <div className="flex border-b border-[#E2EAE6] px-6 bg-white gap-4 text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => setLegalModalTab('privacy')}
-                className={`py-3 border-b-2 transition-colors cursor-pointer ${
-                  legalModalTab === 'privacy'
-                    ? 'border-[#006736] text-[#006736]'
-                    : 'border-transparent text-[#5F7069] hover:text-[#14201C]'
-                }`}
-              >
-                Privacy Policy
-              </button>
-              <button
-                type="button"
-                onClick={() => setLegalModalTab('terms')}
-                className={`py-3 border-b-2 transition-colors cursor-pointer ${
-                  legalModalTab === 'terms'
-                    ? 'border-[#006736] text-[#006736]'
-                    : 'border-transparent text-[#5F7069] hover:text-[#14201C]'
-                }`}
-              >
-                Terms of Service
-              </button>
-              <button
-                type="button"
-                onClick={() => setLegalModalTab('security')}
-                className={`py-3 border-b-2 transition-colors cursor-pointer ${
-                  legalModalTab === 'security'
-                    ? 'border-[#006736] text-[#006736]'
-                    : 'border-transparent text-[#5F7069] hover:text-[#14201C]'
-                }`}
-              >
-                Security
-              </button>
-            </div>
-
-            {/* Modal Scrollable Content */}
-            <div className="p-6 overflow-y-auto space-y-4 text-sm text-[#4A5D54] leading-relaxed">
-              {legalModalTab === 'privacy' && (
-                <>
-                  <p>
-                    <strong>1. Commitment to Privacy:</strong> WhatsAppMSG operates with strict adherence to WhatsApp Business Cloud API guidelines and international data privacy regulations including GDPR and CCPA.
-                  </p>
-                  <p>
-                    <strong>2. Data Encryption:</strong> All message payloads and credentials transmitted through WhatsAppMSG are encrypted in transit using TLS 1.3 encryption and stored securely.
-                  </p>
-                  <p>
-                    <strong>3. Zero Data Resale:</strong> We never sell, rent, or monetize your contact lists, message content, or customer conversation logs.
-                  </p>
-                </>
-              )}
-
-              {legalModalTab === 'terms' && (
-                <>
-                  <p>
-                    <strong>1. Acceptable Messaging Policy:</strong> Users of WhatsAppMSG must comply with Meta's official WhatsApp Business Messaging Policies. Unsolicited spam is strictly prohibited.
-                  </p>
-                  <p>
-                    <strong>2. Customer Opt-In:</strong> Businesses using WhatsAppMSG must obtain affirmative opt-in consent from end users before delivering notifications.
-                  </p>
-                </>
-              )}
-
-              {legalModalTab === 'security' && (
-                <>
-                  <div className="p-3.5 rounded-2xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center gap-3 text-xs text-[#006736]">
-                    <ShieldCheck className="w-5 h-5 text-[#05A222] shrink-0" />
-                    <span><strong>Tier 3 Official Cloud Partner:</strong> Engineered for high-frequency transactional messaging with 99.99% uptime.</span>
-                  </div>
-                  <p>
-                    <strong>1. Continuous Reliability:</strong> Redundant webhook delivery pipelines guarantee real-time delivery and status telemetry.
-                  </p>
-                </>
-              )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-[#E2EAE6] bg-[#F8FBFA] flex items-center justify-between">
-              <span className="text-xs text-[#8A9993]">
-                Last revised: {new Date().getFullYear()}
-              </span>
-              <button
-                type="button"
-                onClick={() => setLegalModalOpen(false)}
-                className="px-5 py-2 rounded-xl bg-[#006736] hover:bg-[#05A222] text-white text-xs font-bold transition-colors cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
 
     </footer>
   );

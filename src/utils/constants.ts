@@ -8,6 +8,9 @@ export const ROUTES = {
   PUBLIC_SOLUTIONS: '/solutions',
   PUBLIC_ABOUT: '/about',
   PUBLIC_CONTACT: '/contact',
+  PUBLIC_PRIVACY: '/privacy',
+  PUBLIC_TERMS: '/terms',
+  PUBLIC_SECURITY: '/security',
 
   // Auth
   LOGIN: '/login',
