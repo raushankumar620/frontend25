@@ -24,9 +24,9 @@ export const PublicNavbar: React.FC = () => {
         {/* Brand - Clean Logo Only */}
         <Link to={ROUTES.HOME} className="flex items-center group">
           <img
-            src="/images/seo/main_logo.png"
+            src="/images/logo.png"
             alt={APP_NAME}
-            className="h-9 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105"
+            className="h-10 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
           />
         </Link>
 

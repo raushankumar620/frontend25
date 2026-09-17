@@ -129,11 +129,16 @@ export const PublicFooter: React.FC = () => {
           <div className="lg:col-span-3 space-y-4">
             
             {/* Logo */}
-            <Link to={ROUTES.HOME} className="inline-flex items-center group">
+            <Link to={ROUTES.HOME} className="inline-flex items-center gap-2 group">
               <img 
-                src="/images/seo/main_logo.png" 
+                src="/images/whatsapplogoshort.png" 
+                alt="WhatsAppMSG Icon" 
+                className="w-9 h-9 sm:w-10 sm:h-10 object-contain drop-shadow-xs shrink-0 transition-transform group-hover:scale-105"
+              />
+              <img 
+                src="/images/seo/whatsappmsg-logo.png" 
                 alt={APP_NAME} 
-                className="h-10 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
+                className="h-8 sm:h-9 w-auto object-contain -translate-y-0.5 transition-transform group-hover:scale-102"
               />
             </Link>
 
