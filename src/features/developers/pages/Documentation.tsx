@@ -142,6 +142,7 @@ interface PostmanResponseViewerProps {
   timeMs: number;
   sizeBytes: number;
   jsonBody: string;
+  responseMode?: 'pretty' | 'raw';
 }
 
 const PostmanResponseViewer: React.FC<PostmanResponseViewerProps> = ({
@@ -150,8 +151,8 @@ const PostmanResponseViewer: React.FC<PostmanResponseViewerProps> = ({
   timeMs,
   sizeBytes,
   jsonBody,
+  responseMode = 'raw',
 }) => {
-  const [activeMode, setActiveMode] = useState<'pretty' | 'raw'>('pretty');
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -165,7 +166,7 @@ const PostmanResponseViewer: React.FC<PostmanResponseViewerProps> = ({
   return (
     <div className="rounded-xl overflow-hidden border border-[#E2EAE6] bg-white shadow-2xs">
       {/* Postman Style Response Header Bar */}
-      <div className="flex flex-wrap items-center justify-between px-3.5 py-2.5 bg-[#F8FAFC] border-b border-[#E2EAE6] gap-2 text-xs">
+      <div className="flex flex-wrap items-center justify-between px-3.5 py-2 bg-[#F8FAFC] border-b border-[#E2EAE6] gap-2 text-xs">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
             <span className="text-[11px] font-bold text-[#5F7069] uppercase tracking-wider font-mono">Response:</span>
@@ -193,34 +194,8 @@ const PostmanResponseViewer: React.FC<PostmanResponseViewerProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Pretty / Raw Mode Switch */}
-          <div className="flex items-center bg-white border border-[#E2EAE6] rounded-lg p-0.5 text-[11px]">
-            <button
-              type="button"
-              onClick={() => setActiveMode('pretty')}
-              className={`px-2 py-0.5 rounded cursor-pointer font-bold transition-all ${
-                activeMode === 'pretty'
-                  ? 'bg-[#006736] text-white shadow-2xs'
-                  : 'text-[#5F7069] hover:text-[#14201C]'
-              }`}
-            >
-              Pretty
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveMode('raw')}
-              className={`px-2 py-0.5 rounded cursor-pointer font-bold transition-all ${
-                activeMode === 'raw'
-                  ? 'bg-[#006736] text-white shadow-2xs'
-                  : 'text-[#5F7069] hover:text-[#14201C]'
-              }`}
-            >
-              Raw
-            </button>
-          </div>
-
-          <span className="text-[11px] font-mono font-bold px-2 py-0.5 bg-[#E9F9EE] border border-[#C4EBD0] rounded text-[#006736]">
-            JSON
+          <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-[#E9F9EE] border border-[#C4EBD0] rounded text-[#006736] uppercase">
+            JSON ({responseMode})
           </span>
 
           <button
@@ -246,7 +221,7 @@ const PostmanResponseViewer: React.FC<PostmanResponseViewerProps> = ({
 
       {/* Postman Style JSON Response Body */}
       <div className="bg-white p-4 overflow-x-auto font-mono text-xs leading-relaxed text-[#0F172A]">
-        {activeMode === 'pretty' ? (
+        {responseMode === 'pretty' ? (
           <pre
             dangerouslySetInnerHTML={{ __html: highlightPostmanJson(jsonBody) }}
             className="font-mono text-xs leading-relaxed"
@@ -261,6 +236,7 @@ const PostmanResponseViewer: React.FC<PostmanResponseViewerProps> = ({
 
 export const Documentation: React.FC = () => {
   const [activeLang, setActiveLang] = useState<LanguageTab>('curl');
+  const [responseMode, setResponseMode] = useState<'raw' | 'pretty'>('raw');
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -313,30 +289,53 @@ export const Documentation: React.FC = () => {
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         {/* Left / Center: API Endpoints & Reference Content */}
         <div className="flex-1 min-w-0 space-y-6 w-full">
-          {/* Global Language Selector & Base URL Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-2.5 rounded-2xl border border-[#E2EAE6] shadow-2xs">
-            <div className="flex items-center gap-1.5 bg-[#F6FAF8] p-1 rounded-xl border border-[#E2EAE6]">
-              {[
-                { id: 'curl', label: 'cURL' },
-                { id: 'node', label: 'Node.js (Axios)' },
-                { id: 'python', label: 'Python (Requests)' },
-                { id: 'php', label: 'PHP' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveLang(tab.id as LanguageTab)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    activeLang === tab.id
-                      ? 'bg-[#05A222] text-white shadow-2xs'
-                      : 'text-[#5F7069] hover:text-[#14201C]'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+          {/* Global Language Selector, Response Format (Raw/Pretty), & Base URL Bar */}
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 bg-white p-2.5 rounded-2xl border border-[#E2EAE6] shadow-2xs">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1 bg-[#F6FAF8] p-1 rounded-xl border border-[#E2EAE6]">
+                {[
+                  { id: 'curl', label: 'cURL' },
+                  { id: 'node', label: 'Node.js' },
+                  { id: 'python', label: 'Python' },
+                  { id: 'php', label: 'PHP' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveLang(tab.id as LanguageTab)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      activeLang === tab.id
+                        ? 'bg-[#05A222] text-white shadow-2xs'
+                        : 'text-[#5F7069] hover:text-[#14201C]'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Global Response Mode Filter: RAW (default) / PRETTY */}
+              <div className="flex items-center gap-1 bg-[#F6FAF8] p-1 rounded-xl border border-[#E2EAE6]">
+                <span className="text-[11px] font-bold text-[#5F7069] px-2 font-mono uppercase tracking-wider">
+                  Response:
+                </span>
+                {(['raw', 'pretty'] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setResponseMode(mode)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all cursor-pointer ${
+                      responseMode === mode
+                        ? 'bg-[#006736] text-white shadow-2xs'
+                        : 'text-[#5F7069] hover:text-[#14201C]'
+                    }`}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="text-xs text-[#5F7069] font-medium px-2 flex items-center gap-1.5">
+            <div className="text-xs text-[#5F7069] font-medium px-2 flex items-center gap-1.5 shrink-0">
               <span>Base URL:</span>
               <code className="text-[#006736] font-mono bg-[#E9F9EE] px-2 py-0.5 rounded-lg font-bold border border-[#C4EBD0]">
                 https://api24.in/api/v1
@@ -445,6 +444,7 @@ export const Documentation: React.FC = () => {
               <div className="space-y-1.5 pt-1">
                 <span className="text-xs font-bold text-[#5F7069]">Response when rate limit is exceeded (HTTP 429):</span>
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={429}
                   statusText="Too Many Requests"
                   timeMs={32}
@@ -504,6 +504,7 @@ export const Documentation: React.FC = () => {
 
                 {/* Response */}
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={154}
@@ -551,6 +552,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={118}
@@ -594,6 +596,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={85}
@@ -637,6 +640,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={62}
@@ -666,6 +670,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={75}
@@ -709,6 +714,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={201}
                   statusText="Created"
                   timeMs={124}
@@ -728,6 +734,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={98}
@@ -747,6 +754,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={78}
@@ -766,6 +774,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={55}
@@ -785,6 +794,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={92}
@@ -804,6 +814,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={88}
@@ -836,6 +847,7 @@ export const Documentation: React.FC = () => {
                 </p>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={105}
@@ -864,6 +876,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={114}
@@ -893,6 +906,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={68}
@@ -912,6 +926,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={74}
@@ -953,6 +968,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={65}
@@ -972,6 +988,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={201}
                   statusText="Created"
                   timeMs={135}
@@ -991,6 +1008,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={95}
@@ -1010,6 +1028,7 @@ export const Documentation: React.FC = () => {
                 </div>
 
                 <PostmanResponseViewer
+                  responseMode={responseMode}
                   statusCode={200}
                   statusText="OK"
                   timeMs={68}
