@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 
-type LanguageTab = 'curl' | 'node' | 'python' | 'php';
+type LanguageTab = 'curl' | 'node' | 'python' | 'php' | 'backend';
 type SectionFilter = 'all' | 'auth' | 'env' | 'text' | 'template' | 'contact' | 'errors';
 type EnvSubFilter = 'all' | 'vars' | 'table' | 'steps' | 'flow' | 'files' | 'security' | 'code' | 'checklist';
 
@@ -126,7 +126,7 @@ curl_setopt_array($curl, [
   CURLOPT_POSTFIELDS => json_encode([
     "to" => "+15551234567",
     "type" => "text",
-    "text" => "Hello Alex! Your appointment has been booked for tomorrow at 3:00 PM."
+    "text": "Hello Alex! Your appointment has been booked for tomorrow at 3:00 PM."
   ]),
   CURLOPT_HTTPHEADER => [
     "x-api-key: wmsg_live_your_api_key_here",
@@ -137,6 +137,26 @@ curl_setopt_array($curl, [
 $response = curl_exec($curl);
 curl_close($curl);
 echo $response;`,
+        backend: `// Backend Service (.env integration)
+import axios from 'axios';
+
+// Reads WMSG_API_BASE_URL and WMSG_API_KEY from process.env
+const whatsappmsg = axios.create({
+  baseURL: process.env.WMSG_API_BASE_URL,
+  headers: {
+    'x-api-key': process.env.WMSG_API_KEY,
+    'Content-Type': 'application/json',
+  },
+});
+
+export const sendWhatsAppText = async (to, text) => {
+  const { data } = await whatsappmsg.post('/messages', {
+    to,
+    type: 'text',
+    text,
+  });
+  return data;
+};`,
       };
     }
 
@@ -193,6 +213,26 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 ]);
 $out = curl_exec($ch);
 curl_close($ch);`,
+        backend: `// Backend Lead Sync (.env integration)
+import axios from 'axios';
+
+const whatsappmsg = axios.create({
+  baseURL: process.env.WMSG_API_BASE_URL,
+  headers: {
+    'x-api-key': process.env.WMSG_API_KEY,
+    'Content-Type': 'application/json',
+  },
+});
+
+export const syncCustomerContact = async (customerData) => {
+  const { data } = await whatsappmsg.post('/contacts', {
+    name: customerData.name,
+    phoneNumber: customerData.phoneNumber,
+    email: customerData.email,
+    tags: customerData.tags || ['Customer'],
+  });
+  return data;
+};`,
       };
     }
 
@@ -273,6 +313,34 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
 curl_setopt($ch, CURLOPT_HTTPHEADER, ["x-api-key: wmsg_live_your_api_key_here", "Content-Type: application/json"]);
 $out = curl_exec($ch);
 curl_close($ch);`,
+      backend: `// Backend Template Dispatch (.env integration)
+import axios from 'axios';
+
+const whatsappmsg = axios.create({
+  baseURL: process.env.WMSG_API_BASE_URL,
+  headers: {
+    'x-api-key': process.env.WMSG_API_KEY,
+    'Content-Type': 'application/json',
+  },
+});
+
+export const sendOrderNotification = async (to, customerName, orderId) => {
+  const { data } = await whatsappmsg.post('/messages', {
+    to,
+    type: 'template',
+    template: {
+      name: 'order_confirmation_v1',
+      language: { code: 'en_US' },
+      components: [
+        {
+          type: 'body',
+          parameters: [{ type: 'text', text: customerName }, { type: 'text', text: orderId }],
+        },
+      ],
+    },
+  });
+  return data;
+};`,
     };
   };
 
@@ -328,25 +396,44 @@ curl_close($ch);`,
         ))}
       </div>
 
-      {/* Language Selector Bar */}
-      <div className="flex items-center justify-between border-b border-[#E2EAE6] pb-3">
-        <div className="flex items-center gap-1.5 bg-[#F6FAF8] p-1 rounded-xl border border-[#E2EAE6]">
+      {/* Language & Backend Environment Filter Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2EAE6] pb-3">
+        <div className="flex items-center gap-1.5 bg-[#F6FAF8] p-1 rounded-xl border border-[#E2EAE6] flex-wrap">
           {[
             { id: 'curl', label: 'cURL' },
             { id: 'node', label: 'Node.js / Axios' },
             { id: 'python', label: 'Python (Requests)' },
             { id: 'php', label: 'PHP' },
+            { id: 'backend', label: 'Backend (.env Setup)', badge: 'Config' },
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveLang(tab.id as LanguageTab)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              onClick={() => {
+                setActiveLang(tab.id as LanguageTab);
+                if (tab.id === 'backend') {
+                  setSelectedSection('env');
+                } else if (selectedSection === 'env') {
+                  setSelectedSection('all');
+                }
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeLang === tab.id
                   ? 'bg-[#05A222] text-white shadow-2xs'
                   : 'text-[#5F7069] hover:text-[#14201C]'
               }`}
             >
-              {tab.label}
+              <span>{tab.label}</span>
+              {tab.badge && (
+                <span
+                  className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
+                    activeLang === tab.id
+                      ? 'bg-[#006736] text-white'
+                      : 'bg-[#E9F9EE] text-[#006736]'
+                  }`}
+                >
+                  {tab.badge}
+                </span>
+              )}
             </button>
           ))}
         </div>
