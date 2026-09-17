@@ -46,10 +46,20 @@ export const authStore = {
   },
   setUser(user: User | null) {
     currentUser = user;
+    if (user) {
+      localStorage.setItem('whatsappmsg_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('whatsappmsg_user');
+    }
     notify();
   },
   setOrganization(org: Organization | null) {
     currentOrg = org;
+    if (org) {
+      localStorage.setItem('whatsappmsg_org', JSON.stringify(org));
+    } else {
+      localStorage.removeItem('whatsappmsg_org');
+    }
     notify();
   },
   subscribe(listener: () => void) {
@@ -62,6 +72,8 @@ export const authStore = {
     const { user, organization } = await authService.login(email, pass);
     currentUser = user;
     currentOrg = organization;
+    if (user) localStorage.setItem('whatsappmsg_user', JSON.stringify(user));
+    if (organization) localStorage.setItem('whatsappmsg_org', JSON.stringify(organization));
     notify();
     return user;
   },
@@ -69,6 +81,8 @@ export const authStore = {
     const { user, organization } = await authService.adminLogin(identifier, pass);
     currentUser = user;
     currentOrg = organization;
+    if (user) localStorage.setItem('whatsappmsg_user', JSON.stringify(user));
+    if (organization) localStorage.setItem('whatsappmsg_org', JSON.stringify(organization));
     notify();
     return user;
   },
@@ -76,6 +90,8 @@ export const authStore = {
     const { user, organization } = await authService.register(payload);
     currentUser = user;
     currentOrg = organization;
+    if (user) localStorage.setItem('whatsappmsg_user', JSON.stringify(user));
+    if (organization) localStorage.setItem('whatsappmsg_org', JSON.stringify(organization));
     notify();
     return user;
   },
@@ -83,6 +99,8 @@ export const authStore = {
     const { user, organization } = await authService.acceptInvite(payload);
     currentUser = user;
     currentOrg = organization;
+    if (user) localStorage.setItem('whatsappmsg_user', JSON.stringify(user));
+    if (organization) localStorage.setItem('whatsappmsg_org', JSON.stringify(organization));
     notify();
     return user;
   },
@@ -91,11 +109,13 @@ export const authStore = {
       const user = await authService.getCurrentUser();
       if (user) {
         currentUser = user;
+        localStorage.setItem('whatsappmsg_user', JSON.stringify(user));
         notify();
       }
       const org = await organizationService.getCurrentOrganization();
       if (org) {
         currentOrg = org;
+        localStorage.setItem('whatsappmsg_org', JSON.stringify(org));
         notify();
       }
     } catch {
@@ -105,12 +125,14 @@ export const authStore = {
   async updateProfile(data: { firstName?: string; lastName?: string; phone?: string; avatarUrl?: string }) {
     const updated = await authService.updateProfile(data);
     currentUser = updated;
+    if (updated) localStorage.setItem('whatsappmsg_user', JSON.stringify(updated));
     notify();
     return updated;
   },
   async updateOrganization(data: { name?: string; branding?: any; settings?: any }) {
     const updated = await organizationService.updateOrganization(data);
     currentOrg = updated;
+    if (updated) localStorage.setItem('whatsappmsg_org', JSON.stringify(updated));
     notify();
     return updated;
   },
@@ -127,6 +149,8 @@ export function useAuthStore() {
   const [organization, setOrganization] = useState<Organization | null>(authStore.getOrganization());
 
   useEffect(() => {
+    // Refresh profile in background to get latest permissions
+    authStore.refreshProfile();
     return authStore.subscribe(() => {
       setUser(authStore.getUser());
       setOrganization(authStore.getOrganization());

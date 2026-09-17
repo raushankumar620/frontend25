@@ -26,12 +26,10 @@ import {
   BarChart3,
   Code2,
   Settings,
-  Check
+  Check,
 } from 'lucide-react';
 import type { TeamMemberItem, UserRole } from '../../../types/auth';
 import { teamService } from '../../../services/teamService';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../../../utils/constants';
 
 interface ModulePermission {
   key: string;
@@ -51,20 +49,20 @@ const AVAILABLE_MODULES: ModulePermission[] = [
   { key: 'ai_agents', label: 'AI Agents', description: 'Autonomous bots & AI assistants', icon: Bot, color: '#9333EA' },
   { key: 'analytics', label: 'Analytics', description: 'Delivery, ROI & message reports', icon: BarChart3, color: '#4F46E5' },
   { key: 'developers', label: 'Developers API', description: 'API keys, webhooks & endpoints', icon: Code2, color: '#0D9488' },
+  { key: 'team', label: 'Team Members', description: 'Team directory & member invites', icon: UserPlus, color: '#05A222' },
   { key: 'settings', label: 'Settings', description: 'Workspace & account settings', icon: Settings, color: '#64748B' },
 ];
 
 const ROLE_DEFAULT_PERMISSIONS: Record<string, string[]> = {
   ORG_ADMIN: AVAILABLE_MODULES.map((m) => m.key),
-  TEAM_LEAD: ['dashboard', 'inbox', 'contacts', 'templates', 'campaigns', 'automations', 'ai_agents', 'analytics'],
+  TEAM_LEAD: ['dashboard', 'inbox', 'contacts', 'templates', 'campaigns', 'automations', 'ai_agents', 'analytics', 'team'],
   AGENT: ['dashboard', 'inbox', 'contacts', 'templates'],
   DEVELOPER: ['dashboard', 'developers', 'templates', 'automations', 'analytics'],
 };
 
 export const Team: React.FC = () => {
-  const navigate = useNavigate();
   const [members, setMembers] = useState<TeamMemberItem[]>([]);
-  const [invitations, setInvitations] = useState<TeamMemberItem[]>([]);
+  const [, setInvitations] = useState<TeamMemberItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');

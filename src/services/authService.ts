@@ -21,6 +21,7 @@ export interface AuthResponseData {
     lastName?: string;
     phone?: string;
     role?: string;
+    permissions?: string[];
     avatarUrl?: string;
     organizationId?: string | Organization;
     organizationName?: string;
@@ -44,6 +45,7 @@ const normalizeUser = (u: any, org?: Organization): User => {
     email: u.email,
     phone: u.phone || '',
     role: u.role || 'ORG_ADMIN',
+    permissions: Array.isArray(u.permissions) ? u.permissions : [],
     avatarUrl: u.avatarUrl || u.avatar || '',
     avatar: u.avatarUrl || u.avatar || '',
     organizationId: typeof u.organizationId === 'object' ? (u.organizationId?._id || u.organizationId?.id) : (u.organizationId || org?.id || org?._id || ''),

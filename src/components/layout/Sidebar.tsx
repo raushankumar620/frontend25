@@ -92,17 +92,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: 'Settings', path: ROUTES.ACCOUNT_SETTINGS, icon: Settings, color: '#64748B', bgColor: '#F8FAFC', permissionKey: 'settings' },
   ];
 
-  // Admins see everything. For members, filter by their granted permissions.
+  // Check permissions strictly: Org Admins see everything; members ONLY see ticked modules.
   const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ORG_ADMIN' || user?.role === 'admin';
+  const userPermissions = Array.isArray(user?.permissions) ? user.permissions : [];
+  const hasSettingsAccess = isAdmin || userPermissions.includes('settings');
+  const hasBillingAccess = isAdmin || userPermissions.includes('billing') || userPermissions.includes('settings');
+
   const navItems = isAdmin
     ? allNavItems
     : allNavItems.filter((item) => {
-        if (!item.permissionKey) return true;
-        if (!user?.permissions || user.permissions.length === 0) {
-          // Default fallback for legacy members without explicit permissions array
-          return ['dashboard', 'inbox', 'contacts', 'templates'].includes(item.permissionKey);
-        }
-        return user.permissions.includes(item.permissionKey);
+        return item.permissionKey && userPermissions.includes(item.permissionKey);
       });
 
   const orgDisplayName = organization?.name || user?.organizationName || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Workspace');
@@ -228,8 +227,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </nav>
 
-        {/* Embedded Plan & Resource Usage Box directly inside Sidebar */}
-        {!collapsed ? (
+        {/* Embedded Plan & Resource Usage Box directly inside Sidebar (Only for billing/admin permitted users) */}
+        {hasBillingAccess && (!collapsed ? (
           !isPlanCardDismissed ? (
             <div className="relative overflow-hidden rounded-2xl p-3.5 bg-gradient-to-br from-[#013B23] via-[#006736] to-[#012818] text-white shadow-md border border-[#05A222]/30 space-y-3 transition-all">
               {/* Background decorative glow */}
@@ -357,7 +356,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Crown className="w-5 h-5" />
             </button>
           </div>
-        )}
+        ))}
       </div>
 
       {/* Account / User Footer Directly in Sidebar */}
@@ -366,8 +365,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex flex-col items-center gap-2">
             <button
               type="button"
-              onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}
-              title={`${orgDisplayName} (${userRole}) - Click for Settings`}
+              onClick={() => hasSettingsAccess && navigate(ROUTES.ACCOUNT_SETTINGS)}
+              title={`${orgDisplayName} (${userRole})`}
               className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 cursor-pointer hover:opacity-95 shadow-2xs transition-all"
             >
               {userInitial}
@@ -387,9 +386,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ) : (
           <div className="bg-slate-50/90 border border-slate-200/90 rounded-2xl p-2.5 flex items-center justify-between gap-2 transition-all">
             <div
-              onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}
-              className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-80 transition-opacity flex-1"
-              title="Click to view Account Profile"
+              onClick={() => hasSettingsAccess && navigate(ROUTES.ACCOUNT_SETTINGS)}
+              className={clsx(
+                "flex items-center gap-2.5 min-w-0 flex-1",
+                hasSettingsAccess && "cursor-pointer hover:opacity-80 transition-opacity"
+              )}
+              title={hasSettingsAccess ? "Click to view Account Settings" : orgDisplayName}
             >
               <div className="w-8.5 h-8.5 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
                 {userInitial}
@@ -402,14 +404,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             {/* Direct Inline Action Buttons */}
             <div className="flex items-center gap-1 shrink-0">
-              <button
-                type="button"
-                onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}
-                title="Settings Hub"
-                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-white transition-all cursor-pointer shadow-2xs border border-transparent hover:border-slate-200"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
+              {hasSettingsAccess && (
+                <button
+                  type="button"
+                  onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}
+                  title="Settings Hub"
+                  className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-white transition-all cursor-pointer shadow-2xs border border-transparent hover:border-slate-200"
+                >
+                  <Settings className="w-4 h-4" />
+                </button>
+              )}
 
               <button
                 type="button"

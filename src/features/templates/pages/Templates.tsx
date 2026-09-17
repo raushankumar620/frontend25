@@ -28,7 +28,6 @@ import {
   Phone,
   Copy,
   Check,
-  Smartphone,
   Share2
 } from 'lucide-react';
 import type { WhatsAppTemplate } from '../types';

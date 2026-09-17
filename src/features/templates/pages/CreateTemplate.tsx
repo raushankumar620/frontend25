@@ -22,13 +22,10 @@ import {
   PhoneCall,
   ExternalLink,
   Copy,
-  Tag,
   ShieldAlert,
   Headphones,
   Bookmark,
   CheckCircle2,
-  FileEdit,
-  RotateCcw
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
