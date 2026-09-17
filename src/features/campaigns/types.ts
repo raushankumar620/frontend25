@@ -11,6 +11,7 @@ export interface Campaign {
   deliveredCount: number;
   readCount: number;
   repliedCount: number;
+  failedCount?: number;
   status: CampaignStatus;
   scheduledAt?: string;
   completedAt?: string;

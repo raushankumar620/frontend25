@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { PageContainer } from '../../../components/layout/PageContainer';
 import { Table, type Column } from '../../../components/ui/Table';
 import { Button } from '../../../components/ui/Button';
@@ -14,6 +14,10 @@ import {
   XCircle,
   Radio,
   BarChart3,
+  MessageSquare,
+  Users,
+  TrendingUp,
+  AlertCircle,
 } from 'lucide-react';
 import type { Campaign } from '../types';
 import { campaignsApi } from '../api';
@@ -27,6 +31,8 @@ export const Campaigns: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const fetchCampaigns = useCallback(async () => {
     setIsLoading(true);
@@ -83,21 +89,62 @@ export const Campaigns: React.FC = () => {
     }
   };
 
-  const filtered = campaigns.filter((c) => {
-    const matchesQuery =
-      c.name.toLowerCase().includes(query.toLowerCase()) ||
-      c.templateName.toLowerCase().includes(query.toLowerCase());
-    const matchesStatus =
-      selectedStatus === 'ALL' || c.status.toUpperCase() === selectedStatus.toUpperCase();
-    return matchesQuery && matchesStatus;
-  });
+  const filtered = useMemo(() => {
+    return campaigns.filter((c) => {
+      const matchesQuery =
+        c.name.toLowerCase().includes(query.toLowerCase()) ||
+        c.templateName.toLowerCase().includes(query.toLowerCase());
+      const matchesStatus =
+        selectedStatus === 'ALL' || c.status.toUpperCase() === selectedStatus.toUpperCase();
+      return matchesQuery && matchesStatus;
+    });
+  }, [campaigns, query, selectedStatus]);
+
+  // Compute 5 Key Metrics for Stats Row
+  const stats = useMemo(() => {
+    const totalCampaigns = campaigns.length;
+    const activeCampaigns = campaigns.filter(
+      (c) => c.status.toUpperCase() === 'RUNNING' || c.status.toUpperCase() === 'SCHEDULED'
+    ).length;
+
+    const totalRecipients = campaigns.reduce((acc, c) => acc + (c.totalRecipients || 0), 0);
+    const totalSent = campaigns.reduce((acc, c) => acc + (c.sentCount || 0), 0);
+    const totalDelivered = campaigns.reduce((acc, c) => acc + (c.deliveredCount || 0), 0);
+    const totalRead = campaigns.reduce((acc, c) => acc + (c.readCount || 0), 0);
+    const totalFailed = campaigns.reduce((acc, c) => acc + (c.failedCount || 0), 0);
+
+    const deliveryRate = totalSent > 0 ? Math.round((totalDelivered / totalSent) * 100) : 0;
+    const readRate = totalDelivered > 0 ? Math.round((totalRead / totalDelivered) * 100) : 0;
+    const failedRate = totalSent > 0 ? Math.round((totalFailed / totalSent) * 100) : 0;
+
+    return {
+      totalCampaigns,
+      activeCampaigns,
+      totalRecipients,
+      totalSent,
+      deliveryRate,
+      totalDelivered,
+      readRate,
+      totalRead,
+      totalFailed,
+      failedRate,
+    };
+  }, [campaigns]);
+
+  // Paginated Data
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
   const getStatusBadge = (status: string) => {
     switch (status.toUpperCase()) {
       case 'COMPLETED':
         return (
           <Badge variant="success" size="sm">
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+            <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-[#039B56]" />
             Completed
           </Badge>
         );
@@ -111,22 +158,23 @@ export const Campaigns: React.FC = () => {
       case 'SCHEDULED':
         return (
           <Badge variant="warning" size="sm">
-            <Clock className="w-3.5 h-3.5 mr-1" />
+            <Clock className="w-3.5 h-3.5 mr-1 text-[#D99A00]" />
             Scheduled
           </Badge>
         );
       case 'PAUSED':
         return (
           <Badge variant="neutral" size="sm">
-            <Pause className="w-3.5 h-3.5 mr-1 text-amber-500" />
+            <Pause className="w-3.5 h-3.5 mr-1 text-amber-600" />
             Paused
           </Badge>
         );
       case 'CANCELLED':
+      case 'FAILED':
         return (
           <Badge variant="danger" size="sm">
-            <XCircle className="w-3.5 h-3.5 mr-1" />
-            Cancelled
+            <XCircle className="w-3.5 h-3.5 mr-1 text-[#D64545]" />
+            Failed
           </Badge>
         );
       default:
@@ -140,72 +188,118 @@ export const Campaigns: React.FC = () => {
 
   const columns: Column<Campaign>[] = [
     {
-      header: 'Campaign & Template',
+      header: 'Campaign Name',
       render: (c) => (
-        <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#E9F9EE] text-[#05A222] flex items-center justify-center shrink-0 mt-0.5">
-            <Send className="w-4 h-4" />
+        <div className="flex items-start gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[#E9F9EE] text-[#006736] flex items-center justify-center shrink-0 mt-0.5 border border-[#C4EBD0]">
+            <Send className="w-3.5 h-3.5" />
           </div>
-          <div>
-            <div className="font-black text-[#14201C] flex items-center gap-2 text-sm">
-              <span>{c.name}</span>
+          <div className="min-w-0">
+            <div
+              className="font-bold text-[#0F172A] text-sm truncate hover:text-[#05A222] transition-colors cursor-pointer"
+              onClick={() => navigate(`/campaigns/${c.id}`)}
+            >
+              {c.name}
             </div>
-            <div className="text-xs font-mono text-[#5F7069] mt-0.5 font-medium">
-              Template: <span className="text-[#05A222] font-semibold">{c.templateName}</span>
+            <div className="text-xs text-[#64748B] truncate font-normal mt-0.5">
+              Target: {c.targetAudience || 'All Subscribers'}
             </div>
           </div>
         </div>
       ),
     },
     {
-      header: 'Audience Reach',
+      header: 'Template',
       render: (c) => (
-        <div>
-          <div className="font-bold text-[#14201C] text-xs">
-            {c.totalRecipients.toLocaleString()} Leads
-          </div>
-          <div className="text-[11px] text-[#5F7069] truncate max-w-[160px] font-medium">
-            {c.targetAudience}
-          </div>
-        </div>
+        <span className="font-mono text-xs text-[#0F172A] bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md">
+          {c.templateName}
+        </span>
       ),
-    },
-    {
-      header: 'Delivery Progress',
-      render: (c) => {
-        const sentPercent = c.totalRecipients > 0 ? Math.round((c.sentCount / c.totalRecipients) * 100) : 0;
-        const delPercent = c.sentCount > 0 ? Math.round((c.deliveredCount / c.sentCount) * 100) : 0;
-        const readPercent = c.deliveredCount > 0 ? Math.round((c.readCount / c.deliveredCount) * 100) : 0;
-
-        return (
-          <div className="w-44 space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] font-bold">
-              <span className="text-[#14201C]">{sentPercent}% Sent</span>
-              <span className="text-[#05A222]">{c.sentCount}/{c.totalRecipients}</span>
-            </div>
-            <div className="w-full h-2 bg-[#E2EAE6] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-[#05A222] rounded-full transition-all duration-500"
-                style={{ width: `${sentPercent}%` }}
-              />
-            </div>
-            <div className="flex items-center gap-2 text-[10px] text-[#5F7069] font-semibold">
-              <span>{delPercent}% Deliv.</span>
-              <span>•</span>
-              <span>{readPercent}% Read</span>
-            </div>
-          </div>
-        );
-      },
     },
     {
       header: 'Status',
       render: (c) => getStatusBadge(c.status),
     },
     {
-      header: 'Actions',
+      header: 'Recipients',
       render: (c) => (
-        <div className="flex items-center gap-1.5">
+        <span className="font-semibold text-xs text-[#0F172A]">
+          {c.totalRecipients.toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      header: 'Sent / Failed',
+      render: (c) => (
+        <div className="text-xs">
+          <span className="font-semibold text-[#0F172A]">{c.sentCount.toLocaleString()}</span>
+          {c.failedCount !== undefined && c.failedCount > 0 && (
+            <span className="text-rose-600 font-medium ml-1">({c.failedCount} failed)</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      header: 'Delivered',
+      render: (c) => {
+        const rate = c.sentCount > 0 ? Math.round((c.deliveredCount / c.sentCount) * 100) : 0;
+        return (
+          <div className="text-xs">
+            <span className="font-semibold text-[#0F172A]">{c.deliveredCount.toLocaleString()}</span>
+            <span className="text-[#64748B] text-[11px] ml-1">({rate}%)</span>
+          </div>
+        );
+      },
+    },
+    {
+      header: 'Read',
+      render: (c) => {
+        const rate = c.deliveredCount > 0 ? Math.round((c.readCount / c.deliveredCount) * 100) : 0;
+        return (
+          <div className="text-xs">
+            <span className="font-semibold text-[#0F172A]">{c.readCount.toLocaleString()}</span>
+            <span className="text-[#64748B] text-[11px] ml-1">({rate}%)</span>
+          </div>
+        );
+      },
+    },
+    {
+      header: 'Delivery Rate',
+      render: (c) => {
+        const rate = c.sentCount > 0 ? Math.round((c.deliveredCount / c.sentCount) * 100) : 0;
+        return (
+          <div className="flex items-center gap-2">
+            <div className="w-14 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#05A222] rounded-full"
+                style={{ width: `${rate}%` }}
+              />
+            </div>
+            <span className="font-bold text-xs text-[#0F172A]">{rate}%</span>
+          </div>
+        );
+      },
+    },
+    {
+      header: 'Created Date',
+      render: (c) => (
+        <span className="text-xs text-[#64748B] whitespace-nowrap">
+          {c.createdAt
+            ? new Date(c.createdAt).toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })
+            : '—'}
+        </span>
+      ),
+    },
+    {
+      header: 'Actions',
+      className: 'text-right',
+      render: (c) => (
+        <div className="flex items-center justify-end gap-1.5">
           {c.status.toUpperCase() === 'DRAFT' && (
             <Button
               size="sm"
@@ -213,7 +307,7 @@ export const Campaigns: React.FC = () => {
               onClick={() => handleStart(c.id)}
               isLoading={actionLoadingId === c.id}
               leftIcon={<Play className="w-3.5 h-3.5 text-[#05A222]" />}
-              className="text-xs font-semibold px-2.5 py-1 border-[#C4EBD0] text-[#006736] hover:bg-[#E9F9EE]"
+              className="text-xs font-semibold px-2 py-1 border-[#C4EBD0] text-[#006736] hover:bg-[#E9F9EE]"
             >
               Start
             </Button>
@@ -225,8 +319,8 @@ export const Campaigns: React.FC = () => {
               variant="outline"
               onClick={() => handlePause(c.id)}
               isLoading={actionLoadingId === c.id}
-              leftIcon={<Pause className="w-3.5 h-3.5 text-amber-500" />}
-              className="text-xs font-semibold px-2.5 py-1"
+              leftIcon={<Pause className="w-3.5 h-3.5 text-amber-600" />}
+              className="text-xs font-semibold px-2 py-1"
             >
               Pause
             </Button>
@@ -239,7 +333,7 @@ export const Campaigns: React.FC = () => {
               onClick={() => handleResume(c.id)}
               isLoading={actionLoadingId === c.id}
               leftIcon={<Play className="w-3.5 h-3.5 text-[#05A222]" />}
-              className="text-xs font-semibold px-2.5 py-1 border-[#C4EBD0] text-[#006736] hover:bg-[#E9F9EE]"
+              className="text-xs font-semibold px-2 py-1 border-[#C4EBD0] text-[#006736] hover:bg-[#E9F9EE]"
             >
               Resume
             </Button>
@@ -249,8 +343,8 @@ export const Campaigns: React.FC = () => {
             size="sm"
             variant="ghost"
             onClick={() => navigate(`/campaigns/${c.id}`)}
-            leftIcon={<BarChart3 className="w-3.5 h-3.5 text-[#5F7069]" />}
-            className="text-xs font-semibold text-[#006736] hover:bg-[#F6FAF8] px-2.5 py-1"
+            leftIcon={<BarChart3 className="w-3.5 h-3.5 text-[#64748B]" />}
+            className="text-xs font-semibold text-[#006736] hover:bg-[#F8FAFC] px-2 py-1"
           >
             Analytics
           </Button>
@@ -261,49 +355,140 @@ export const Campaigns: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* Unified Search, Filter & Action Bar */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-6">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
-          <div className="max-w-md w-full">
-            <SearchBar value={query} onChange={setQuery} placeholder="Search campaigns by name or template..." />
+      {/* 5-Card Spacious KPI Stat Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 mb-6">
+        {/* Card 1: Total Campaigns */}
+        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
+          <div>
+            <div className="text-xs font-semibold text-[#64748B]">Total Campaigns</div>
+            <div className="text-2xl font-black text-[#0F172A] mt-1 tracking-tight">{stats.totalCampaigns}</div>
+            <div className="text-[11px] text-[#64748B] mt-0.5">{stats.activeCampaigns} Active</div>
           </div>
-
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-            {[
-              { key: 'ALL', label: 'All' },
-              { key: 'RUNNING', label: 'Running' },
-              { key: 'SCHEDULED', label: 'Scheduled' },
-              { key: 'COMPLETED', label: 'Completed' },
-              { key: 'PAUSED', label: 'Paused' },
-              { key: 'DRAFT', label: 'Draft' },
-            ].map((st) => (
-              <button
-                key={st.key}
-                onClick={() => setSelectedStatus(st.key as any)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                  selectedStatus === st.key
-                    ? 'bg-[#05A222] text-white shadow-xs'
-                    : 'bg-white text-[#14201C] border border-[#E2EAE6] hover:bg-[#F6FAF8]'
-                }`}
-              >
-                {st.label}
-              </button>
-            ))}
+          <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 shrink-0">
+            <MessageSquare className="w-5 h-5" />
           </div>
         </div>
 
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
-          leftIcon={<Plus className="w-4 h-4" />}
-          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-xs bg-[#05A222] hover:bg-[#006736] text-white shrink-0 whitespace-nowrap cursor-pointer"
-        >
-          New Broadcast Campaign
-        </Button>
+        {/* Card 2: Total Recipients */}
+        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
+          <div>
+            <div className="text-xs font-semibold text-[#64748B]">Total Recipients</div>
+            <div className="text-2xl font-black text-[#0F172A] mt-1 tracking-tight">{stats.totalRecipients.toLocaleString()}</div>
+            <div className="text-[11px] text-[#64748B] mt-0.5">{stats.totalSent.toLocaleString()} Sent</div>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 shrink-0">
+            <Users className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Card 3: Delivery Rate */}
+        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
+          <div>
+            <div className="text-xs font-semibold text-[#64748B]">Delivery Rate</div>
+            <div className="text-2xl font-black text-[#006736] mt-1 tracking-tight">{stats.deliveryRate}%</div>
+            <div className="text-[11px] text-[#64748B] mt-0.5">{stats.totalDelivered.toLocaleString()} Delivered</div>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0">
+            <CheckCircle2 className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Card 4: Read Rate */}
+        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
+          <div>
+            <div className="text-xs font-semibold text-[#64748B]">Read Rate</div>
+            <div className="text-2xl font-black text-[#0F172A] mt-1 tracking-tight">{stats.readRate}%</div>
+            <div className="text-[11px] text-[#64748B] mt-0.5">{stats.totalRead.toLocaleString()} Read</div>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-indigo-600 shrink-0">
+            <TrendingUp className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Card 5: Failed Messages */}
+        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
+          <div>
+            <div className="text-xs font-semibold text-[#64748B]">Failed Messages</div>
+            <div className="text-2xl font-black text-rose-600 mt-1 tracking-tight">{stats.totalFailed}</div>
+            <div className="text-[11px] text-rose-600/80 mt-0.5">{stats.failedRate}% Failed Rate</div>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+            <AlertCircle className="w-5 h-5" />
+          </div>
+        </div>
       </div>
 
-      <Table columns={columns} data={filtered} isLoading={isLoading} />
+      {/* Main SaaS Card wrapping Filter Toolbar & Table */}
+      <div className="bg-white rounded-2xl border border-[#E2EAE6] shadow-xs p-5 mb-6 space-y-4">
+        {/* Card Header & Controls */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-[#E2EAE6]">
+          <div>
+            <h2 className="text-base font-bold text-[#0F172A] tracking-tight">All Campaigns</h2>
+            <p className="text-xs text-[#64748B] mt-0.5">Manage, monitor, and optimize your WhatsApp broadcasts.</p>
+          </div>
+
+          {/* Search, Filter Pills & Create CTA */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="w-full sm:w-64">
+              <SearchBar value={query} onChange={setQuery} placeholder="Search campaigns..." />
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+              {[
+                { key: 'ALL', label: 'All' },
+                { key: 'RUNNING', label: 'Running' },
+                { key: 'SCHEDULED', label: 'Scheduled' },
+                { key: 'COMPLETED', label: 'Completed' },
+                { key: 'PAUSED', label: 'Paused' },
+                { key: 'DRAFT', label: 'Draft' },
+              ].map((st) => (
+                <button
+                  key={st.key}
+                  onClick={() => {
+                    setSelectedStatus(st.key);
+                    setCurrentPage(1);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                    selectedStatus === st.key
+                      ? 'bg-[#05A222] text-white shadow-2xs'
+                      : 'bg-white text-[#64748B] border border-[#E2EAE6] hover:bg-[#F8FAFC]'
+                  }`}
+                >
+                  {st.label}
+                </button>
+              ))}
+            </div>
+
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
+              leftIcon={<Plus className="w-4 h-4" />}
+              className="text-xs font-bold px-3.5 py-2 rounded-xl shadow-xs bg-[#05A222] hover:bg-[#006736] text-white shrink-0 whitespace-nowrap cursor-pointer"
+            >
+              Create Campaign
+            </Button>
+          </div>
+        </div>
+
+        {/* Data Table with Built-in Pagination */}
+        <Table
+          columns={columns}
+          data={paginatedData}
+          isLoading={isLoading}
+          pagination={{
+            currentPage,
+            totalPages,
+            totalItems: filtered.length,
+            pageSize,
+            onPageChange: setCurrentPage,
+            onPageSizeChange: (newSize) => {
+              setPageSize(newSize);
+              setCurrentPage(1);
+            },
+          }}
+        />
+      </div>
     </PageContainer>
   );
 };

@@ -8,16 +8,17 @@
   --color-emerald: #039B56;
   --color-teal-green: #07CF74;
   --color-lime: #6AEB31;
-  --color-ink: #14201C;
-  --color-primary-text: #1F2A26;
-  --color-secondary-text: #5F7069;
-  --color-muted-text: #8A9993;
-  --color-border: #E2EAE6;
-  --color-surface: #F6FAF8;
+  --color-ink: #0F172A;
+  --color-primary-text: #1E293B;
+  --color-secondary-text: #64748B;
+  --color-muted-text: #94A3B8;
+  --color-border: #E2E8F0;
+  --color-surface: #F8FAFC;
   --color-surface-green: #E9F9EE;
   --color-border-green: #C4EBD0;
   --brand-gradient: linear-gradient(135deg, #6AEB31 0%, #1CD72C 30%, #07CF74 70%, #039B56 100%);
-  --font-family-system: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --font-family-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
 }
 
 *,
@@ -29,15 +30,8 @@ input,
 button,
 select,
 textarea,
-div,
 p,
 span,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
 table,
 thead,
 tbody,
@@ -49,13 +43,18 @@ label,
 ul,
 li,
 ol {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
+  font-family: var(--font-family-sans);
+}
+
+h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
+  font-family: var(--font-family-display);
+  letter-spacing: -0.02em;
 }
 
 body {
   background-color: var(--color-surface);
   color: var(--color-primary-text);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
+  font-family: var(--font-family-sans);
   letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -63,10 +62,8 @@ body {
 
 .font-outfit,
 .font-poppins,
-.font-display,
-.font-sans,
-.font-mono {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
+.font-sans {
+  font-family: var(--font-family-sans);
 }
 
 @keyframes float-slow {
