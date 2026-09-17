@@ -246,17 +246,127 @@ export const Documentation: React.FC = () => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const tocCategories = [
-    { id: 'all', label: 'All Endpoints', icon: ListTree, count: '14' },
-    { id: 'auth', label: 'Authentication', icon: ShieldCheck, count: 'Headers' },
-    { id: 'rate_limits', label: 'Rate Limiting', icon: Activity, count: '429' },
-    { id: 'messaging', label: 'Messaging', icon: MessageSquare, count: '4' },
-    { id: 'contacts', label: 'Contacts & Groups', icon: Users, count: '7' },
-    { id: 'templates', label: 'Templates', icon: LayoutTemplate, count: '1' },
-    { id: 'campaigns', label: 'Campaigns', icon: Send, count: '1' },
-    { id: 'account', label: 'Account & Usage', icon: UserCheck, count: '2' },
-    { id: 'webhooks', label: 'Webhooks', icon: WebhookIcon, count: '4' },
-    { id: 'errors', label: 'HTTP Error Codes', icon: AlertTriangle, count: '7' },
+  const tocCategories: {
+    id: CategoryFilter;
+    label: string;
+    icon: any;
+    count: string;
+    activeClasses: string;
+    badgeActive: string;
+    badgeInactive: string;
+    iconColor: string;
+    iconBg: string;
+  }[] = [
+    {
+      id: 'all',
+      label: 'All Endpoints',
+      icon: ListTree,
+      count: '14',
+      activeClasses: 'bg-emerald-50 text-emerald-900 border-emerald-300 font-bold shadow-2xs',
+      badgeActive: 'bg-emerald-600 text-white shadow-2xs',
+      badgeInactive: 'bg-emerald-100/70 text-emerald-800 border border-emerald-200/70',
+      iconColor: 'text-emerald-700',
+      iconBg: 'bg-emerald-100/80',
+    },
+    {
+      id: 'auth',
+      label: 'Authentication',
+      icon: ShieldCheck,
+      count: 'Headers',
+      activeClasses: 'bg-indigo-50 text-indigo-900 border-indigo-300 font-bold shadow-2xs',
+      badgeActive: 'bg-indigo-600 text-white shadow-2xs',
+      badgeInactive: 'bg-indigo-100/70 text-indigo-800 border border-indigo-200/70',
+      iconColor: 'text-indigo-700',
+      iconBg: 'bg-indigo-100/80',
+    },
+    {
+      id: 'rate_limits',
+      label: 'Rate Limiting',
+      icon: Activity,
+      count: '429',
+      activeClasses: 'bg-amber-50 text-amber-900 border-amber-300 font-bold shadow-2xs',
+      badgeActive: 'bg-amber-600 text-white shadow-2xs',
+      badgeInactive: 'bg-amber-100/70 text-amber-800 border border-amber-200/70',
+      iconColor: 'text-amber-700',
+      iconBg: 'bg-amber-100/80',
+    },
+    {
+      id: 'messaging',
+      label: 'Messaging',
+      icon: MessageSquare,
+      count: '4',
+      activeClasses: 'bg-sky-50 text-sky-900 border-sky-300 font-bold shadow-2xs',
+      badgeActive: 'bg-sky-600 text-white shadow-2xs',
+      badgeInactive: 'bg-sky-100/70 text-sky-800 border border-sky-200/70',
+      iconColor: 'text-sky-700',
+      iconBg: 'bg-sky-100/80',
+    },
+    {
+      id: 'contacts',
+      label: 'Contacts & Groups',
+      icon: Users,
+      count: '7',
+      activeClasses: 'bg-teal-50 text-teal-900 border-teal-300 font-bold shadow-2xs',
+      badgeActive: 'bg-teal-600 text-white shadow-2xs',
+      badgeInactive: 'bg-teal-100/70 text-teal-800 border border-teal-200/70',
+      iconColor: 'text-teal-700',
+      iconBg: 'bg-teal-100/80',
+    },
+    {
+      id: 'templates',
+      label: 'Templates',
+      icon: LayoutTemplate,
+      count: '1',
+      activeClasses: 'bg-purple-50 text-purple-900 border-purple-300 font-bold shadow-2xs',
+      badgeActive: 'bg-purple-600 text-white shadow-2xs',
+      badgeInactive: 'bg-purple-100/70 text-purple-800 border border-purple-200/70',
+      iconColor: 'text-purple-700',
+      iconBg: 'bg-purple-100/80',
+    },
+    {
+      id: 'campaigns',
+      label: 'Campaigns',
+      icon: Send,
+      count: '1',
+      activeClasses: 'bg-rose-50 text-rose-900 border-rose-300 font-bold shadow-2xs',
+      badgeActive: 'bg-rose-600 text-white shadow-2xs',
+      badgeInactive: 'bg-rose-100/70 text-rose-800 border border-rose-200/70',
+      iconColor: 'text-rose-700',
+      iconBg: 'bg-rose-100/80',
+    },
+    {
+      id: 'account',
+      label: 'Account & Usage',
+      icon: UserCheck,
+      count: '2',
+      activeClasses: 'bg-blue-50 text-blue-900 border-blue-300 font-bold shadow-2xs',
+      badgeActive: 'bg-blue-600 text-white shadow-2xs',
+      badgeInactive: 'bg-blue-100/70 text-blue-800 border border-blue-200/70',
+      iconColor: 'text-blue-700',
+      iconBg: 'bg-blue-100/80',
+    },
+    {
+      id: 'webhooks',
+      label: 'Webhooks',
+      icon: WebhookIcon,
+      count: '4',
+      activeClasses: 'bg-orange-50 text-orange-900 border-orange-300 font-bold shadow-2xs',
+      badgeActive: 'bg-orange-600 text-white shadow-2xs',
+      badgeInactive: 'bg-orange-100/70 text-orange-800 border border-orange-200/70',
+      iconColor: 'text-orange-700',
+      iconBg: 'bg-orange-100/80',
+    },
+    {
+      id: 'errors',
+      label: 'HTTP Error Codes',
+      icon: AlertTriangle,
+      count: '7',
+      activeClasses: 'bg-red-50 text-red-900 border-red-300 font-bold shadow-2xs',
+      badgeActive: 'bg-red-600 text-white shadow-2xs',
+      badgeInactive: 'bg-red-100/70 text-red-800 border border-red-200/70',
+      iconColor: 'text-red-700',
+      iconBg: 'bg-red-100/80',
+    },
   ];
 
   return (
@@ -1142,30 +1252,36 @@ export const Documentation: React.FC = () => {
             </div>
 
             {/* Navigation List Items */}
-            <nav className="space-y-1">
+            <nav className="space-y-1.5">
               {tocCategories.map((item) => {
                 const IconComponent = item.icon;
                 const isActive = selectedCategory === item.id;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setSelectedCategory(item.id as CategoryFilter)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all text-left cursor-pointer group ${
+                    onClick={() => setSelectedCategory(item.id)}
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all text-left cursor-pointer border ${
                       isActive
-                        ? 'bg-[#E9F9EE] text-[#006736] font-bold border border-[#C4EBD0] shadow-2xs'
-                        : 'text-[#5F7069] hover:text-[#14201C] hover:bg-[#F8FAFC]'
+                        ? item.activeClasses
+                        : 'border-transparent text-[#475569] hover:text-[#14201C] hover:bg-[#F8FAFC]'
                     }`}
                   >
-                    <div className="flex items-center gap-2 truncate pr-1">
-                      <IconComponent className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-[#05A222]' : 'text-[#94A3B8] group-hover:text-[#5F7069]'}`} />
-                      <span className="truncate">{item.label}</span>
+                    <div className="flex items-center gap-2.5 truncate pr-1">
+                      <div
+                        className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-all ${
+                          isActive ? item.badgeActive : `${item.iconBg} ${item.iconColor}`
+                        }`}
+                      >
+                        <IconComponent className={`w-3.5 h-3.5 ${isActive ? 'text-white' : item.iconColor}`} />
+                      </div>
+                      <span className={`truncate text-xs ${isActive ? 'font-bold' : 'font-medium'}`}>{item.label}</span>
                     </div>
                     {item.count && (
                       <span
-                        className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded ${
+                        className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md shrink-0 transition-all ${
                           isActive
-                            ? 'bg-[#006736] text-white'
-                            : 'bg-[#F1F5F9] text-[#64748B]'
+                            ? item.badgeActive
+                            : item.badgeInactive
                         }`}
                       >
                         {item.count}
