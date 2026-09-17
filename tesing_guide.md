@@ -2656,6 +2656,23 @@ Expiry was set to 2026-09-21T06:40:57.526Z.
 Invitation is associated with the correct organization.
 invitedBy correctly identifies the current organization admin.
 
+---
+
+## 36. Billing & Subscription — Cashfree Payment Gateway Integration
+
+### Test Case: Cashfree Order Creation & Sandbox Session Generation
+- **Target Endpoint**: `POST /api/v1/billing/create-order`
+- **Environment**: `SANDBOX`
+- **App ID**: `TEST430329ae80e0f32e41a393d78b923034`
+- **API Version**: `2025-01-01`
+
+### Test Result:
+**PASSED — HTTP 200**
+- Order ID created successfully on Cashfree PG Sandbox.
+- Payment Session ID generated for in-app modal checkout.
+- Multi-tier plans (`₹1,599` / `₹2,599` / `₹15,999`) ready with UPI, Cards, NetBanking, and Wallets.
+- Auto GST tax invoice receipt generation upon payment confirmation.
+
 
 
 
