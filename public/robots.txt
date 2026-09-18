@@ -8,6 +8,31 @@ Allow: /solutions
 Allow: /pricing
 Allow: /about
 Allow: /contact
+Allow: /privacy-policy
+Allow: /terms-of-service
+Allow: /security-policy
+
+# Explicit static assets and crawler discovery
+Allow: /favicon.ico
+Allow: /favicon.svg
+Allow: /favicon-*.png
+Allow: /apple-touch-icon.png
+Allow: /site.webmanifest
+Allow: /manifest.json
+Allow: /images/
+Allow: /sitemap.xml
+
+# Dedicated rules for Googlebot & Googlebot-Image
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+Allow: /favicon.ico
+Allow: /favicon.svg
+Allow: /favicon-*.png
+Allow: /apple-touch-icon.png
+Allow: /images/
 
 # Disallow private application, auth and admin routes
 Disallow: /app
@@ -30,6 +55,7 @@ Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
 Disallow: /reset-password
+Disallow: /superadmin
 
 # Sitemap
 Sitemap: https://whatsappmsg.com/sitemap.xml
