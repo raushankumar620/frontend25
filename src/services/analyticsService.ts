@@ -26,10 +26,12 @@ export const analyticsService = {
   /**
    * Fetch Message Volume & Delivery Funnel Analytics
    */
-  async getMessageAnalytics(startDate?: string, endDate?: string): Promise<{ stats: MessageStats; timeseries: MessageTimeseriesPoint[] }> {
+  async getMessageAnalytics(startDate?: string, endDate?: string, timezone?: string): Promise<{ stats: MessageStats; timeseries: MessageTimeseriesPoint[] }> {
     const params = new URLSearchParams();
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
+    const tz = timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata';
+    params.append('timezone', tz);
     const query = params.toString() ? `?${params.toString()}` : '';
 
     const res = await apiClient.get<{ stats: MessageStats; timeseries: MessageTimeseriesPoint[] }>(`/analytics/messages${query}`);

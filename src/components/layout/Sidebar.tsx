@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -12,12 +12,9 @@ import {
   Code2,
   Settings,
   PanelLeftClose,
-  Crown,
-  Check,
   LogOut,
   ArrowUpRight,
   Sparkles,
-  X,
   UserPlus,
   CreditCard,
   Headphones,
@@ -25,8 +22,6 @@ import {
 import clsx from 'clsx';
 import { ROUTES, APP_NAME } from '../../utils/constants';
 import { useAuthStore } from '../../store/authStore';
-import { billingService } from '../../services/billingService';
-import { whatsappService } from '../../services/whatsappService';
 
 export interface SidebarProps {
   collapsed?: boolean;
@@ -50,56 +45,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const navigate = useNavigate();
   const { user, organization, logout } = useAuthStore();
-  const [usageData, setUsageData] = useState<any>(null);
-  const [channelsCount, setChannelsCount] = useState<number>(1);
-  const [isPlanCardDismissed, setIsPlanCardDismissed] = useState<boolean>(() => {
-    return localStorage.getItem('sidebar_plan_card_dismissed') === 'true';
-  });
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [usageRes, numbersRes] = await Promise.allSettled([
-          billingService.getUsage(),
-          whatsappService.getNumbers(),
-        ]);
-
-        if (usageRes.status === 'fulfilled' && usageRes.value) {
-          setUsageData(usageRes.value);
-        }
-        if (numbersRes.status === 'fulfilled' && Array.isArray(numbersRes.value)) {
-          setChannelsCount(numbersRes.value.length || 1);
-        }
-      } catch {
-        // Silently handle
-      }
-    };
-
-    loadData();
-    const interval = setInterval(loadData, 30000);
-    return () => clearInterval(interval);
-  }, [organization?.id]);
 
   const allNavItems: NavItem[] = [
-    { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: LayoutDashboard, color: '#2563EB', bgColor: '#EFF6FF', permissionKey: 'dashboard' },
-    { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, color: '#059669', bgColor: '#ECFDF5', permissionKey: 'inbox' },
-    { label: 'Contacts', path: ROUTES.CONTACTS, icon: Users, color: '#7C3AED', bgColor: '#F5F3FF', permissionKey: 'contacts' },
-    { label: 'Templates', path: ROUTES.TEMPLATES, icon: FileText, color: '#D97706', bgColor: '#FFFBEB', permissionKey: 'templates' },
-    { label: 'Campaigns', path: ROUTES.CAMPAIGNS, icon: Send, color: '#E11D48', bgColor: '#FFF1F2', permissionKey: 'campaigns' },
-    { label: 'Automations', path: ROUTES.AUTOMATIONS, icon: GitBranch, color: '#0891B2', bgColor: '#ECFEFF', permissionKey: 'automations' },
-    { label: 'AI Agents', path: ROUTES.AI_DASHBOARD, icon: Bot, highlight: true, color: '#9333EA', bgColor: '#FAF5FF', permissionKey: 'ai_agents' },
-    { label: 'Analytics', path: ROUTES.ANALYTICS, icon: BarChart3, color: '#4F46E5', bgColor: '#EEF2FF', permissionKey: 'analytics' },
+    { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: LayoutDashboard, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'dashboard' },
+    { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, color: '#05A222', bgColor: '#E9F9EE', badge: '12', permissionKey: 'inbox' },
+    { label: 'Contacts', path: ROUTES.CONTACTS, icon: Users, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'contacts' },
+    { label: 'Templates', path: ROUTES.TEMPLATES, icon: FileText, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'templates' },
+    { label: 'Campaigns', path: ROUTES.CAMPAIGNS, icon: Send, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'campaigns' },
+    { label: 'Automations', path: ROUTES.AUTOMATIONS, icon: GitBranch, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'automations' },
+    { label: 'AI Agents', path: ROUTES.AI_DASHBOARD, icon: Bot, highlight: true, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'ai_agents' },
+    { label: 'Analytics', path: ROUTES.ANALYTICS, icon: BarChart3, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'analytics' },
     { label: 'Billing & Subscription', path: ROUTES.BILLING, icon: CreditCard, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'billing' },
-    { label: 'Developers API', path: ROUTES.DEVELOPERS_DASHBOARD, icon: Code2, color: '#0D9488', bgColor: '#F0FDFA', permissionKey: 'developers' },
+    { label: 'Developers API', path: ROUTES.DEVELOPERS_DASHBOARD, icon: Code2, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'developers' },
     { label: 'Team', path: ROUTES.TEAM, icon: UserPlus, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'team' },
-    { label: 'Settings', path: ROUTES.ACCOUNT_SETTINGS, icon: Settings, color: '#64748B', bgColor: '#F8FAFC', permissionKey: 'settings' },
+    { label: 'Settings', path: ROUTES.ACCOUNT_SETTINGS, icon: Settings, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'settings' },
   ];
 
   // Check permissions strictly: Org Admins see everything; members ONLY see ticked modules.
   const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ORG_ADMIN' || user?.role === 'admin';
   const userPermissions = Array.isArray(user?.permissions) ? user.permissions : [];
   const hasSettingsAccess = isAdmin || userPermissions.includes('settings');
-  const hasBillingAccess = isAdmin || userPermissions.includes('billing') || userPermissions.includes('settings');
 
   const navItems = isAdmin
     ? allNavItems
@@ -110,17 +75,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const orgDisplayName = organization?.name || user?.organizationName || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Workspace');
   const userInitial = (orgDisplayName?.[0] || user?.firstName?.[0] || 'A').toUpperCase();
   const userRole = user?.role === 'ORG_ADMIN' || user?.role === 'admin' ? 'Admin' : (user?.role === 'SUPER_ADMIN' ? 'Super Admin' : (user?.role ? String(user.role) : 'Admin'));
-  const planName = usageData?.plan?.name || (organization?.plan ? organization.plan.replace(/_/g, ' ') : 'PRO');
-  const rawStatus = usageData?.plan?.status ? usageData.plan.status.toUpperCase() : '';
-  const planBadge = rawStatus && !rawStatus.includes('TRAIL') && !rawStatus.includes('TRIAL') ? rawStatus : 'ACTIVE';
-
-  // Dynamic limits from live usage / org limits
-  const maxChannels = organization?.limits?.maxNumbers || Math.max(channelsCount, 1);
-  const channelsText = `${channelsCount} / ${maxChannels} Channel${maxChannels > 1 ? 's' : ''}`;
-  const messagesLimit = usageData?.metrics?.messages?.limit || organization?.limits?.monthlyMessages;
-  const campaignsText = messagesLimit ? `${messagesLimit.toLocaleString()} Messages/mo` : 'Unlimited Campaign';
-  const contactsLimit = usageData?.metrics?.contacts?.limit || 10000;
-  const contactsText = `${contactsLimit.toLocaleString()} Contacts`;
 
   return (
     <aside
@@ -208,7 +162,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </div>
                   {!collapsed && <span className="truncate">{item.label}</span>}
                   {!collapsed && item.badge && (
-                    <span className="ml-auto px-2 py-0.5 rounded-full text-[11px] bg-[#E9F9EE] text-[#006736] font-bold border border-[#C4EBD0]">
+                    <span className={clsx(
+                      "ml-auto px-2 py-0.5 rounded-full text-[11px] font-bold",
+                      item.label === 'Inbox' ? "bg-[#EF4444] text-white shadow-2xs" : "bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]"
+                    )}>
                       {item.badge}
                     </span>
                   )}
@@ -219,7 +176,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     </span>
                   )}
                   {collapsed && item.badge && (
-                    <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-[#05A222] ring-2 ring-white" />
+                    <span className={clsx(
+                      "absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full ring-2 ring-white",
+                      item.label === 'Inbox' ? "bg-[#EF4444]" : "bg-[#05A222]"
+                    )} />
                   )}
                   {isActive && (
                     <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-[#05A222] rounded-r-full" />
@@ -230,153 +190,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </nav>
 
-        {/* Embedded Plan & Resource Usage Box directly inside Sidebar (Only for billing/admin permitted users) */}
-        {hasBillingAccess && (!collapsed ? (
-          !isPlanCardDismissed ? (
-            <div className="relative overflow-hidden rounded-2xl p-3.5 bg-gradient-to-br from-[#013B23] via-[#006736] to-[#012818] text-white shadow-md border border-[#05A222]/30 space-y-3 transition-all">
-              {/* Background decorative glow */}
-              <div className="absolute -right-6 -top-6 w-24 h-24 bg-[#1CD72C]/15 rounded-full blur-xl pointer-events-none" />
-              <div className="absolute -left-6 -bottom-6 w-20 h-20 bg-[#07CF74]/15 rounded-full blur-lg pointer-events-none" />
-
-              {/* Header: Crown + Plan Name + Status + Close Button */}
-              <div className="relative flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <div className="w-8 h-8 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-xs shrink-0">
-                    <Crown className="w-4.5 h-4.5 text-[#6AEB31]" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-xs font-extrabold text-white capitalize tracking-tight truncate">
-                        {planName} Plan
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-[9px] font-bold bg-[#1CD72C]/20 text-[#6AEB31] border border-[#1CD72C]/40 px-1.5 py-0.2 rounded-full">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#1CD72C] animate-pulse" />
-                        {planBadge}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsPlanCardDismissed(true);
-                    localStorage.setItem('sidebar_plan_card_dismissed', 'true');
-                  }}
-                  title="Close Subscription Box"
-                  className="w-5 h-5 rounded-md flex items-center justify-center text-white/60 hover:text-white hover:bg-white/15 transition-colors cursor-pointer shrink-0 -mr-1"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Checklist items with Live Backend Data */}
-              <div className="relative space-y-1.5 pt-2 border-t border-white/10 text-[11px] text-white/90 font-medium">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[#C4EBD0] flex items-center gap-1.5 truncate">
-                    <Check className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
-                    <span>Channels</span>
-                  </span>
-                  <span className="font-semibold text-white font-mono text-[11px] shrink-0">
-                    {channelsText}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[#C4EBD0] flex items-center gap-1.5 truncate">
-                    <Check className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
-                    <span>Messages</span>
-                  </span>
-                  <span className="font-semibold text-white font-mono text-[11px] shrink-0">
-                    {campaignsText}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[#C4EBD0] flex items-center gap-1.5 truncate">
-                    <Check className="w-3.5 h-3.5 text-[#6AEB31] shrink-0" />
-                    <span>Contacts</span>
-                  </span>
-                  <span className="font-semibold text-white font-mono text-[11px] shrink-0">
-                    {contactsText}
-                  </span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => navigate(ROUTES.BILLING)}
-                className="relative w-full py-2 px-3 bg-white/10 hover:bg-white/20 active:bg-white/25 text-white border border-white/20 rounded-xl text-xs font-bold transition-all text-center cursor-pointer shadow-xs flex items-center justify-center gap-1.5 group"
-              >
-                <span>Manage Subscription</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-[#6AEB31] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-gradient-to-r from-[#013B23] via-[#006736] to-[#012818] border border-[#05A222]/30 text-white shadow-xs">
-              <button
-                type="button"
-                onClick={() => navigate(ROUTES.BILLING)}
-                className="flex items-center gap-2.5 text-left hover:opacity-90 transition-opacity cursor-pointer group flex-1 min-w-0"
-              >
-                <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-[#6AEB31] shrink-0 border border-white/15">
-                  <Crown className="w-4 h-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-bold text-white capitalize truncate leading-tight">
-                      {planName}
-                    </span>
-                    <span className="text-[9px] font-bold bg-[#1CD72C]/25 text-[#6AEB31] px-1 py-0.2 rounded leading-tight">
-                      {planBadge}
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-[#C4EBD0] font-medium block leading-tight mt-0.5 truncate">
-                    Manage Subscription &rarr;
-                  </span>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsPlanCardDismissed(false);
-                  localStorage.setItem('sidebar_plan_card_dismissed', 'false');
-                }}
-                title="Show Subscription Details"
-                className="w-6 h-6 rounded-lg flex items-center justify-center text-[#C4EBD0] hover:text-white hover:bg-white/15 transition-colors cursor-pointer shrink-0 ml-1"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-[#6AEB31]" />
-              </button>
-            </div>
-          )
-        ) : (
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={() => navigate(ROUTES.BILLING)}
-              title={`Subscription: ${planName} (${planBadge}) - Click to Manage`}
-              className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#013B23] to-[#006736] text-[#6AEB31] flex items-center justify-center shadow-xs border border-[#05A222]/30 hover:scale-105 transition-transform cursor-pointer"
-            >
-              <Crown className="w-5 h-5" />
-            </button>
-          </div>
-        ))}
-        {/* Support Help Card */}
+        {/* Promo Mascot Banner */}
         {!collapsed && (
-          <div className="p-3.5 bg-[#F6FAF8] border border-[#E2EAE6] rounded-2xl space-y-2 text-center">
-            <div className="w-8 h-8 rounded-full bg-[#E9F9EE] text-[#006736] flex items-center justify-center mx-auto border border-[#C4EBD0]">
-              <Headphones className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-xs font-bold text-[#14201C]">Need Help?</div>
-              <div className="text-[11px] text-[#5F7069] mt-0.5">Our team is here to help you.</div>
-            </div>
-            <a
-              href="mailto:support@whatsappmsg.com"
-              className="block w-full py-1.5 px-3 bg-white hover:bg-slate-50 text-[#14201C] border border-[#E2EAE6] rounded-xl text-xs font-bold transition-all text-center cursor-pointer shadow-2xs"
-            >
-              Contact Support
-            </a>
+          <div className="relative overflow-hidden rounded-2xl group hover:shadow-md transition-all cursor-pointer">
+            <img
+              src="/sidebarimg/sidebar image.png"
+              alt="Same Conversations Bigger Opportunities!"
+              className="w-full h-auto object-contain rounded-2xl group-hover:scale-[1.02] transition-transform"
+            />
           </div>
+        )}
+
+        {/* Support Help Link */}
+        {!collapsed && (
+          <button
+            type="button"
+            onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}
+            className="w-full p-2.5 bg-[#F6FAF8] hover:bg-[#E9F9EE] border border-[#E2EAE6] hover:border-[#C4EBD0] rounded-xl flex items-center justify-between text-left transition-all cursor-pointer group"
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-white text-[#006736] flex items-center justify-center border border-[#E2EAE6] shrink-0 shadow-2xs">
+                <Headphones className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[11px] font-bold text-[#14201C] group-hover:text-[#006736] truncate">Need Help?</div>
+                <div className="text-[10px] text-[#5F7069] truncate">We're here for you</div>
+              </div>
+            </div>
+            <ArrowUpRight className="w-3.5 h-3.5 text-[#8A9993] group-hover:text-[#05A222] transition-colors shrink-0" />
+          </button>
         )}
       </div>
 

@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { analyticsService } from '../../../services/analyticsService';
 import type { MessageTimeseriesPoint, OverviewKPIs } from '../../analytics/types';
-import { Calendar, Layers } from 'lucide-react';
-
-
+import { ChevronDown, Loader2, Check } from 'lucide-react';
 
 interface MessageChartProps {
   timeseries?: MessageTimeseriesPoint[];
@@ -11,80 +9,74 @@ interface MessageChartProps {
   loading?: boolean;
 }
 
-type RangeOption = 'Today' | '7 Days' | '30 Days' | '3 Months';
+type RangeOption = 'Last 7 Days' | 'Today' | 'Last 30 Days' | 'Last 3 Months';
 
-interface ChartPoint {
-  date: string;
-  rawKey: string;
+interface DataPoint {
+  dateLabel: string;
+  showLabel: boolean;
+  fullDate: string;
   sent: number;
   delivered: number;
   read: number;
-  replied: number;
+  failed: number;
 }
 
 export const MessageChart: React.FC<MessageChartProps> = ({
   timeseries: initialTimeseries = [],
   loading: initialLoading = false,
 }) => {
-  const [selectedRange, setSelectedRange] = useState<RangeOption>('7 Days');
+  const [selectedRange, setSelectedRange] = useState<RangeOption>('Last 7 Days');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [timeseriesData, setTimeseriesData] = useState<MessageTimeseriesPoint[]>(initialTimeseries);
   const [loading, setLoading] = useState<boolean>(initialLoading);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-  const [visibleSeries, setVisibleSeries] = useState({
-    sent: true,
-    delivered: true,
-    read: true,
-    replied: true,
-  });
-  const svgRef = useRef<SVGSVGElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Helper to calculate exact start and end timestamps
-  const getDateRange = (range: RangeOption) => {
-    const end = new Date();
-    const start = new Date();
-
-    if (range === 'Today') {
-      start.setHours(0, 0, 0, 0);
-      end.setHours(23, 59, 59, 999);
-      return {
-        startDate: start.toISOString(),
-        endDate: end.toISOString(),
-        isHourly: true,
-        startObj: start,
-        endObj: end,
-      };
-    }
-
-    if (range === '7 Days') {
-      start.setDate(end.getDate() - 6);
-      start.setHours(0, 0, 0, 0);
-    } else if (range === '30 Days') {
-      start.setDate(end.getDate() - 29);
-      start.setHours(0, 0, 0, 0);
-    } else if (range === '3 Months') {
-      start.setDate(end.getDate() - 89);
-      start.setHours(0, 0, 0, 0);
-    }
-
-    return {
-      startDate: start.toISOString(),
-      endDate: end.toISOString(),
-      isHourly: false,
-      startObj: start,
-      endObj: end,
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
     };
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  // Fetch real analytics data when range filter changes
+  // Sync with prop when initialTimeseries changes
+  useEffect(() => {
+    if (selectedRange === 'Last 7 Days' && initialTimeseries && initialTimeseries.length > 0) {
+      setTimeseriesData(initialTimeseries);
+    }
+  }, [initialTimeseries, selectedRange]);
+
+  // Fetch real analytics data whenever filter range changes
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {
       try {
         setLoading(true);
-        const { startDate, endDate } = getDateRange(selectedRange);
-        const res = await analyticsService.getMessageAnalytics(startDate, endDate);
-        if (isMounted && res?.timeseries) {
-          setTimeseriesData(res.timeseries);
+        const now = new Date();
+        const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+
+        if (selectedRange === 'Today') {
+          // start of today to end of today
+        } else if (selectedRange === 'Last 7 Days') {
+          start.setDate(now.getDate() - 6);
+        } else if (selectedRange === 'Last 30 Days') {
+          start.setDate(now.getDate() - 29);
+        } else {
+          start.setDate(now.getDate() - 89);
+        }
+
+        const res = await analyticsService
+          .getMessageAnalytics(start.toISOString(), end.toISOString())
+          .catch(() => null);
+
+        if (isMounted) {
+          setTimeseriesData(res?.timeseries || []);
         }
       } catch (err) {
         console.error('Failed to load message analytics:', err);
@@ -99,584 +91,574 @@ export const MessageChart: React.FC<MessageChartProps> = ({
     };
   }, [selectedRange]);
 
-  // Construct continuous timeline points
-  const chartPoints: ChartPoint[] = useMemo(() => {
-    const { isHourly, startObj, endObj } = getDateRange(selectedRange);
-    const dataMap = new Map<string, MessageTimeseriesPoint>();
+  // Construct chart points directly from real-time backend data
+  const points: DataPoint[] = useMemo(() => {
+    const now = new Date();
+    const result: DataPoint[] = [];
+
+    // Map backend data by date string and date+hour
+    const dataMap = new Map<string, { sent: number; delivered: number; read: number; failed: number; inbound: number }>();
 
     (timeseriesData || []).forEach((item) => {
-      if (item.date) {
-        dataMap.set(item.date, item);
+      if (!item.date) return;
+      // item.date can be "2026-09-18" or "2026-09-18 14:00" or ISO
+      const exactKey = item.date.trim();
+      const dateOnlyKey = item.date.replace(' ', 'T').split('T')[0];
+
+      // Exact key entry
+      dataMap.set(exactKey, {
+        sent: item.sent || 0,
+        delivered: item.delivered || 0,
+        read: item.read || 0,
+        failed: item.failed || 0,
+        inbound: item.inbound || 0,
+      });
+
+      // Accumulate into date-only entry
+      if (!dataMap.has(dateOnlyKey)) {
+        dataMap.set(dateOnlyKey, {
+          sent: item.sent || 0,
+          delivered: item.delivered || 0,
+          read: item.read || 0,
+          failed: item.failed || 0,
+          inbound: item.inbound || 0,
+        });
+      } else {
+        const existing = dataMap.get(dateOnlyKey)!;
+        existing.sent += item.sent || 0;
+        existing.delivered += item.delivered || 0;
+        existing.read += item.read || 0;
+        existing.failed += item.failed || 0;
+        existing.inbound += item.inbound || 0;
       }
     });
 
-    const points: ChartPoint[] = [];
+    if (selectedRange === 'Today') {
+      // 12 points: 00:00, 02:00, 04:00, ..., 22:00
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-    if (isHourly) {
-      const current = new Date(startObj);
-      const yyyy = current.getFullYear();
-      const mm = String(current.getMonth() + 1).padStart(2, '0');
-      const dd = String(current.getDate()).padStart(2, '0');
+      for (let h = 0; h < 24; h += 2) {
+        const hourStr = `${String(h).padStart(2, '0')}:00`;
+        const nextH = h + 2;
+        const showLabel = h % 4 === 0;
 
-      for (let h = 0; h < 24; h++) {
-        const hourStr = String(h).padStart(2, '0');
-        const rawKey = `${yyyy}-${mm}-${dd} ${hourStr}:00`;
-        const displayLabel = `${hourStr}:00`;
-        const match = dataMap.get(rawKey);
+        let sent = 0;
+        let delivered = 0;
+        let read = 0;
+        let failed = 0;
 
-        points.push({
-          date: `${dd}/${mm}/${yyyy} ${displayLabel}`,
-          rawKey: displayLabel,
-          sent: match?.sent || 0,
-          delivered: match?.delivered || 0,
-          read: match?.read || 0,
-          replied: match?.inbound || 0,
+        (timeseriesData || []).forEach((item) => {
+          if (!item.date) return;
+          if (item.date.startsWith(todayStr)) {
+            let itemHour = -1;
+            if (item.date.includes(':')) {
+              const timePart = item.date.split(' ')[1] || item.date.split('T')[1] || item.date;
+              const parsedH = parseInt(timePart.split(':')[0], 10);
+              if (!isNaN(parsedH)) itemHour = parsedH;
+            }
+            if (itemHour >= h && itemHour < nextH) {
+              sent += item.sent || 0;
+              delivered += item.delivered || 0;
+              read += item.read || 0;
+              failed += item.failed || 0;
+            }
+          }
+        });
+
+        // 12-hour format for tooltip
+        const period = h >= 12 ? 'PM' : 'AM';
+        const displayH = h % 12 === 0 ? 12 : h % 12;
+
+        result.push({
+          dateLabel: hourStr,
+          showLabel,
+          fullDate: `Today, ${displayH}:00 ${period}`,
+          sent,
+          delivered,
+          read,
+          failed,
+        });
+      }
+    } else if (selectedRange === 'Last 7 Days') {
+      // Exactly 7 daily points (e.g. 6 days ago -> today)
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(now.getDate() - i);
+        const isoKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const dateLabel = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+        const fullDate = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+
+        const item = dataMap.get(isoKey);
+
+        result.push({
+          dateLabel,
+          showLabel: true,
+          fullDate,
+          sent: item?.sent || 0,
+          delivered: item?.delivered || 0,
+          read: item?.read || 0,
+          failed: item?.failed || 0,
+        });
+      }
+    } else if (selectedRange === 'Last 30 Days') {
+      // 30 daily points
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(now.getDate() - i);
+        const isoKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const dateLabel = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+        const fullDate = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+        // Show label every 5 days and on last day
+        const showLabel = i % 5 === 0 || i === 0;
+
+        const item = dataMap.get(isoKey);
+
+        result.push({
+          dateLabel,
+          showLabel,
+          fullDate,
+          sent: item?.sent || 0,
+          delivered: item?.delivered || 0,
+          read: item?.read || 0,
+          failed: item?.failed || 0,
         });
       }
     } else {
-      const cur = new Date(startObj);
-      while (cur <= endObj) {
-        const yyyy = cur.getFullYear();
-        const mm = String(cur.getMonth() + 1).padStart(2, '0');
-        const dd = String(cur.getDate()).padStart(2, '0');
-        const rawKey = `${yyyy}-${mm}-${dd}`;
-        const fullDate = `${dd}/${mm}/${yyyy}`;
-        const match = dataMap.get(rawKey);
+      // Last 3 Months: 13 weekly points
+      for (let i = 12; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(now.getDate() - i * 7);
+        const dateLabel = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+        const fullDate = `Week of ${d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}`;
+        const showLabel = i % 2 === 0 || i === 0;
 
-        points.push({
-          date: fullDate,
-          rawKey: fullDate,
-          sent: match?.sent || 0,
-          delivered: match?.delivered || 0,
-          read: match?.read || 0,
-          replied: match?.inbound || 0,
+        let sent = 0;
+        let delivered = 0;
+        let read = 0;
+        let failed = 0;
+
+        (timeseriesData || []).forEach((item) => {
+          if (!item.date) return;
+          const itemKey = item.date.split('T')[0].split(' ')[0];
+          const itemDate = new Date(itemKey);
+          const diffDays = (d.getTime() - itemDate.getTime()) / (1000 * 3600 * 24);
+          if (diffDays >= 0 && diffDays < 7) {
+            sent += item.sent || 0;
+            delivered += item.delivered || 0;
+            read += item.read || 0;
+            failed += item.failed || 0;
+          }
         });
 
-        cur.setDate(cur.getDate() + 1);
+        result.push({
+          dateLabel,
+          showLabel,
+          fullDate,
+          sent,
+          delivered,
+          read,
+          failed,
+        });
       }
     }
 
-    return points;
-  }, [selectedRange, timeseriesData]);
+    return result;
+  }, [timeseriesData, selectedRange]);
 
-  // Total aggregates for period summary
-  const totals = useMemo(() => {
-    const sent = chartPoints.reduce((acc, p) => acc + p.sent, 0);
-    const delivered = chartPoints.reduce((acc, p) => acc + p.delivered, 0);
-    const read = chartPoints.reduce((acc, p) => acc + p.read, 0);
-    const replied = chartPoints.reduce((acc, p) => acc + p.replied, 0);
-    const deliveryRate = sent > 0 ? Math.round((delivered / sent) * 100) : 100;
-    const readRate = delivered > 0 ? Math.round((read / delivered) * 100) : 0;
-    return { sent, delivered, read, replied, deliveryRate, readRate };
-  }, [chartPoints]);
-
-  // Dynamic Y-axis scale calculation
-  const maxDataVal = useMemo(() => {
-    let max = 0;
-    chartPoints.forEach((p) => {
-      if (visibleSeries.sent) max = Math.max(max, p.sent);
-      if (visibleSeries.delivered) max = Math.max(max, p.delivered);
-      if (visibleSeries.read) max = Math.max(max, p.read);
-      if (visibleSeries.replied) max = Math.max(max, p.replied);
-    });
-    return max;
-  }, [chartPoints, visibleSeries]);
-
-  const yAxisTicks = useMemo(() => {
-    const targetMax = maxDataVal > 0 ? maxDataVal * 1.25 : 10;
-    const numTicks = 4;
-    const rawStep = targetMax / numTicks;
-    const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep || 1)));
-    const step = Math.ceil(rawStep / magnitude) * magnitude || 1;
-    const ticks: number[] = [];
-    for (let i = 0; i <= numTicks; i++) {
-      ticks.push(i * step);
-    }
-    return ticks;
-  }, [maxDataVal]);
-
-  const yMax = yAxisTicks[yAxisTicks.length - 1] || 10;
-
-  // SVG Chart Dimensions (Spacious & Clean)
-  const width = 1000;
-  const height = 240;
+  // Geometry calculations for SVG
+  const width = 800;
+  const height = 260;
   const padLeft = 45;
   const padRight = 20;
-  const padTop = 15;
-  const padBottom = 46;
+  const padTop = 20;
+  const padBottom = 35;
 
-  const innerWidth = width - padLeft - padRight;
-  const innerHeight = height - padTop - padBottom;
+  const chartW = width - padLeft - padRight;
+  const chartH = height - padTop - padBottom;
 
-  const getX = (index: number) => {
-    if (chartPoints.length <= 1) return padLeft + innerWidth / 2;
-    return padLeft + (index / (chartPoints.length - 1)) * innerWidth;
+  // Dynamic max scale calculation
+  const maxVal = useMemo(() => {
+    let max = 0;
+    points.forEach((p) => {
+      max = Math.max(max, p.sent, p.delivered, p.read, p.failed);
+    });
+
+    if (max === 0) return 10;
+    if (max <= 10) return 10;
+    if (max <= 25) return 25;
+    if (max <= 50) return 50;
+    if (max <= 100) return 100;
+    if (max <= 250) return 250;
+    if (max <= 500) return 500;
+    if (max <= 1000) return 1000;
+    if (max <= 5000) return Math.ceil(max / 500) * 500;
+    return Math.ceil(max / 1000) * 1000;
+  }, [points]);
+
+  const getX = (idx: number) => {
+    if (points.length <= 1) return padLeft + chartW / 2;
+    return padLeft + (idx / (points.length - 1)) * chartW;
   };
 
   const getY = (val: number) => {
-    return padTop + innerHeight - (val / yMax) * innerHeight;
+    const ratio = Math.min(Math.max(val / maxVal, 0), 1);
+    return padTop + chartH - ratio * chartH;
   };
 
-  // Smooth spline curve generator
-  const generatePath = (accessor: (p: ChartPoint) => number) => {
-    if (chartPoints.length === 0) return '';
-    const coords = chartPoints.map((p, idx) => ({
-      x: getX(idx),
-      y: getY(accessor(p)),
-    }));
-
-    if (coords.length === 1) return `M ${coords[0].x},${coords[0].y}`;
-
-    let path = `M ${coords[0].x},${coords[0].y}`;
-    for (let i = 0; i < coords.length - 1; i++) {
-      const p0 = coords[i];
-      const p1 = coords[i + 1];
-      const cx = (p0.x + p1.x) / 2;
-      path += ` C ${cx},${p0.y} ${cx},${p1.y} ${p1.x},${p1.y}`;
+  const generateSmoothPath = (values: number[]) => {
+    if (values.length === 0) return '';
+    const pts = values.map((v, i) => ({ x: getX(i), y: getY(v) }));
+    let d = `M ${pts[0].x},${pts[0].y}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i];
+      const p1 = pts[i + 1];
+      const midX = (p0.x + p1.x) / 2;
+      d += ` C ${midX},${p0.y} ${midX},${p1.y} ${p1.x},${p1.y}`;
     }
-    return path;
+    return d;
   };
 
-  // Generate Area Fill Path
-  const generateAreaPath = (accessor: (p: ChartPoint) => number) => {
-    if (chartPoints.length === 0) return '';
-    const linePath = generatePath(accessor);
-    const startX = getX(0);
-    const endX = getX(chartPoints.length - 1);
-    const bottomY = padTop + innerHeight;
-    return `${linePath} L ${endX},${bottomY} L ${startX},${bottomY} Z`;
+  const generateAreaPath = (values: number[]) => {
+    const linePath = generateSmoothPath(values);
+    if (!linePath) return '';
+    const lastX = getX(values.length - 1);
+    const firstX = getX(0);
+    const bottomY = padTop + chartH;
+    return `${linePath} L ${lastX},${bottomY} L ${firstX},${bottomY} Z`;
   };
 
-  const sentPath = useMemo(() => generatePath((p) => p.sent), [chartPoints, yMax]);
-  const deliveredPath = useMemo(() => generatePath((p) => p.delivered), [chartPoints, yMax]);
-  const readPath = useMemo(() => generatePath((p) => p.read), [chartPoints, yMax]);
-  const repliedPath = useMemo(() => generatePath((p) => p.replied), [chartPoints, yMax]);
+  const sentPath = generateSmoothPath(points.map((p) => p.sent));
+  const deliveredPath = generateSmoothPath(points.map((p) => p.delivered));
+  const readPath = generateSmoothPath(points.map((p) => p.read));
+  const failedPath = generateSmoothPath(points.map((p) => p.failed));
 
-  const sentAreaPath = useMemo(() => generateAreaPath((p) => p.sent), [chartPoints, yMax]);
-  const deliveredAreaPath = useMemo(() => generateAreaPath((p) => p.delivered), [chartPoints, yMax]);
+  const sentArea = generateAreaPath(points.map((p) => p.sent));
+  const deliveredArea = generateAreaPath(points.map((p) => p.delivered));
+  const readArea = generateAreaPath(points.map((p) => p.read));
 
-  // Mouse hover tracking
-  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (!svgRef.current || chartPoints.length === 0) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const mouseX = ((e.clientX - rect.left) / rect.width) * width;
+  // Y-axis 5 ticks
+  const yTicks = useMemo(() => {
+    return [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal];
+  }, [maxVal]);
 
-    let closestIdx = 0;
-    let minDistance = Infinity;
-
-    chartPoints.forEach((_, idx) => {
-      const x = getX(idx);
-      const dist = Math.abs(x - mouseX);
-      if (dist < minDistance) {
-        minDistance = dist;
-        closestIdx = idx;
-      }
-    });
-
-    setHoverIndex(closestIdx);
-  };
-
-  const activePoint = hoverIndex !== null ? chartPoints[hoverIndex] : null;
+  const activePoint = hoverIndex !== null && points[hoverIndex] ? points[hoverIndex] : null;
   const activeX = hoverIndex !== null ? getX(hoverIndex) : null;
 
-  const toggleSeries = (key: keyof typeof visibleSeries) => {
-    setVisibleSeries((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
   return (
-    <div className="bg-white border border-[#E2EAE6] rounded-2xl p-5 sm:p-6 shadow-[0_4px_24px_rgba(1,59,35,0.04)] space-y-4">
-      {/* Header Row: Clean Title on Left & Range Buttons on Right */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#F0F5F2]">
+    <div className="bg-white border border-[#E2EAE6] rounded-2xl p-5 shadow-xs flex flex-col justify-between h-full">
+      {/* Header with Title & Dropdown Filter (Matching Mockup exactly) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div>
-          <h3 className="text-lg sm:text-xl font-black text-[#14201C] tracking-tight">
-            Message Analytics
-          </h3>
-          <p className="text-xs text-[#5F7069] mt-0.5 font-medium">
-            Real-time delivery, read rates, and response metrics
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-bold text-[#14201C] tracking-tight">Message Analytics</h2>
+            {loading && <Loader2 className="w-3.5 h-3.5 text-[#006736] animate-spin" />}
+          </div>
+          <p className="text-xs text-[#5F7069] mt-0.5">
+            Track your message delivery, read rates, and engagement over time.
           </p>
         </div>
 
-        {/* Range Selector Filter Tabs */}
-        <div className="flex items-center bg-[#F6FAF8] p-1 rounded-xl border border-[#E2EAE6] self-start sm:self-auto">
-          {(['Today', '7 Days', '30 Days', '3 Months'] as RangeOption[]).map((range) => {
-            const isSelected = selectedRange === range;
-            return (
-              <button
-                key={range}
-                onClick={() => {
-                  setSelectedRange(range);
-                  setHoverIndex(null);
-                }}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  isSelected
-                    ? 'bg-[#05A222] text-white shadow-xs'
-                    : 'text-[#5F7069] hover:text-[#14201C] hover:bg-white/60'
-                }`}
-              >
-                {range}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+        {/* Dropdown Filter */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center gap-2 bg-[#F6FAF8] hover:bg-[#E9F9EE] border border-[#E2EAE6] hover:border-[#C4EBD0] text-xs font-semibold text-[#14201C] px-3.5 py-1.5 rounded-xl transition-all cursor-pointer shadow-2xs"
+          >
+            <span>{selectedRange}</span>
+            <ChevronDown className="w-3.5 h-3.5 text-[#5F7069]" />
+          </button>
 
-      {/* KPI Stats Strip */}
-      <div className="flex flex-wrap items-center gap-2.5">
-        <div className="px-3 py-1 rounded-lg bg-[#F6FAF8] border border-[#E2EAE6] flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
-          <span className="text-[11px] text-[#5F7069] font-medium">Total Sent:</span>
-          <strong className="text-xs font-bold text-[#14201C]">{totals.sent.toLocaleString()}</strong>
-        </div>
-
-        <div className="px-3 py-1 rounded-lg bg-[#E9F9EE] border border-[#C4EBD0] flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[#05A222]" />
-          <span className="text-[11px] text-[#006736] font-medium">Delivered:</span>
-          <strong className="text-xs font-bold text-[#006736]">{totals.delivered.toLocaleString()} ({totals.deliveryRate}%)</strong>
-        </div>
-
-        <div className="px-3 py-1 rounded-lg bg-amber-50 border border-amber-200 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[#F59E0B]" />
-          <span className="text-[11px] text-amber-800 font-medium">Read Rate:</span>
-          <strong className="text-xs font-bold text-amber-800">{totals.readRate}%</strong>
-        </div>
-
-        <div className="px-3 py-1 rounded-lg bg-purple-50 border border-purple-200 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[#8B5CF6]" />
-          <span className="text-[11px] text-purple-800 font-medium">Inbound Replies:</span>
-          <strong className="text-xs font-bold text-purple-800">{totals.replied.toLocaleString()}</strong>
-        </div>
-      </div>
-
-      {/* Interactive Chart Canvas */}
-      <div className="relative w-full overflow-x-auto select-none pt-2">
-        {loading && (
-          <div className="absolute inset-0 bg-white/75 backdrop-blur-[2px] z-20 flex items-center justify-center rounded-xl">
-            <div className="text-xs font-bold text-[#05A222] flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-[#C4EBD0] shadow-sm">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#05A222] animate-ping" />
-              Syncing analytics...
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-1.5 w-44 bg-white border border-[#E2EAE6] rounded-xl shadow-lg py-1 z-30 animate-in fade-in zoom-in-95 duration-100">
+              {(['Last 7 Days', 'Today', 'Last 30 Days', 'Last 3 Months'] as RangeOption[]).map(
+                (opt) => {
+                  const isSelected = selectedRange === opt;
+                  return (
+                    <button
+                      key={opt}
+                      onClick={() => {
+                        setSelectedRange(opt);
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-3.5 py-2 text-xs font-semibold transition-colors flex items-center justify-between cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#E9F9EE] text-[#006736] font-bold'
+                          : 'text-[#1F2A26] hover:bg-[#F6FAF8]'
+                      }`}
+                    >
+                      <span>{opt}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-[#006736]" />}
+                    </button>
+                  );
+                }
+              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
+      </div>
 
+      {/* SVG Interactive Chart Canvas */}
+      <div
+        ref={containerRef}
+        className={`relative w-full overflow-hidden select-none transition-opacity duration-200 ${
+          loading ? 'opacity-60' : 'opacity-100'
+        }`}
+        onMouseLeave={() => setHoverIndex(null)}
+      >
         <svg
-          ref={svgRef}
           viewBox={`0 0 ${width} ${height}`}
-          className="w-full h-auto min-w-[700px] overflow-visible cursor-crosshair"
-          onMouseMove={handleMouseMove}
-          onMouseLeave={() => setHoverIndex(null)}
+          className="w-full h-auto overflow-visible"
+          style={{ minHeight: '220px' }}
         >
           <defs>
-            {/* Delivered Area Gradient */}
-            <linearGradient id="deliveredGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#05A222" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#05A222" stopOpacity="0.0" />
+            {/* Gradients for smooth area fills */}
+            <linearGradient id="sentGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
             </linearGradient>
-
-            {/* Sent Area Gradient */}
-            <linearGradient id="sentGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#2563EB" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="#2563EB" stopOpacity="0.0" />
+            <linearGradient id="deliveredGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#10B981" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#10B981" stopOpacity="0.0" />
+            </linearGradient>
+            <linearGradient id="readGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
-          {/* Horizontal Dotted Grid Lines */}
-          {yAxisTicks.map((tickVal, i) => {
-            const y = getY(tickVal);
+          {/* Grid Horizontal Lines & Y-Axis Labels */}
+          {yTicks.map((val, idx) => {
+            const y = getY(val);
+            const label = val >= 1000 ? `${(val / 1000).toFixed(val % 1000 === 0 ? 0 : 1)}K` : `${Math.round(val)}`;
             return (
-              <g key={`y-${i}`}>
+              <g key={idx}>
                 <line
                   x1={padLeft}
                   y1={y}
                   x2={width - padRight}
                   y2={y}
-                  stroke="#EBF2EE"
-                  strokeWidth="1"
+                  stroke="#E2EAE6"
                   strokeDasharray="3 3"
+                  strokeWidth="1"
                 />
                 <text
                   x={padLeft - 8}
                   y={y + 3.5}
                   textAnchor="end"
                   fontSize="10"
-                  fontFamily="sans-serif"
-                  fill="#8A9993"
                   fontWeight="600"
+                  fill="#8A9993"
                 >
-                  {tickVal.toLocaleString()}
+                  {label}
                 </text>
               </g>
             );
           })}
 
-          {/* Base Zero Line */}
-          <line
-            x1={padLeft}
-            y1={padTop + innerHeight}
-            x2={width - padRight}
-            y2={padTop + innerHeight}
-            stroke="#DDE7E2"
-            strokeWidth="1.5"
-          />
-
-          {/* 1. Sent Area & Line (Blue) */}
-          {visibleSeries.sent && (
-            <>
-              <path d={sentAreaPath} fill="url(#sentGrad)" />
-              <path
-                d={sentPath}
-                fill="none"
-                stroke="#2563EB"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {chartPoints.map((p, idx) => (
-                <circle
-                  key={`sent-pt-${idx}`}
-                  cx={getX(idx)}
-                  cy={getY(p.sent)}
-                  r="3.5"
-                  fill="#FFFFFF"
-                  stroke="#2563EB"
-                  strokeWidth="2"
-                />
-              ))}
-            </>
-          )}
-
-          {/* 2. Delivered Area & Line (Emerald) */}
-          {visibleSeries.delivered && (
-            <>
-              <path d={deliveredAreaPath} fill="url(#deliveredGrad)" />
-              <path
-                d={deliveredPath}
-                fill="none"
-                stroke="#05A222"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {chartPoints.map((p, idx) => (
-                <circle
-                  key={`deliv-pt-${idx}`}
-                  cx={getX(idx)}
-                  cy={getY(p.delivered)}
-                  r="4"
-                  fill="#FFFFFF"
-                  stroke="#05A222"
-                  strokeWidth="2.5"
-                />
-              ))}
-            </>
-          )}
-
-          {/* 3. Read Line (Amber) */}
-          {visibleSeries.read && (
-            <>
-              <path
-                d={readPath}
-                fill="none"
-                stroke="#F59E0B"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {chartPoints.map((p, idx) => (
-                <circle
-                  key={`read-pt-${idx}`}
-                  cx={getX(idx)}
-                  cy={getY(p.read)}
-                  r="3.5"
-                  fill="#FFFFFF"
-                  stroke="#F59E0B"
-                  strokeWidth="2"
-                />
-              ))}
-            </>
-          )}
-
-          {/* 4. Replied Line (Violet) */}
-          {visibleSeries.replied && (
-            <>
-              <path
-                d={repliedPath}
-                fill="none"
-                stroke="#8B5CF6"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {chartPoints.map((p, idx) => (
-                <circle
-                  key={`replied-pt-${idx}`}
-                  cx={getX(idx)}
-                  cy={getY(p.replied)}
-                  r="3.5"
-                  fill="#FFFFFF"
-                  stroke="#8B5CF6"
-                  strokeWidth="2"
-                />
-              ))}
-            </>
-          )}
-
-          {/* X-Axis Slanted Date Labels - Show Every Date */}
-          {chartPoints.map((p, idx) => {
+          {/* X-Axis Date Labels */}
+          {points.map((p, idx) => {
+            if (!p.showLabel) return null;
             const x = getX(idx);
-            const y = padTop + innerHeight + 12;
             return (
               <text
-                key={`lbl-${idx}`}
+                key={idx}
                 x={x}
-                y={y}
-                transform={`rotate(-45, ${x}, ${y})`}
-                textAnchor="end"
-                fontSize="8"
-                fontFamily="sans-serif"
-                fill="#6B7280"
-                fontWeight="500"
+                y={height - 10}
+                textAnchor="middle"
+                fontSize="10"
+                fontWeight="600"
+                fill="#8A9993"
               >
-                {p.rawKey}
+                {p.dateLabel}
               </text>
             );
           })}
 
-          {/* Active Hover Crosshair Line */}
-          {hoverIndex !== null && activeX !== null && activePoint && (
-            <g>
-              <line
-                x1={activeX}
-                y1={padTop}
-                x2={activeX}
-                y2={padTop + innerHeight}
-                stroke="#14201C"
-                strokeWidth="1.5"
-                strokeDasharray="4 4"
-                opacity="0.6"
-              />
-              {visibleSeries.sent && (
-                <circle cx={activeX} cy={getY(activePoint.sent)} r="5.5" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2.5" />
-              )}
-              {visibleSeries.delivered && (
-                <circle cx={activeX} cy={getY(activePoint.delivered)} r="6.5" fill="#05A222" stroke="#FFFFFF" strokeWidth="3" />
-              )}
-              {visibleSeries.read && (
-                <circle cx={activeX} cy={getY(activePoint.read)} r="5.5" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="2.5" />
-              )}
-              {visibleSeries.replied && (
-                <circle cx={activeX} cy={getY(activePoint.replied)} r="5.5" fill="#8B5CF6" stroke="#FFFFFF" strokeWidth="2.5" />
-              )}
-            </g>
+          {/* Area Fills */}
+          <path d={sentArea} fill="url(#sentGrad)" />
+          <path d={deliveredArea} fill="url(#deliveredGrad)" />
+          <path d={readArea} fill="url(#readGrad)" />
+
+          {/* Lines */}
+          <path
+            d={sentPath}
+            fill="none"
+            stroke="#3B82F6"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d={deliveredPath}
+            fill="none"
+            stroke="#10B981"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d={readPath}
+            fill="none"
+            stroke="#F59E0B"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d={failedPath}
+            fill="none"
+            stroke="#EF4444"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          {/* Points along the curves */}
+          {points.map((p, idx) => {
+            const x = getX(idx);
+            const isHovered = hoverIndex === idx;
+            return (
+              <g key={idx}>
+                {/* Sent point */}
+                <circle
+                  cx={x}
+                  cy={getY(p.sent)}
+                  r={isHovered ? '4.5' : '3'}
+                  fill="#3B82F6"
+                  stroke="#fff"
+                  strokeWidth={isHovered ? '2' : '1.5'}
+                />
+                {/* Delivered point */}
+                <circle
+                  cx={x}
+                  cy={getY(p.delivered)}
+                  r={isHovered ? '4.5' : '3'}
+                  fill="#10B981"
+                  stroke="#fff"
+                  strokeWidth={isHovered ? '2' : '1.5'}
+                />
+                {/* Read point */}
+                <circle
+                  cx={x}
+                  cy={getY(p.read)}
+                  r={isHovered ? '4.5' : '3'}
+                  fill="#F59E0B"
+                  stroke="#fff"
+                  strokeWidth={isHovered ? '2' : '1.5'}
+                />
+                {/* Failed point */}
+                <circle
+                  cx={x}
+                  cy={getY(p.failed)}
+                  r={isHovered ? '4' : '2.5'}
+                  fill="#EF4444"
+                  stroke="#fff"
+                  strokeWidth="1.5"
+                />
+              </g>
+            );
+          })}
+
+          {/* Active Hover Guideline & Hitboxes */}
+          {activeX !== null && (
+            <line
+              x1={activeX}
+              y1={padTop}
+              x2={activeX}
+              y2={padTop + chartH}
+              stroke="#8A9993"
+              strokeDasharray="2 2"
+              strokeWidth="1.2"
+            />
           )}
+
+          {/* Interactive Invisible Columns for hovering */}
+          {points.map((_, idx) => {
+            const x = getX(idx);
+            const colW = chartW / Math.max(points.length, 1);
+            return (
+              <rect
+                key={idx}
+                x={x - colW / 2}
+                y={padTop}
+                width={colW}
+                height={chartH}
+                fill="transparent"
+                className="cursor-pointer"
+                onMouseEnter={() => setHoverIndex(idx)}
+              />
+            );
+          })}
         </svg>
 
-        {/* Premium Dark Glass Floating Tooltip */}
-        {hoverIndex !== null && activePoint && activeX !== null && (
+        {/* Floating Tooltip Card (Matching mockup styling exactly) */}
+        {activePoint && activeX !== null && (
           <div
+            className="absolute z-20 bg-white/95 backdrop-blur-xs border border-[#E2EAE6] rounded-xl p-3 shadow-lg pointer-events-none text-xs transition-all duration-150"
             style={{
-              left: `${Math.min(Math.max((activeX / width) * 100, 14), 86)}%`,
-              top: '10px',
+              left: `${Math.min(Math.max((activeX / width) * 100, 15), 85)}%`,
+              top: '15%',
+              transform: 'translate(-50%, 0)',
+              minWidth: '130px',
             }}
-            className="absolute transform -translate-x-1/2 pointer-events-none z-30 bg-[#14201C]/95 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl border border-white/10 text-xs w-56 transition-all duration-75"
           >
-            <div className="font-black border-b border-white/10 pb-1.5 mb-2 text-white flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-[#05A222]" />
-                {activePoint.date}
-              </span>
-              <span className="text-[10px] uppercase font-bold text-[#05A222] bg-[#05A222]/20 px-1.5 py-0.5 rounded">
-                Live
-              </span>
+            <div className="text-[11px] font-bold text-[#14201C] pb-1.5 mb-1.5 border-b border-[#E2EAE6]">
+              {activePoint.fullDate}
             </div>
-
-            <div className="space-y-1.5 font-medium">
-              <div className="flex items-center justify-between text-blue-300">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]" /> Sent:
-                </span>
-                <strong className="text-white font-bold">{activePoint.sent.toLocaleString()}</strong>
+            <div className="space-y-1">
+              <div className="flex items-center justify-between gap-3 text-[11px]">
+                <div className="flex items-center gap-1.5 text-[#5F7069]">
+                  <span className="w-2 h-2 rounded-full bg-[#3B82F6]" />
+                  <span>Sent</span>
+                </div>
+                <span className="font-bold text-[#14201C]">{activePoint.sent.toLocaleString()}</span>
               </div>
-
-              <div className="flex items-center justify-between text-emerald-300">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#05A222]" /> Delivered:
+              <div className="flex items-center justify-between gap-3 text-[11px]">
+                <div className="flex items-center gap-1.5 text-[#5F7069]">
+                  <span className="w-2 h-2 rounded-full bg-[#10B981]" />
+                  <span>Delivered</span>
+                </div>
+                <span className="font-bold text-[#14201C]">
+                  {activePoint.delivered.toLocaleString()}
                 </span>
-                <strong className="text-white font-bold">{activePoint.delivered.toLocaleString()}</strong>
               </div>
-
-              <div className="flex items-center justify-between text-amber-300">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" /> Read:
-                </span>
-                <strong className="text-white font-bold">{activePoint.read.toLocaleString()}</strong>
+              <div className="flex items-center justify-between gap-3 text-[11px]">
+                <div className="flex items-center gap-1.5 text-[#5F7069]">
+                  <span className="w-2 h-2 rounded-full bg-[#F59E0B]" />
+                  <span>Read</span>
+                </div>
+                <span className="font-bold text-[#14201C]">{activePoint.read.toLocaleString()}</span>
               </div>
-
-              <div className="flex items-center justify-between text-purple-300">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#8B5CF6]" /> Replied:
-                </span>
-                <strong className="text-white font-bold">{activePoint.replied.toLocaleString()}</strong>
+              <div className="flex items-center justify-between gap-3 text-[11px]">
+                <div className="flex items-center gap-1.5 text-[#5F7069]">
+                  <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
+                  <span>Failed</span>
+                </div>
+                <span className="font-bold text-[#EF4444]">{activePoint.failed.toLocaleString()}</span>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Interactive Clickable Legend Bar */}
-      <div className="pt-3 border-t border-[#F0F5F2] flex flex-wrap items-center justify-center sm:justify-between gap-3 text-xs">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#5F7069] uppercase tracking-wider">
-          <Layers className="w-3.5 h-3.5 text-[#05A222]" />
-          <span>Filter Lines:</span>
+      {/* Bottom Chart Legend */}
+      <div className="flex items-center justify-center gap-6 mt-2 pt-3 border-t border-[#F6FAF8] flex-wrap">
+        <div className="flex items-center gap-2 text-xs font-bold text-[#14201C]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#3B82F6]" />
+          <span>Sent</span>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => toggleSeries('sent')}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-              visibleSeries.sent
-                ? 'bg-blue-50 text-blue-700 border-blue-200 shadow-2xs'
-                : 'bg-white text-gray-400 border-gray-200 line-through opacity-60'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
-            <span>Sent</span>
-          </button>
-
-          <button
-            onClick={() => toggleSeries('delivered')}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-              visibleSeries.delivered
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-200 shadow-2xs'
-                : 'bg-white text-gray-400 border-gray-200 line-through opacity-60'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-[#05A222]" />
-            <span>Delivered</span>
-          </button>
-
-          <button
-            onClick={() => toggleSeries('read')}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-              visibleSeries.read
-                ? 'bg-amber-50 text-amber-800 border-amber-200 shadow-2xs'
-                : 'bg-white text-gray-400 border-gray-200 line-through opacity-60'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-[#F59E0B]" />
-            <span>Read</span>
-          </button>
-
-          <button
-            onClick={() => toggleSeries('replied')}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-              visibleSeries.replied
-                ? 'bg-purple-50 text-purple-800 border-purple-200 shadow-2xs'
-                : 'bg-white text-gray-400 border-gray-200 line-through opacity-60'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-[#8B5CF6]" />
-            <span>Replied</span>
-          </button>
+        <div className="flex items-center gap-2 text-xs font-bold text-[#14201C]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
+          <span>Delivered</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs font-bold text-[#14201C]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+          <span>Read</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs font-bold text-[#14201C]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" />
+          <span>Failed</span>
         </div>
       </div>
     </div>

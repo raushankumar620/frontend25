@@ -1,32 +1,25 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Users,
-  MessageSquare,
   Send,
   CheckCircle,
   Eye,
   XCircle,
   Calendar,
   Megaphone,
-  TrendingUp,
-  Plus,
-  Zap,
 } from 'lucide-react';
 import { PageContainer } from '../../../components/layout/PageContainer';
-import { MetricCard, RateCard } from '../components/StatsCard';
+import { MetricCard } from '../components/StatsCard';
 import { MessageChart } from '../components/MessageChart';
+import { QuickActions } from '../components/QuickActions';
 import { RecentActivity } from '../components/RecentActivity';
-import { ApiConnectionStatus } from '../components/ApiConnectionStatus';
-import { Button } from '../../../components/ui/Button';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../../../utils/constants';
+import { TemplatePerformance } from '../components/TemplatePerformance';
 import { useAuthStore } from '../../../store/authStore';
 import { analyticsService } from '../../../services/analyticsService';
 import type { OverviewKPIs, MessageTimeseriesPoint } from '../../analytics/types';
 
 export const Dashboard: React.FC = () => {
-  const navigate = useNavigate();
-  const { refreshProfile } = useAuthStore();
+  const { user, refreshProfile } = useAuthStore();
   const [overview, setOverview] = useState<OverviewKPIs | null>(null);
   const [timeseries, setTimeseries] = useState<MessageTimeseriesPoint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,15 +44,15 @@ export const Dashboard: React.FC = () => {
     refreshProfile();
     loadDashboardData(true);
 
-    // Auto-refresh real-time metrics every 10 seconds
+    // Auto-refresh real-time metrics every 15 seconds
     const interval = setInterval(() => {
       loadDashboardData(false);
-    }, 10000);
+    }, 15000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Primary Metrics
+  // Primary real-time dynamic values directly from backend
   const totalContacts = overview?.activeContacts ?? 0;
   const totalMessages = overview?.messages?.total ?? 0;
   const sentCount = overview?.messages?.sent ?? 0;
@@ -68,9 +61,10 @@ export const Dashboard: React.FC = () => {
   const failedCount = overview?.messages?.failed ?? 0;
   const campaignsCount = overview?.activeCampaigns ?? 0;
 
-  // Calculate today's messages from timeseries or overview
+  // Calculate today's messages from timeseries
   const todayCount = useMemo(() => {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const todayPoint = timeseries.find((t) => t.date && t.date.startsWith(todayStr));
     if (todayPoint) {
       return (todayPoint.sent || 0) + (todayPoint.inbound || 0);
@@ -78,174 +72,175 @@ export const Dashboard: React.FC = () => {
     return 0;
   }, [timeseries]);
 
-  // Rate calculations
-  const deliveryPct = totalMessages > 0 ? (deliveredCount / totalMessages) * 100 : 0;
-  const deliveryRateStr = overview?.messages?.deliveryRate || `${deliveryPct.toFixed(1)}%`;
+  // Real delivery & read rates
+  const deliveryRateStr = totalMessages > 0 ? `${((deliveredCount / totalMessages) * 100).toFixed(1)}%` : '0%';
+  const readRateStr = totalMessages > 0 ? `${((readCount / totalMessages) * 100).toFixed(1)}%` : '0%';
+  const failedRateStr = totalMessages > 0 ? `${((failedCount / totalMessages) * 100).toFixed(1)}%` : '0%';
 
-  const readPct = totalMessages > 0 ? (readCount / totalMessages) * 100 : 0;
-  const readRateStr = overview?.messages?.readRate || `${readPct.toFixed(1)}%`;
+  // Real-time sparklines from timeseries
+  const sentSparkline = useMemo(() => {
+    if (timeseries.length >= 2) return timeseries.map((t) => t.sent || 0);
+    return [0, 0, 0, 0, 0, 0, 0];
+  }, [timeseries]);
 
-  const resolutionRateStr = overview?.conversations?.resolutionRate || '100%';
-  const resolutionPct = parseFloat(resolutionRateStr) || 100;
-  const resolvedCount = overview?.conversations?.resolved ?? 0;
+  const deliveredSparkline = useMemo(() => {
+    if (timeseries.length >= 2) return timeseries.map((t) => t.delivered || 0);
+    return [0, 0, 0, 0, 0, 0, 0];
+  }, [timeseries]);
+
+  const readSparkline = useMemo(() => {
+    if (timeseries.length >= 2) return timeseries.map((t) => t.read || 0);
+    return [0, 0, 0, 0, 0, 0, 0];
+  }, [timeseries]);
+
+  const failedSparkline = useMemo(() => {
+    if (timeseries.length >= 2) return timeseries.map((t) => t.failed || 0);
+    return [0, 0, 0, 0, 0, 0, 0];
+  }, [timeseries]);
+
+  const totalSparkline = useMemo(() => {
+    if (timeseries.length >= 2) return timeseries.map((t) => (t.sent || 0) + (t.inbound || 0));
+    return [0, 0, 0, 0, 0, 0, 0];
+  }, [timeseries]);
+
+  // Greeting logic
+  const currentHour = new Date().getHours();
+  const greeting =
+    currentHour < 12
+      ? 'Good Morning'
+      : currentHour < 17
+        ? 'Good Afternoon'
+        : 'Good Evening';
+
+  const userName = user?.firstName || user?.name || (user?.email ? user.email.split('@')[0] : 'User');
 
   return (
     <PageContainer>
-      {/* Top Actions */}
-      <div className="flex items-center justify-end gap-3 mb-6">
-        <Button
-          variant="outline"
-          size="md"
-          onClick={() => navigate(ROUTES.CREATE_TEMPLATE)}
-          leftIcon={<Plus className="w-4 h-4" />}
-          className="text-sm font-semibold px-4 py-2.5 rounded-xl border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] cursor-pointer"
-        >
-          New Template
-        </Button>
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
-          leftIcon={<Zap className="w-4 h-4" />}
-          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm cursor-pointer"
-        >
-          Launch Broadcast
-        </Button>
-      </div>
+      <div className="space-y-6 pb-6">
+        {/* Top Section: Personalized Greeting & Mascot Side Banner */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-[#14201C] tracking-tight flex items-center gap-2">
+              <span>{greeting}, {userName}!</span>
+              <span>👋</span>
+            </h1>
+            <p className="text-xs sm:text-sm text-[#5F7069] mt-1 font-medium">
+              Here's what's happening with your WhatsApp business today.
+            </p>
+          </div>
 
-      {/* 8 Primary KPI Metrics (Top 2 Rows) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-        {/* Row 1 */}
-        <MetricCard
-          title="Total Contacts"
-          value={loading ? '...' : totalContacts.toLocaleString()}
-          icon={<Users className="w-4 h-4" />}
-          accentColor="#2563EB"
-          theme="blue"
-          subText="Opted-in audience"
-          badge="CRM"
-        />
+          <div className="shrink-0 hidden sm:block">
+            <img
+              src="/dashbord_side_banner.png"
+              alt="Move Faster. Grow Bigger. Automate. Engage. Convert."
+              className="h-14 md:h-16 w-auto object-contain drop-shadow-xs"
+            />
+          </div>
+        </div>
 
-        <MetricCard
-          title="Total Messages"
-          value={loading ? '...' : totalMessages.toLocaleString()}
-          icon={<MessageSquare className="w-4 h-4" />}
-          accentColor="#F97316"
-          theme="orange"
-          subText="Lifetime throughput"
-          badge="Processed"
-        />
+        {/* 8 Primary KPI Metric Cards (4x2 Grid) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <MetricCard
+            title="Total Contacts"
+            value={loading && !overview ? '...' : totalContacts.toLocaleString()}
+            icon={<Users className="w-4 h-4" />}
+            change={totalContacts > 0 ? `Active` : '0'}
+            subText="Active contacts"
+            theme="green"
+            sparklineData={totalSparkline}
+          />
 
-        <MetricCard
-          title="Sent"
-          value={loading ? '...' : sentCount.toLocaleString()}
-          icon={<Send className="w-4 h-4" />}
-          accentColor="#0EA5E9"
-          theme="sky"
-          subText="Meta Cloud API"
-          badge="Outbound"
-        />
+          <MetricCard
+            title="Total Messages"
+            value={loading && !overview ? '...' : totalMessages.toLocaleString()}
+            icon={<Send className="w-4 h-4" />}
+            change={totalMessages > 0 ? `100%` : '0'}
+            subText="Lifetime throughput"
+            theme="blue"
+            sparklineData={totalSparkline}
+          />
 
-        <MetricCard
-          title="Delivered"
-          value={loading ? '...' : deliveredCount.toLocaleString()}
-          icon={<CheckCircle className="w-4 h-4" />}
-          accentColor="#10B981"
-          theme="emerald"
-          subText="Handset verified"
-          badge="Double Tick"
-        />
+          <MetricCard
+            title="Sent"
+            value={loading && !overview ? '...' : sentCount.toLocaleString()}
+            icon={<Send className="w-4 h-4" />}
+            change={totalMessages > 0 ? `${((sentCount / totalMessages) * 100).toFixed(0)}%` : '0%'}
+            subText="Via Meta Cloud API"
+            theme="purple"
+            sparklineData={sentSparkline}
+          />
 
-        {/* Row 2 */}
-        <MetricCard
-          title="Read"
-          value={loading ? '...' : readCount.toLocaleString()}
-          icon={<Eye className="w-4 h-4" />}
-          accentColor="#8B5CF6"
-          theme="purple"
-          subText="Customer opened"
-          badge="Blue Ticks"
-        />
+          <MetricCard
+            title="Delivered"
+            value={loading && !overview ? '...' : deliveredCount.toLocaleString()}
+            icon={<CheckCircle className="w-4 h-4" />}
+            change={deliveryRateStr}
+            subText="Delivery success rate"
+            theme="emerald"
+            sparklineData={deliveredSparkline}
+          />
 
-        <MetricCard
-          title="Failed"
-          value={loading ? '...' : failedCount.toLocaleString()}
-          icon={<XCircle className="w-4 h-4" />}
-          accentColor="#EF4444"
-          theme="rose"
-          subText="Delivery bounces"
-          badge="Errors"
-        />
+          <MetricCard
+            title="Read"
+            value={loading && !overview ? '...' : readCount.toLocaleString()}
+            icon={<Eye className="w-4 h-4" />}
+            change={readRateStr}
+            subText={totalMessages > 0 ? `${readRateStr} read rate` : 'Read conversion rate'}
+            theme="orange"
+            sparklineData={readSparkline}
+          />
 
-        <MetricCard
-          title="Today"
-          value={loading ? '...' : todayCount.toLocaleString()}
-          icon={<Calendar className="w-4 h-4" />}
-          accentColor="#F59E0B"
-          theme="amber"
-          subText="Live 24h traffic"
-          badge="Real-time"
-        />
+          <MetricCard
+            title="Failed"
+            value={loading && !overview ? '...' : failedCount.toLocaleString()}
+            icon={<XCircle className="w-4 h-4" />}
+            change={failedRateStr}
+            changeType={failedCount > 0 ? 'negative' : 'neutral'}
+            subText="Delivery failure rate"
+            theme="rose"
+            sparklineData={failedSparkline}
+          />
 
-        <MetricCard
-          title="Total Campaigns"
-          value={loading ? '...' : campaignsCount.toLocaleString()}
-          icon={<Megaphone className="w-4 h-4" />}
-          accentColor="#EC4899"
-          theme="pink"
-          subText="Broadcast workflows"
-          badge="Active"
-        />
-      </div>
+          <MetricCard
+            title="Today"
+            value={loading && !overview ? '...' : todayCount.toLocaleString()}
+            icon={<Calendar className="w-4 h-4" />}
+            change={todayCount > 0 ? 'Live' : '0'}
+            subText="Messages sent today"
+            theme="sky"
+            sparklineData={totalSparkline}
+          />
 
-      {/* 3 Rate & Performance Cards (Row 3) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <RateCard
-          title="Delivery Success Rate"
-          rate={loading ? '...' : deliveryRateStr}
-          percentage={deliveryPct}
-          icon={<Send className="w-4.5 h-4.5" />}
-          accentColor="#10B981"
-          gradientFrom="from-emerald-500 to-teal-400"
-          details={`${deliveredCount.toLocaleString()} delivered of ${totalMessages.toLocaleString()} messages`}
-          subMetric="Meta Webhook SLA"
-          badge="Reliability"
-        />
+          <MetricCard
+            title="Active Campaigns"
+            value={loading && !overview ? '...' : campaignsCount.toLocaleString()}
+            icon={<Megaphone className="w-4 h-4" />}
+            change={campaignsCount > 0 ? `${campaignsCount} Active` : '0 Active'}
+            subText="Running campaigns"
+            theme="violet"
+            sparklineData={[0, 0, 0, 0, campaignsCount]}
+          />
+        </div>
 
-        <RateCard
-          title="Message Read Rate"
-          rate={loading ? '...' : readRateStr}
-          percentage={readPct}
-          icon={<Eye className="w-4.5 h-4.5" />}
-          accentColor="#8B5CF6"
-          gradientFrom="from-purple-500 to-indigo-400"
-          details={`${readCount.toLocaleString()} read of ${totalMessages.toLocaleString()} messages`}
-          subMetric="Customer Engagement"
-          badge="Open Rate"
-        />
+        {/* Middle Section: Message Analytics Chart (approx 62%) + Quick Actions (approx 38%) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+          <div className="lg:col-span-7 xl:col-span-8 flex flex-col">
+            <MessageChart timeseries={timeseries} overview={overview} loading={loading} />
+          </div>
+          <div className="lg:col-span-5 xl:col-span-4 flex flex-col">
+            <QuickActions />
+          </div>
+        </div>
 
-        <RateCard
-          title="Resolution SLA"
-          rate={loading ? '...' : resolutionRateStr}
-          percentage={resolutionPct}
-          icon={<TrendingUp className="w-4.5 h-4.5" />}
-          accentColor="#F59E0B"
-          gradientFrom="from-amber-500 to-orange-400"
-          details={`${resolvedCount.toLocaleString()} customer conversations resolved`}
-          subMetric="Support Efficiency"
-          badge="SLA Target"
-        />
-      </div>
-
-      {/* Full-Width Message Analytics Graph Section */}
-      <div className="w-full mb-8">
-        <MessageChart timeseries={timeseries} overview={overview} loading={loading} />
-      </div>
-
-      {/* 2-Column Row: API Status & Connection (Left) + Live Activity Feed (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <ApiConnectionStatus />
-        <RecentActivity />
+        {/* Bottom Section: Recent Activity (Left) + Template Performance (Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+          <div className="lg:col-span-5 flex flex-col">
+            <RecentActivity />
+          </div>
+          <div className="lg:col-span-7 flex flex-col">
+            <TemplatePerformance />
+          </div>
+        </div>
       </div>
     </PageContainer>
   );

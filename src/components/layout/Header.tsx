@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Menu,
-  Zap,
-  ShieldCheck,
+  Send,
+  Crown,
+  Search,
   User as UserIcon,
   Building,
   Key,
@@ -10,7 +11,6 @@ import {
   LogOut,
   ChevronDown,
 } from 'lucide-react';
-import { Avatar } from '../ui/Avatar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
 import { useAuthStore } from '../../store/authStore';
@@ -217,7 +217,6 @@ export interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   onToggleSidebar,
   title,
-  subtitle,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -253,11 +252,9 @@ export const Header: React.FC<HeaderProps> = ({
   };
   const displayRole = formatRoleLabel(user?.role);
   const orgName = organization?.name || user?.organizationName || 'WhatsApp Workspace';
-  const orgPlan = organization?.plan ? organization.plan.replace(/_/g, ' ') : 'FREE TRIAL';
 
-  // Determine active header title and subtitle
+  // Determine active header title
   let activeTitle = title;
-  let activeSubtitle = subtitle;
 
   if (!activeTitle) {
     const currentPath = location.pathname;
@@ -270,19 +267,17 @@ export const Header: React.FC<HeaderProps> = ({
 
     if (match) {
       activeTitle = match.title;
-      activeSubtitle = match.subtitle;
     } else {
       // Default fallback based on path segment
       const segment = currentPath.split('/').filter(Boolean)[0] || 'app';
       activeTitle = segment.charAt(0).toUpperCase() + segment.slice(1);
-      activeSubtitle = 'Manage and configure your WhatsApp Cloud workspace.';
     }
   }
 
   return (
-    <header className="h-[72px] sm:h-20 bg-white border-b border-[#E2EAE6] px-5 sm:px-8 flex items-center justify-between z-20 shrink-0 shadow-xs">
-      {/* Left: Mobile trigger & Page Title + Subtitle */}
-      <div className="flex items-center gap-3.5 min-w-0 pr-4">
+    <header className="h-[72px] sm:h-20 bg-white border-b border-[#E2EAE6] px-4 sm:px-6 lg:px-8 flex items-center justify-between z-20 shrink-0 shadow-xs">
+      {/* Left: Mobile trigger & Search Input or Page Title */}
+      <div className="flex items-center gap-3.5 min-w-0 flex-1 max-w-xl pr-4">
         {onToggleSidebar && (
           <button
             onClick={onToggleSidebar}
@@ -292,59 +287,84 @@ export const Header: React.FC<HeaderProps> = ({
             <Menu className="w-5 h-5" />
           </button>
         )}
-        <div className="min-w-0">
-          <h1 className="text-base sm:text-lg font-black text-[#14201C] tracking-tight truncate leading-tight">
+
+        {/* Global Search Bar */}
+        <div className="relative w-full max-w-md hidden sm:block">
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#8A9993]">
+            <Search className="w-4 h-4" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search contacts, messages, templates..."
+            className="w-full pl-9 pr-14 py-2 bg-[#F6FAF8] border border-[#E2EAE6] hover:border-[#C4EBD0] focus:border-[#05A222] focus:bg-white text-xs font-medium text-[#14201C] placeholder-[#8A9993] rounded-xl outline-none transition-all"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                navigate(`${ROUTES.CONTACTS}?search=${encodeURIComponent(e.currentTarget.value.trim())}`);
+              }
+            }}
+          />
+          <div className="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
+            <kbd className="px-1.5 py-0.5 text-[10px] font-semibold text-[#8A9993] bg-white border border-[#E2EAE6] rounded-md shadow-2xs">
+              Ctrl K
+            </kbd>
+          </div>
+        </div>
+
+        {/* Mobile Page Title fallback when search is hidden on very small devices */}
+        <div className="sm:hidden min-w-0">
+          <h1 className="text-base font-black text-[#14201C] tracking-tight truncate">
             {activeTitle}
           </h1>
-          {activeSubtitle && (
-            <p className="text-[11px] sm:text-xs text-[#5F7069] truncate font-medium mt-0.5 hidden sm:block">
-              {activeSubtitle}
-            </p>
-          )}
         </div>
       </div>
 
-      {/* Right: Status badge, Notification, User menu */}
-      <div className="flex items-center gap-3.5">
-        <div className="hidden sm:flex items-center gap-2 bg-[#E9F9EE] text-[#006736] px-3.5 py-1.5 rounded-full text-xs font-bold border border-[#C4EBD0]">
-          <ShieldCheck className="w-4 h-4 text-[#05A222]" />
-          <span>{orgPlan}</span>
+      {/* Right: Free Trial Badge, Quick Broadcast, Notification, User menu */}
+      <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+        {/* Free Trial Crown Badge */}
+        <div className="flex items-center gap-1.5 bg-[#E9F9EE] text-[#006736] px-3 py-1.5 rounded-full border border-[#C4EBD0] shadow-2xs">
+          <Crown className="w-3.5 h-3.5 text-[#05A222]" />
+          <div className="flex flex-col leading-none">
+            <span className="text-[10px] font-black tracking-wide uppercase">FREE TRIAL</span>
+            <span className="text-[9px] font-bold text-[#05A222]">7 days left</span>
+          </div>
         </div>
 
+        {/* Quick Broadcast Button */}
         <button
-          onClick={() => navigate(ROUTES.CAMPAIGNS)}
-          className="hidden md:flex items-center gap-2 bg-[#05A222] hover:bg-[#006736] text-white text-sm font-bold px-4 py-2 rounded-xl shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+          onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
+          className="flex items-center gap-2 bg-[#05A222] hover:bg-[#006736] text-white text-xs sm:text-sm font-bold px-3.5 sm:px-4 py-2 rounded-xl shadow-xs transition-all active:scale-[0.98] cursor-pointer"
         >
-          <Zap className="w-4 h-4" />
-          <span>Quick Broadcast</span>
+          <Send className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Quick Broadcast</span>
         </button>
 
+        {/* Notification Bell */}
         <NotificationDropdown />
 
-        <div className="h-8 w-px bg-[#E2EAE6] mx-1" />
+        <div className="h-7 w-px bg-[#E2EAE6]" />
 
         {/* Dynamic User Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-[#F6FAF8] transition-colors cursor-pointer text-left focus:outline-none"
+            className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-[#F6FAF8] transition-colors cursor-pointer text-left focus:outline-none"
             aria-expanded={isDropdownOpen}
           >
-            <Avatar
-              name={displayName}
-              src={user?.avatarUrl || user?.avatar}
-              size="md"
-              status="online"
-            />
+            <div className="relative">
+              <div className="w-9 h-9 rounded-full bg-[#013B23] text-white flex items-center justify-center font-black text-xs shadow-2xs border border-[#006736]">
+                {displayName.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase() || 'RK'}
+              </div>
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#05A222] border-2 border-white rounded-full" />
+            </div>
             <div className="hidden md:flex flex-col text-left">
-              <span className="text-sm font-bold text-[#14201C] truncate max-w-[150px]">
+              <span className="text-xs font-black text-[#14201C] truncate max-w-[140px] leading-tight">
                 {displayName}
               </span>
-              <span className="text-[11px] text-[#05A222] font-semibold uppercase tracking-wide">
+              <span className="text-[10px] text-[#5F7069] font-semibold leading-tight">
                 {displayRole}
               </span>
             </div>
-            <ChevronDown className="hidden md:block w-4 h-4 text-[#8A9993]" />
+            <ChevronDown className="hidden md:block w-3.5 h-3.5 text-[#8A9993]" />
           </button>
 
           {isDropdownOpen && (
