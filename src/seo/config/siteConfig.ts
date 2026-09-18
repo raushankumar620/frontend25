@@ -30,7 +30,7 @@ export const siteConfig = {
     logoSquare: '/images/whatsapplogoshort.png',
     ogImage: '/images/seo/whatsappmsg-og.png',
     twitterImage: '/images/seo/whatsappmsg-twitter.png',
-    favicon: '/images/seo/favicon/favicon.ico',
+    favicon: '/favicon.png',
   },
 } as const;
 
