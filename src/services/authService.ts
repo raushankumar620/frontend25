@@ -159,13 +159,27 @@ export const authService = {
     throw new Error(res.message || 'Registration failed');
   },
 
-  async forgotPassword(email: string): Promise<{ message: string; resetToken?: string }> {
-    const res = await apiClient.post<{ message: string; resetToken?: string }>('/auth/forgot-password', { email });
-    return res.data || { message: res.message || 'Reset link sent' };
+  async forgotPassword(email: string): Promise<{ success?: boolean; message: string; email?: string; resetToken?: string }> {
+    const res = await apiClient.post<{ success?: boolean; message: string; email?: string; resetToken?: string }>('/auth/forgot-password', { email });
+    return res.data || { message: res.message || 'Verification OTP sent to your email' };
   },
 
-  async resetPassword(token: string, password: string): Promise<{ message: string }> {
-    const res = await apiClient.post<{ message: string }>('/auth/reset-password', { token, password });
+  async verifyResetOtp(email: string, otp: string): Promise<{ success: boolean; message: string }> {
+    const res = await apiClient.post<{ success: boolean; message: string }>('/auth/verify-otp', { email, otp });
+    return res.data || { success: true, message: res.message || 'OTP verified successfully' };
+  },
+
+  async resetPassword(
+    payload: { email?: string; otp?: string; token?: string; password?: string } | string,
+    explicitPassword?: string
+  ): Promise<{ message: string }> {
+    let body: any;
+    if (typeof payload === 'string') {
+      body = { token: payload, password: explicitPassword };
+    } else {
+      body = payload;
+    }
+    const res = await apiClient.post<{ message: string }>('/auth/reset-password', body);
     return res.data || { message: res.message || 'Password reset successful' };
   },
 

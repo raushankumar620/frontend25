@@ -23,18 +23,19 @@ export const Pricing: React.FC = () => {
   };
 
   const comparisonFeatures = [
-    { name: 'WhatsApp Business Numbers', starter: '1 Number', growth: '3 Numbers', enterprise: 'Unlimited' },
-    { name: 'Monthly Active Contacts', starter: '2,500', growth: '25,000', enterprise: '1,000,000+' },
-    { name: 'Team Members / Agent Seats', starter: '2 Seats', growth: '10 Seats', enterprise: 'Custom / Unlimited' },
-    { name: 'Meta Cloud API Direct (Zero Markup)', starter: 'Included', growth: 'Included', enterprise: 'Included' },
-    { name: 'AI Autonomous Agent & RAG', starter: 'Basic (100 responses/mo)', growth: 'Advanced (2,500/mo)', enterprise: 'Unlimited Custom RAG' },
-    { name: 'Visual Workflow Automations', starter: '5 Active Flows', growth: 'Unlimited Flows', enterprise: 'Unlimited Flows + Sub-routines' },
-    { name: 'Broadcast Campaigns & A/B Testing', starter: 'Basic', growth: 'Advanced + Smart Throttle', enterprise: 'Dedicated High-Throughput Queue' },
-    { name: 'Developer APIs & Webhooks', starter: '100 req/min', growth: '1,000 req/min', enterprise: '10,000+ req/min (Dedicated Pod)' },
-    { name: 'Role-Based Access Control (RBAC)', starter: 'Standard', growth: 'Granular Roles', enterprise: 'Custom Roles & SAML SSO' },
-    { name: 'Green Tick Verification Support', starter: 'Documentation Only', growth: 'Assisted Submission', enterprise: 'Priority Fast-Track Guarantee' },
-    { name: 'Support SLA & Dedicated CSM', starter: 'Community / Email (24h)', growth: 'Priority Chat (2h)', enterprise: '24/7 Dedicated Slack + 15m SLA' },
-    { name: 'Custom Data Residency (EU / US / APAC)', starter: 'Shared US Cloud', growth: 'Shared US/EU Cloud', enterprise: 'Dedicated Single-Tenant Option' },
+    { name: 'Monthly Price / Effective Rate', starter: '₹1,599 / mo', growth: '₹2,599 (₹866/mo)', enterprise: '₹15,999 (₹1,333/mo)' },
+    { name: 'WhatsApp Business Numbers', starter: '1 Number', growth: '2 Numbers', enterprise: 'Up to 5 Numbers' },
+    { name: 'Monthly Messages Included', starter: '10,000 / mo', growth: '35,000 / mo', enterprise: '150,000+ / mo' },
+    { name: 'CRM Contacts Limit', starter: '5,000 Contacts', growth: '25,000 Contacts', enterprise: '100,000+ Contacts' },
+    { name: 'Team Members / Agent Seats', starter: '5 Seats', growth: '15 Seats', enterprise: '50 Seats' },
+    { name: 'Meta Cloud API Direct (Zero Markup)', starter: 'Included', growth: 'Included', enterprise: 'Included (High TPS)' },
+    { name: 'AI Autonomous Agent & Knowledge Base', starter: 'Standard Auto-responder', growth: 'AI Agent + Knowledge Base', enterprise: 'Dedicated Custom RAG + Tools' },
+    { name: 'Visual Workflow Automations', starter: 'Included', growth: 'Unlimited Flows', enterprise: 'Unlimited Flows + Custom Webhooks' },
+    { name: 'Broadcast Campaigns & Templates', starter: 'Included', growth: 'Advanced + Smart Throttle', enterprise: 'Dedicated High-Throughput Queue' },
+    { name: 'Developer APIs & Webhooks', starter: 'Standard API', growth: 'High Rate Limits', enterprise: 'Dedicated Developer Pods' },
+    { name: 'Role-Based Access Control (RBAC)', starter: 'Standard', growth: 'Granular Permissions', enterprise: 'Custom Roles & Audit Logs' },
+    { name: 'Green Tick Verification Support', starter: 'Documentation Guide', growth: 'Assisted Submission', enterprise: 'Priority Fast-Track Guarantee' },
+    { name: 'Support SLA & Dedicated CSM', starter: 'Email & Chat Support', growth: 'Priority 24/7 Support', enterprise: 'Dedicated Manager & 24/7 SLA' },
   ];
 
   const faqs = [

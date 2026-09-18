@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-  ShieldCheck, 
-  Lock, 
-  Smartphone, 
-  Eye, 
-  EyeOff, 
-  ArrowRight, 
-  AlertCircle 
+import {
+  ShieldCheck,
+  Lock,
+  Smartphone,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  AlertCircle
 } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore';
 import { ROUTES } from '../../../utils/constants';
@@ -15,7 +15,7 @@ import { ROUTES } from '../../../utils/constants';
 export const SuperAdminLogin: React.FC = () => {
   const navigate = useNavigate();
   const { adminLogin } = useAuthStore();
-  
+
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +33,7 @@ export const SuperAdminLogin: React.FC = () => {
       setIsLoading(true);
       setError('');
       const user = await adminLogin(identifier, password);
-      
+
       if (user.role === 'SUPER_ADMIN') {
         navigate(ROUTES.SUPER_ADMIN_DASHBOARD);
       } else {
@@ -57,10 +57,10 @@ export const SuperAdminLogin: React.FC = () => {
         <div className="bg-white border border-[#E2EAE6] shadow-xl shadow-[#013B23]/5 rounded-3xl p-8 sm:p-10 transition-all">
           {/* Header Brand */}
           <div className="flex flex-col items-center text-center mb-7">
-            <img 
-              src="/images/logo.png" 
-              alt="WhatsAppMSG" 
-              className="h-10 sm:h-12 w-auto object-contain drop-shadow-sm mb-3" 
+            <img
+              src="/images/logo.png"
+              alt="WhatsAppMSG"
+              className="h-10 sm:h-12 w-auto object-contain drop-shadow-sm mb-3"
             />
 
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E9F9EE] border border-[#C4EBD0] text-[#006736] text-xs font-semibold uppercase tracking-wider mb-2">
@@ -155,8 +155,8 @@ export const SuperAdminLogin: React.FC = () => {
           {/* Footer Back link */}
           <div className="mt-8 pt-6 border-t border-[#E2EAE6] flex items-center justify-between text-xs text-[#5F7069]">
             <span>Customer account?</span>
-            <Link 
-              to={ROUTES.LOGIN} 
+            <Link
+              to={ROUTES.LOGIN}
               className="text-[#05A222] font-bold hover:underline flex items-center gap-1 hover:text-[#006736] transition-colors"
             >
               Standard Client Login &rarr;

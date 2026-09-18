@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { User as UserIcon, Mail, Lock, Building, Phone, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { User as UserIcon, Mail, Lock, Building, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore';
 import { ROUTES } from '../../../utils/constants';
 
@@ -12,7 +12,6 @@ export const Register: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState(searchParams.get('email') || '');
   const [company, setCompany] = useState('');
-  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +42,6 @@ export const Register: React.FC = () => {
         firstName,
         lastName,
         name,
-        phone,
         organizationName: company || `${firstName}'s Organization`,
       });
 
@@ -65,11 +63,11 @@ export const Register: React.FC = () => {
           className="h-10 sm:h-12 w-auto object-contain drop-shadow-sm"
         />
         <div className="text-center pt-1">
-          <h2 className="text-2xl sm:text-[26px] font-black text-[#102319] tracking-tight font-display">
+          <h2 className="text-2xl sm:text-[28px] font-black tracking-tight bg-gradient-to-r from-[#102319] via-[#05A222] to-[#008744] bg-clip-text text-transparent font-display">
             Create Business Account
           </h2>
-          <p className="text-xs text-[#527063] mt-1">
-            Get started with Meta Cloud API & WhatsApp automation in minutes.
+          <p className="text-xs sm:text-sm text-[#527063] mt-1 font-medium">
+            Get started with Meta Cloud API &amp; WhatsApp automation in minutes.
           </p>
         </div>
       </div>
@@ -83,8 +81,8 @@ export const Register: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-3.5">
         <div className="relative flex items-center">
-          <div className="absolute left-3.5 text-[#739284] pointer-events-none flex items-center">
-            <UserIcon className="w-4 h-4" />
+          <div className="absolute left-3.5 text-[#2563EB] pointer-events-none flex items-center">
+            <UserIcon className="w-4.5 h-4.5 text-[#2563EB]" />
           </div>
           <input
             type="text"
@@ -92,13 +90,13 @@ export const Register: React.FC = () => {
             onChange={(e) => setName(e.target.value)}
             placeholder="Full Name (e.g. Rahul Sharma)"
             required
-            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-4 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
+            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-11 pr-4 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
           />
         </div>
 
         <div className="relative flex items-center">
-          <div className="absolute left-3.5 text-[#739284] pointer-events-none flex items-center">
-            <Mail className="w-4 h-4" />
+          <div className="absolute left-3.5 text-[#0284C7] pointer-events-none flex items-center">
+            <Mail className="w-4.5 h-4.5 text-[#0284C7]" />
           </div>
           <input
             type="email"
@@ -106,39 +104,26 @@ export const Register: React.FC = () => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Work Email (e.g. owner@mybusiness.com)"
             required
-            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-4 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
+            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-11 pr-4 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
           />
         </div>
 
         <div className="relative flex items-center">
-          <div className="absolute left-3.5 text-[#739284] pointer-events-none flex items-center">
-            <Building className="w-4 h-4" />
+          <div className="absolute left-3.5 text-[#7C3AED] pointer-events-none flex items-center">
+            <Building className="w-4.5 h-4.5 text-[#7C3AED]" />
           </div>
           <input
             type="text"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
             placeholder="Organization / Company Name"
-            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-4 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
+            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-11 pr-4 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
           />
         </div>
 
         <div className="relative flex items-center">
-          <div className="absolute left-3.5 text-[#739284] pointer-events-none flex items-center">
-            <Phone className="w-4 h-4" />
-          </div>
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Phone Number (optional)"
-            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-4 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
-          />
-        </div>
-
-        <div className="relative flex items-center">
-          <div className="absolute left-3.5 text-[#739284] pointer-events-none flex items-center">
-            <Lock className="w-4 h-4" />
+          <div className="absolute left-3.5 text-[#05A222] pointer-events-none flex items-center">
+            <Lock className="w-4.5 h-4.5 text-[#05A222]" />
           </div>
           <input
             type={showPassword ? 'text' : 'password'}
@@ -146,7 +131,7 @@ export const Register: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password (minimum 6 characters)"
             required
-            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-10 pr-11 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
+            className="w-full rounded-2xl border border-[#d6e5dd] bg-[#fafcfb] focus:bg-white text-[#14201C] text-sm pl-11 pr-11 py-3.5 transition-all placeholder:text-[#8ea49a] focus:outline-none focus:border-[#05A222] focus:ring-4 focus:ring-[#05A222]/15 shadow-2xs font-medium"
           />
           <button
             type="button"

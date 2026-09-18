@@ -21,7 +21,7 @@ interface Message {
 const KNOWLEDGE_BASE: { keywords: string[]; answer: string; action?: { label: string; url: string; isInternal?: boolean } }[] = [
   {
     keywords: ['price', 'pricing', 'cost', 'plan', 'charge', 'rate', 'paisa'],
-    answer: '💰 WhatsAppMSG offers 3 flexible plans with ZERO Meta API markup:\n\n• Starter: $29/mo (Up to 10k msgs, 2 agents)\n• Pro: $79/mo (Up to 50k msgs, 5 agents, AI Bot)\n• Enterprise: $199/mo (Unlimited msgs, custom AI models, 24/7 dedicated SLA).\n\nYou also get a 14-Day Free Trial with no credit card required!',
+    answer: '💰 WhatsAppMSG offers 3 transparent plans with ZERO Meta API markup:\n\n• Starter Pro: ₹1,599/mo (10k msgs, 1 number, 5k contacts, 5 seats)\n• Growth Business: ₹2,599 total for 3 Months (Effective ₹866/mo, 35k msgs, 2 numbers, 25k contacts, AI Agent - 45% OFF)\n• Annual Enterprise: ₹15,999/yr (Effective ₹1,333/mo, 150k+ msgs, 5 numbers, 100k contacts, 50 seats, High TPS API).\n\nInstant activation via Cashfree PG with UPI, Cards & Netbanking!',
     action: { label: 'View Full Pricing', url: ROUTES.PUBLIC_PRICING, isInternal: true }
   },
   {

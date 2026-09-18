@@ -24,7 +24,7 @@ export const PublicNavbar: React.FC = () => {
         {/* Brand - Clean Logo Only */}
         <Link to={ROUTES.HOME} className="flex items-center group">
           <img
-            src="/images/logo.png"
+            src="/images/seo/main_logo.png"
             alt={APP_NAME}
             className="h-10 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
           />
@@ -113,8 +113,7 @@ export const PublicNavbar: React.FC = () => {
                 to={item.path}
                 onClick={() => setIsMobileOpen(false)}
                 className={({ isActive }) =>
-                  `px-3 py-2.5 rounded-xl text-sm font-semibold ${
-                    isActive ? 'bg-[#E9F9EE] text-[#006736] font-bold' : 'text-[#5F7069] hover:bg-[#F6FAF8]'
+                  `px-3 py-2.5 rounded-xl text-sm font-semibold ${isActive ? 'bg-[#E9F9EE] text-[#006736] font-bold' : 'text-[#5F7069] hover:bg-[#F6FAF8]'
                   }`
                 }
               >

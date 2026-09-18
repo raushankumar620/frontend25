@@ -58,8 +58,8 @@ export const Login: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
         {/* Email Field */}
         <div className="relative flex items-center">
-          <div className="absolute left-4 text-[#739284] pointer-events-none flex items-center">
-            <Mail className="w-5 h-5" />
+          <div className="absolute left-4 text-[#0284C7] pointer-events-none flex items-center">
+            <Mail className="w-5 h-5 text-[#0284C7]" />
           </div>
           <input
             type="email"
@@ -73,8 +73,8 @@ export const Login: React.FC = () => {
 
         {/* Password Field */}
         <div className="relative flex items-center">
-          <div className="absolute left-4 text-[#739284] pointer-events-none flex items-center">
-            <Lock className="w-5 h-5" />
+          <div className="absolute left-4 text-[#05A222] pointer-events-none flex items-center">
+            <Lock className="w-5 h-5 text-[#05A222]" />
           </div>
           <input
             type={showPassword ? 'text' : 'password'}

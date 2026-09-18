@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  ShieldCheck, 
-  Zap, 
-  Headphones, 
-  Users, 
+import {
+  ShieldCheck,
+  Zap,
+  Headphones,
+  Users,
   Heart,
   CheckCircle2,
   Mail
@@ -55,46 +55,46 @@ export const PublicFooter: React.FC = () => {
   };
 
   const socialIcons = [
-    { 
-      name: 'LinkedIn', 
-      icon: LinkedInIcon, 
+    {
+      name: 'LinkedIn',
+      icon: LinkedInIcon,
       url: 'https://www.linkedin.com/company/whatsapmsg/',
-      colorClass: 'bg-[#0A66C2]/10 border-[#0A66C2]/25 text-[#0A66C2] hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2] hover:shadow-[0_4px_14px_rgba(10,102,194,0.4)]',
+      colorClass: 'bg-[#0A66C2] text-white border-[#0A66C2] shadow-[0_3px_10px_rgba(10,102,194,0.35)] hover:bg-[#004182] hover:shadow-[0_6px_16px_rgba(10,102,194,0.5)]',
     },
-    { 
-      name: 'X', 
-      icon: XTwitterIcon, 
+    {
+      name: 'X',
+      icon: XTwitterIcon,
       url: 'https://twitter.com/whatsapmsg',
-      colorClass: 'bg-black/5 border-black/20 text-black hover:bg-black hover:text-white hover:border-black hover:shadow-[0_4px_14px_rgba(0,0,0,0.35)]',
+      colorClass: 'bg-black text-white border-black shadow-[0_3px_10px_rgba(0,0,0,0.3)] hover:bg-[#262626] hover:shadow-[0_6px_16px_rgba(0,0,0,0.45)]',
     },
-    { 
-      name: 'YouTube', 
-      icon: YouTubeIcon, 
+    {
+      name: 'YouTube',
+      icon: YouTubeIcon,
       url: 'https://www.youtube.com/@whatsapmsg',
-      colorClass: 'bg-[#FF0000]/10 border-[#FF0000]/25 text-[#FF0000] hover:bg-[#FF0000] hover:text-white hover:border-[#FF0000] hover:shadow-[0_4px_14px_rgba(255,0,0,0.4)]',
+      colorClass: 'bg-[#FF0000] text-white border-[#FF0000] shadow-[0_3px_10px_rgba(255,0,0,0.35)] hover:bg-[#D90000] hover:shadow-[0_6px_16px_rgba(255,0,0,0.5)]',
     },
-    { 
-      name: 'Instagram', 
-      icon: InstagramIcon, 
-      url: 'https://www.instagram.com/whatsapmsg/',
-      colorClass: 'bg-[#E1306C]/10 border-[#E1306C]/25 text-[#E1306C] hover:bg-gradient-to-tr hover:from-[#F58529] hover:via-[#DD2A7B] hover:to-[#8134AF] hover:text-white hover:border-transparent hover:shadow-[0_4px_14px_rgba(225,48,108,0.4)]',
+    {
+      name: 'Instagram',
+      icon: InstagramIcon,
+      url: 'https://www.instagram.com/wmsgplatform/',
+      colorClass: 'bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white border-transparent shadow-[0_3px_10px_rgba(225,48,108,0.35)] hover:opacity-95 hover:shadow-[0_6px_16px_rgba(225,48,108,0.5)]',
     },
-    { 
-      name: 'Facebook', 
-      icon: FacebookIcon, 
+    {
+      name: 'Facebook',
+      icon: FacebookIcon,
       url: 'https://www.facebook.com/whatsapmsg',
-      colorClass: 'bg-[#1877F2]/10 border-[#1877F2]/25 text-[#1877F2] hover:bg-[#1877F2] hover:text-white hover:border-[#1877F2] hover:shadow-[0_4px_14px_rgba(24,119,242,0.4)]',
+      colorClass: 'bg-[#1877F2] text-white border-[#1877F2] shadow-[0_3px_10px_rgba(24,119,242,0.35)] hover:bg-[#0C5DC7] hover:shadow-[0_6px_16px_rgba(24,119,242,0.5)]',
     },
   ];
 
   return (
     <footer className="relative bg-[#FAFDFB] text-[#14201C] overflow-hidden">
-      
+
       {/* Background Image Layer */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none">
-        <img 
-          src="/images/footerbg.png" 
-          alt="WhatsAppMSG Footer Background" 
+        <img
+          src="/images/footerbg.png"
+          alt="WhatsAppMSG Footer Background"
           className="w-full h-full object-cover object-bottom"
         />
       </div>
@@ -102,20 +102,20 @@ export const PublicFooter: React.FC = () => {
       {/* Flying Paper Airplane Illustration on Top Right */}
       <div className="hidden xl:block absolute top-6 right-10 pointer-events-none select-none z-10">
         <svg width="140" height="140" viewBox="0 0 140 140" fill="none">
-          <path 
-            d="M15 125 C 25 85, 65 95, 95 55" 
-            stroke="#1CD72C" 
-            strokeWidth="1.8" 
-            strokeDasharray="5 5" 
-            strokeLinecap="round" 
+          <path
+            d="M15 125 C 25 85, 65 95, 95 55"
+            stroke="#1CD72C"
+            strokeWidth="1.8"
+            strokeDasharray="5 5"
+            strokeLinecap="round"
             opacity="0.75"
           />
-          <path 
-            d="M90 50 L132 20 L108 68 L96 52 Z" 
+          <path
+            d="M90 50 L132 20 L108 68 L96 52 Z"
             fill="#05A222"
           />
-          <path 
-            d="M108 68 L96 52 L132 20 Z" 
+          <path
+            d="M108 68 L96 52 L132 20 Z"
             fill="#039B56"
           />
         </svg>
@@ -124,21 +124,16 @@ export const PublicFooter: React.FC = () => {
       {/* MAIN TOP SECTION */}
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-10 xl:px-14 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8">
-          
+
           {/* Col 1: Brand & Logo (Span 3) */}
           <div className="lg:col-span-3 space-y-4">
-            
+
             {/* Logo */}
-            <Link to={ROUTES.HOME} className="inline-flex items-center gap-2 group">
-              <img 
-                src="/images/whatsapplogoshort.png" 
-                alt="WhatsAppMSG Icon" 
-                className="w-9 h-9 sm:w-10 sm:h-10 object-contain drop-shadow-xs shrink-0 transition-transform group-hover:scale-105"
-              />
-              <img 
-                src="/images/seo/whatsappmsg-logo.png" 
-                alt={APP_NAME} 
-                className="h-8 sm:h-9 w-auto object-contain -translate-y-0.5 transition-transform group-hover:scale-102"
+            <Link to={ROUTES.HOME} className="inline-flex items-center group">
+              <img
+                src="/images/seo/main_logo.png"
+                alt={APP_NAME}
+                className="h-10 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
               />
             </Link>
 
@@ -327,10 +322,10 @@ export const PublicFooter: React.FC = () => {
 
           {/* Col 5: Stay Updated Card (Span 3) */}
           <div className="lg:col-span-3 space-y-6">
-            
+
             {/* Card */}
             <div className="bg-[#EBF7EE]/85 border border-[#C4EBD0] rounded-2xl p-5 sm:p-6 shadow-xs backdrop-blur-xs">
-              
+
               <div className="flex items-center gap-2 text-xs font-bold text-[#006736] mb-2">
                 <Mail className="w-4 h-4 text-[#05A222]" />
                 <span>Stay Updated</span>
@@ -348,15 +343,15 @@ export const PublicFooter: React.FC = () => {
               ) : (
                 <form onSubmit={handleNewsletterSubmit} className="space-y-2">
                   <div className="flex flex-col sm:flex-row items-stretch gap-2">
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       required
-                      placeholder="Enter your email address" 
+                      placeholder="Enter your email address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="flex-1 min-w-0 bg-white border border-[#C4EBD0] rounded-xl px-3.5 py-2 text-xs text-[#14201C] placeholder:text-[#8A9993] focus:outline-none focus:border-[#05A222] shadow-2xs"
                     />
-                    <button 
+                    <button
                       type="submit"
                       className="bg-[#05A222] hover:bg-[#006736] text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center justify-center gap-1 shrink-0 transition-colors shadow-xs cursor-pointer"
                     >
@@ -374,30 +369,30 @@ export const PublicFooter: React.FC = () => {
             </div>
 
             {/* 4 Feature Trust Badges */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3 pt-1">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2.5 pt-2">
               
-              <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+              <div className="flex flex-col items-center sm:items-start text-center sm:text-left bg-white/90 backdrop-blur-xs border border-[#C4EBD0] p-2.5 rounded-2xl shadow-2xs">
                 <ShieldCheck className="w-5 h-5 text-[#05A222] mb-1 shrink-0" />
-                <span className="text-[11px] font-bold text-[#14201C] leading-tight">Secure</span>
-                <span className="text-[10px] text-[#5F7069] leading-tight">& Reliable</span>
+                <span className="text-[12px] font-black text-[#0B1E13] leading-tight">Secure</span>
+                <span className="text-[10px] text-[#374151] font-bold leading-tight">&amp; Reliable</span>
               </div>
 
-              <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+              <div className="flex flex-col items-center sm:items-start text-center sm:text-left bg-white/90 backdrop-blur-xs border border-[#C4EBD0] p-2.5 rounded-2xl shadow-2xs">
                 <Zap className="w-5 h-5 text-[#05A222] mb-1 shrink-0" />
-                <span className="text-[11px] font-bold text-[#14201C] leading-tight">99.9%</span>
-                <span className="text-[10px] text-[#5F7069] leading-tight">Uptime</span>
+                <span className="text-[12px] font-black text-[#0B1E13] leading-tight">99.9%</span>
+                <span className="text-[10px] text-[#374151] font-bold leading-tight">Uptime</span>
               </div>
 
-              <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+              <div className="flex flex-col items-center sm:items-start text-center sm:text-left bg-white/90 backdrop-blur-xs border border-[#C4EBD0] p-2.5 rounded-2xl shadow-2xs">
                 <Headphones className="w-5 h-5 text-[#05A222] mb-1 shrink-0" />
-                <span className="text-[11px] font-bold text-[#14201C] leading-tight">24/7</span>
-                <span className="text-[10px] text-[#5F7069] leading-tight">Support</span>
+                <span className="text-[12px] font-black text-[#0B1E13] leading-tight">24/7</span>
+                <span className="text-[10px] text-[#374151] font-bold leading-tight">Support</span>
               </div>
 
-              <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+              <div className="flex flex-col items-center sm:items-start text-center sm:text-left bg-white/90 backdrop-blur-xs border border-[#C4EBD0] p-2.5 rounded-2xl shadow-2xs">
                 <Users className="w-5 h-5 text-[#05A222] mb-1 shrink-0" />
-                <span className="text-[11px] font-bold text-[#14201C] leading-tight">Trusted by</span>
-                <span className="text-[10px] text-[#5F7069] leading-tight">10,000+ Brands</span>
+                <span className="text-[12px] font-black text-[#0B1E13] leading-tight">Trusted by</span>
+                <span className="text-[10px] text-[#374151] font-bold leading-tight">10,000+ Brands</span>
               </div>
 
             </div>
@@ -418,7 +413,7 @@ export const PublicFooter: React.FC = () => {
       {/* DARK FOREST GREEN BOTTOM COPYRIGHT BAR */}
       <div className="relative z-10 bg-[#013B23] text-white/85 text-xs py-4 px-4 sm:px-6 lg:px-10 xl:px-14 border-t border-[#006736]">
         <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-          
+
           <div className="flex items-center flex-wrap justify-center gap-2 text-[11px] sm:text-xs text-white/80">
             <span>© 2024 {APP_NAME}. All rights reserved.</span>
             <span className="hidden sm:inline text-white/40">|</span>

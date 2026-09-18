@@ -85,7 +85,7 @@ export const Contact: React.FC = () => {
                 </a>
 
                 <a 
-                  href="https://www.instagram.com/whatsapmsg/" 
+                  href="https://www.instagram.com/wmsgplatform/" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-[#E2EAE6] hover:border-[#05A222] transition-colors group shadow-2xs"
@@ -95,7 +95,7 @@ export const Contact: React.FC = () => {
                   </div>
                   <div>
                     <div className="text-xs font-bold text-[#5F7069] uppercase tracking-wider">Official Instagram</div>
-                    <div className="text-sm font-semibold text-[#14201C] mt-0.5">@whatsapmsg</div>
+                    <div className="text-sm font-semibold text-[#14201C] mt-0.5">@wmsgplatform</div>
                     <div className="text-[11px] text-[#8A9993]">Follow our verified product announcements</div>
                   </div>
                 </a>

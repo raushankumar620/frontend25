@@ -11,8 +11,8 @@ export const socialConfig = {
   },
   instagram: {
     name: 'Instagram',
-    url: 'https://www.instagram.com/whatsapmsg/',
-    handle: '@whatsapmsg',
+    url: 'https://www.instagram.com/wmsgplatform/',
+    handle: '@wmsgplatform',
   },
   youtube: {
     name: 'YouTube',
@@ -26,7 +26,7 @@ export const socialConfig = {
   },
   sameAs: [
     'https://www.linkedin.com/company/whatsapmsg/',
-    'https://www.instagram.com/whatsapmsg/',
+    'https://www.instagram.com/wmsgplatform/',
     'https://www.youtube.com/@whatsapmsg',
     'https://www.facebook.com/whatsapmsg',
   ],
