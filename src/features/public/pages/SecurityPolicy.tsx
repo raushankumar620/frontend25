@@ -152,11 +152,11 @@ export const SecurityPolicy: React.FC = () => {
               <div className="pt-4 border-t border-[#E2EAE6] space-y-2">
                 <p className="text-xs text-[#8A9993]">Security emergency or bug report?</p>
                 <a
-                  href="mailto:whatsappmsgofficial@gmail.com"
+                  href="mailto:support@whatsappmsg.com"
                   className="inline-flex items-center gap-2 text-xs font-bold text-[#006736] hover:underline"
                 >
                   <Mail className="w-3.5 h-3.5" />
-                  <span>whatsappmsgofficial@gmail.com</span>
+                  <span>support@whatsappmsg.com</span>
                 </a>
               </div>
             </div>
@@ -293,8 +293,8 @@ export const SecurityPolicy: React.FC = () => {
                 </p>
                 <div className="flex items-center gap-2 text-sm text-[#006736] font-semibold">
                   <Mail className="w-4 h-4" />
-                  <a href="mailto:whatsappmsgofficial@gmail.com" className="hover:underline">
-                    whatsappmsgofficial@gmail.com
+                  <a href="mailto:support@whatsappmsg.com" className="hover:underline">
+                    support@whatsappmsg.com
                   </a>
                 </div>
               </div>

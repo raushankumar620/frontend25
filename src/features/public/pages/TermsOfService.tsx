@@ -151,11 +151,11 @@ export const TermsOfService: React.FC = () => {
               <div className="pt-4 border-t border-[#E2EAE6] space-y-2">
                 <p className="text-xs text-[#8A9993]">Questions or contract inquiries?</p>
                 <a
-                  href="mailto:whatsappmsgofficial@gmail.com"
+                  href="mailto:legal@whatsappmsg.com"
                   className="inline-flex items-center gap-2 text-xs font-bold text-[#006736] hover:underline"
                 >
                   <Mail className="w-3.5 h-3.5" />
-                  <span>whatsappmsgofficial@gmail.com</span>
+                  <span>legal@whatsappmsg.com</span>
                 </a>
               </div>
             </div>
@@ -331,7 +331,7 @@ export const TermsOfService: React.FC = () => {
                   Have questions about our enterprise terms or custom master service agreements?
                 </div>
                 <a
-                  href="mailto:whatsappmsgofficial@gmail.com"
+                  href="mailto:legal@whatsappmsg.com"
                   className="px-4 py-2 rounded-xl bg-[#006736] hover:bg-[#05A222] text-white text-xs font-bold transition-colors shrink-0"
                 >
                   Contact Legal Desk

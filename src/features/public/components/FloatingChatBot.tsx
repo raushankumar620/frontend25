@@ -26,7 +26,7 @@ const KNOWLEDGE_BASE: { keywords: string[]; answer: string; action?: { label: st
   },
   {
     keywords: ['meta', 'cloud api', 'direct', 'broker', 'tier 3', 'api'],
-    answer: '⚡ We use the Official Direct Meta Cloud API v20.0 with Tier 3 certification. This means:\n\n1. Zero broker middleman markups (pay official Meta rates)\n2. Ultra-low 380ms latency\n3. High-throughput (100,000+ messages/day)\n4. 99.99% delivery guarantee directly from Meta servers.',
+    answer: '⚡ We integrate directly with the Meta Cloud API v20.0. This means:\n\n1. Zero broker middleman markups (pay standard Meta rates)\n2. Ultra-low latency\n3. Scalable throughput (100,000+ messages/day)\n4. High delivery reliability directly via Meta infrastructure.',
     action: { label: 'Explore API Docs', url: ROUTES.DEVELOPERS_DOCS, isInternal: true }
   },
   {

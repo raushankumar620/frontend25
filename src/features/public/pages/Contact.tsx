@@ -71,15 +71,15 @@ export const Contact: React.FC = () => {
               
               <div className="space-y-4">
                 <a 
-                  href="mailto:whatsappmsgofficial@gmail.com"
+                  href="mailto:support@whatsappmsg.com"
                   className="flex items-start gap-4 p-4 rounded-2xl bg-[#E9F9EE] border border-[#C4EBD0] hover:border-[#05A222] transition-colors group cursor-pointer shadow-2xs"
                 >
                   <div className="w-10 h-10 rounded-xl bg-[#05A222] text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform font-bold shadow-xs">
                     <Mail className="w-5 h-5 fill-current" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-[#006736] uppercase tracking-wider">Official Email</div>
-                    <div className="text-sm font-semibold text-[#14201C] mt-0.5">whatsappmsgofficial@gmail.com</div>
+                    <div className="text-xs font-bold text-[#006736] uppercase tracking-wider">Support Email</div>
+                    <div className="text-sm font-semibold text-[#14201C] mt-0.5">support@whatsappmsg.com</div>
                     <div className="text-[11px] text-[#5F7069]">Direct support & enterprise inquiries</div>
                   </div>
                 </a>

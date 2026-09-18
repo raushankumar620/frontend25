@@ -1,0 +1,4 @@
+Contact: mailto:support@whatsappmsg.com
+Canonical: https://whatsappmsg.com/.well-known/security.txt
+Preferred-Languages: en
+Policy: https://whatsappmsg.com/security-policy

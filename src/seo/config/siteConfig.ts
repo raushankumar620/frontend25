@@ -11,7 +11,7 @@ export const siteConfig = {
   description:
     'WhatsAppMSG is an enterprise WhatsApp Business messaging and API platform that helps businesses connect WhatsApp, manage conversations, automate messaging, run campaigns, integrate APIs and deploy AI-powered WhatsApp customer support.',
   url: (import.meta.env.VITE_SITE_URL as string) || 'https://whatsappmsg.com',
-  officialEmail: 'whatsappmsgofficial@gmail.com',
+  officialEmail: 'support@whatsappmsg.com',
   locale: 'en_US',
   themeColor: '#006736',
   brandColors: {

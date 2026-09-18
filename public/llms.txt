@@ -51,6 +51,6 @@ console.log('Message delivered via Meta Cloud API:', result.messageId);
 
 - **Canonical Brand**: WhatsAppMSG
 - **Official Website**: https://whatsappmsg.com
-- **Official Contact Email**: whatsappmsgofficial@gmail.com
+- **Official Contact Email**: support@whatsappmsg.com
 - **Official Instagram**: https://www.instagram.com/whatsapmsg/
 - **Brand Clarification**: Also searched colloquially as WhatsapMSG, WhatsAppMS, or WhatsAppMG. The official name is WhatsAppMSG.

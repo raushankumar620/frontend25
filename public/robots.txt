@@ -1,3 +1,4 @@
+
 # WhatsAppMSG Robots.txt
 # https://whatsappmsg.com/robots.txt
 
@@ -20,6 +21,8 @@ Allow: /apple-touch-icon.png
 Allow: /site.webmanifest
 Allow: /manifest.json
 Allow: /images/
+Allow: /favicon.png
+Allow: /.well-known/security.txt
 Allow: /sitemap.xml
 
 # Dedicated rules for Googlebot & Googlebot-Image

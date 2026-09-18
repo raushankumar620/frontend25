@@ -25,7 +25,7 @@ export const About: React.FC = () => {
     {
       icon: Lock,
       title: 'Security & Trust First',
-      description: 'We treat customer data with bank-grade seriousness. End-to-end encryption, SOC 2 compliance, and zero data selling are our foundational pillars.',
+      description: 'We treat customer data with bank-grade seriousness. End-to-end encryption, strict security standards, and zero data selling are our foundational pillars.',
     },
     {
       icon: Zap,
@@ -89,13 +89,13 @@ export const About: React.FC = () => {
             <div className="lg:col-span-8 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E9F9EE] text-[#006736] text-xs font-bold border border-[#C4EBD0]">
                 <ShieldCheck className="w-4 h-4 text-[#05A222]" />
-                Official Meta Business Solution Provider
+                Built on the Official Meta Cloud API
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-[#14201C]">
-                Direct Cloud API Partnership with Zero Intermediaries
+                Direct Cloud API Integration with Zero Intermediaries
               </h2>
               <p className="text-xs sm:text-sm text-[#5F7069] leading-relaxed">
-                Unlike legacy aggregators that route messages through unpredictable intermediary SMS gateways, {APP_NAME} connects your business directly to Meta's Cloud API infrastructure. This guarantees unmatched delivery speeds, automatic green tick verification pathways, and official Meta pricing.
+                Unlike legacy aggregators that route messages through unpredictable intermediary SMS gateways, {APP_NAME} connects your business directly to Meta's Cloud API infrastructure. This guarantees unmatched delivery speeds, official green tick verification guidance, and standard Meta pricing.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-[#1F2A26]">
@@ -104,15 +104,15 @@ export const About: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-[#1F2A26]">
                   <CheckCircle2 className="w-4 h-4 text-[#05A222] shrink-0" />
-                  <span>Tier 3 100k msg/day Tier Status</span>
+                  <span>Scalable High Throughput (100k+ msg/day)</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-[#1F2A26]">
                   <CheckCircle2 className="w-4 h-4 text-[#05A222] shrink-0" />
-                  <span>Official Green Tick Assistance</span>
+                  <span>Green Tick Verification Guidance</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-[#1F2A26]">
                   <CheckCircle2 className="w-4 h-4 text-[#05A222] shrink-0" />
-                  <span>SOC 2 Type II & GDPR Compliant</span>
+                  <span>Enterprise Security & GDPR Alignment</span>
                 </div>
               </div>
             </div>
