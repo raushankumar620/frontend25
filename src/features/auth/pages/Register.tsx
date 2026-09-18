@@ -164,6 +164,13 @@ export const Register: React.FC = () => {
           Log In
         </Link>
       </div>
+
+      {/* Security Clarification (Prevents automated phishing flags) */}
+      <div className="pt-3 border-t border-[#E8EFEA] text-center">
+        <p className="text-[10px] text-[#788E83] leading-relaxed">
+          Create your WhatsAppMSG SaaS Dashboard account. Not affiliated with WhatsApp LLC or Meta Platforms, Inc.
+        </p>
+      </div>
     </div>
   );
 };

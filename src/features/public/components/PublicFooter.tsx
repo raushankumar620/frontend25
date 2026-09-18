@@ -441,6 +441,13 @@ export const PublicFooter: React.FC = () => {
           </div>
 
         </div>
+
+        {/* Official Trademark Disclaimer (Required to prevent false-positive phishing flags by security scanners) */}
+        <div className="w-full pt-3 mt-3 border-t border-white/10 text-center sm:text-left">
+          <p className="text-[10px] sm:text-[11px] text-white/55 leading-relaxed">
+            <span className="font-semibold text-white/70">Disclaimer:</span> {APP_NAME} is an independent B2B software platform built for WhatsApp Business messaging and official Meta Cloud API integration. We are not affiliated, associated, authorized, endorsed by, or in any way officially connected with WhatsApp LLC or Meta Platforms, Inc. WhatsApp and Meta are registered trademarks of Meta Platforms, Inc.
+          </p>
+        </div>
       </div>
 
     </footer>
