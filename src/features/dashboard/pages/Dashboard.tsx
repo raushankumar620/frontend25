@@ -77,30 +77,49 @@ export const Dashboard: React.FC = () => {
   const readRateStr = totalMessages > 0 ? `${((readCount / totalMessages) * 100).toFixed(1)}%` : '0%';
   const failedRateStr = totalMessages > 0 ? `${((failedCount / totalMessages) * 100).toFixed(1)}%` : '0%';
 
-  // Real-time sparklines from timeseries
-  const sentSparkline = useMemo(() => {
-    if (timeseries.length >= 2) return timeseries.map((t) => t.sent || 0);
-    return [0, 0, 0, 0, 0, 0, 0];
-  }, [timeseries]);
+  // Construct 7 real daily data points for each KPI sparkline from live backend timeseries
+  const dailySparklines = useMemo(() => {
+    const now = new Date();
+    const map = new Map<string, { sent: number; delivered: number; read: number; failed: number; total: number }>();
 
-  const deliveredSparkline = useMemo(() => {
-    if (timeseries.length >= 2) return timeseries.map((t) => t.delivered || 0);
-    return [0, 0, 0, 0, 0, 0, 0];
-  }, [timeseries]);
+    (timeseries || []).forEach((t) => {
+      if (t.date) {
+        const key = t.date.split('T')[0].split(' ')[0];
+        map.set(key, {
+          sent: t.sent || 0,
+          delivered: t.delivered || 0,
+          read: t.read || 0,
+          failed: t.failed || 0,
+          total: (t.sent || 0) + (t.inbound || 0),
+        });
+      }
+    });
 
-  const readSparkline = useMemo(() => {
-    if (timeseries.length >= 2) return timeseries.map((t) => t.read || 0);
-    return [0, 0, 0, 0, 0, 0, 0];
-  }, [timeseries]);
+    const sentArr: number[] = [];
+    const deliveredArr: number[] = [];
+    const readArr: number[] = [];
+    const failedArr: number[] = [];
+    const totalArr: number[] = [];
 
-  const failedSparkline = useMemo(() => {
-    if (timeseries.length >= 2) return timeseries.map((t) => t.failed || 0);
-    return [0, 0, 0, 0, 0, 0, 0];
-  }, [timeseries]);
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const item = map.get(key);
+      sentArr.push(item?.sent || 0);
+      deliveredArr.push(item?.delivered || 0);
+      readArr.push(item?.read || 0);
+      failedArr.push(item?.failed || 0);
+      totalArr.push(item?.total || 0);
+    }
 
-  const totalSparkline = useMemo(() => {
-    if (timeseries.length >= 2) return timeseries.map((t) => (t.sent || 0) + (t.inbound || 0));
-    return [0, 0, 0, 0, 0, 0, 0];
+    return {
+      sent: sentArr,
+      delivered: deliveredArr,
+      read: readArr,
+      failed: failedArr,
+      total: totalArr,
+    };
   }, [timeseries]);
 
   // Greeting logic
@@ -138,36 +157,36 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* 8 Primary KPI Metric Cards (4x2 Grid) */}
+        {/* 8 Primary KPI Metric Cards (4x2 Grid) - 100% Dynamic Real Data */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <MetricCard
             title="Total Contacts"
             value={loading && !overview ? '...' : totalContacts.toLocaleString()}
             icon={<Users className="w-4 h-4" />}
-            change={totalContacts > 0 ? `Active` : '0'}
+            change={totalContacts > 0 ? `${totalContacts} Active` : '0 Active'}
             subText="Active contacts"
             theme="green"
-            sparklineData={totalSparkline}
+            sparklineData={dailySparklines.total}
           />
 
           <MetricCard
             title="Total Messages"
             value={loading && !overview ? '...' : totalMessages.toLocaleString()}
             icon={<Send className="w-4 h-4" />}
-            change={totalMessages > 0 ? `100%` : '0'}
+            change={totalMessages > 0 ? `100%` : '0%'}
             subText="Lifetime throughput"
             theme="blue"
-            sparklineData={totalSparkline}
+            sparklineData={dailySparklines.total}
           />
 
           <MetricCard
             title="Sent"
             value={loading && !overview ? '...' : sentCount.toLocaleString()}
             icon={<Send className="w-4 h-4" />}
-            change={totalMessages > 0 ? `${((sentCount / totalMessages) * 100).toFixed(0)}%` : '0%'}
+            change={totalMessages > 0 ? `✓ ${((sentCount / totalMessages) * 100).toFixed(0)}%` : '0%'}
             subText="Via Meta Cloud API"
             theme="purple"
-            sparklineData={sentSparkline}
+            sparklineData={dailySparklines.sent}
           />
 
           <MetricCard
@@ -177,7 +196,7 @@ export const Dashboard: React.FC = () => {
             change={deliveryRateStr}
             subText="Delivery success rate"
             theme="emerald"
-            sparklineData={deliveredSparkline}
+            sparklineData={dailySparklines.delivered}
           />
 
           <MetricCard
@@ -187,7 +206,7 @@ export const Dashboard: React.FC = () => {
             change={readRateStr}
             subText={totalMessages > 0 ? `${readRateStr} read rate` : 'Read conversion rate'}
             theme="orange"
-            sparklineData={readSparkline}
+            sparklineData={dailySparklines.read}
           />
 
           <MetricCard
@@ -196,19 +215,19 @@ export const Dashboard: React.FC = () => {
             icon={<XCircle className="w-4 h-4" />}
             change={failedRateStr}
             changeType={failedCount > 0 ? 'negative' : 'neutral'}
-            subText="Delivery failure rate"
+            subText={totalMessages > 0 ? `${failedRateStr} failure rate` : 'Delivery failure rate'}
             theme="rose"
-            sparklineData={failedSparkline}
+            sparklineData={dailySparklines.failed}
           />
 
           <MetricCard
             title="Today"
             value={loading && !overview ? '...' : todayCount.toLocaleString()}
             icon={<Calendar className="w-4 h-4" />}
-            change={todayCount > 0 ? 'Live' : '0'}
+            change={todayCount > 0 ? `+${todayCount} today` : '0 today'}
             subText="Messages sent today"
             theme="sky"
-            sparklineData={totalSparkline}
+            sparklineData={dailySparklines.total}
           />
 
           <MetricCard

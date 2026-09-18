@@ -48,7 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const allNavItems: NavItem[] = [
     { label: 'Dashboard', path: ROUTES.DASHBOARD, icon: LayoutDashboard, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'dashboard' },
-    { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, color: '#05A222', bgColor: '#E9F9EE', badge: '12', permissionKey: 'inbox' },
+    { label: 'Inbox', path: ROUTES.INBOX, icon: MessageSquare, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'inbox' },
     { label: 'Contacts', path: ROUTES.CONTACTS, icon: Users, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'contacts' },
     { label: 'Templates', path: ROUTES.TEMPLATES, icon: FileText, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'templates' },
     { label: 'Campaigns', path: ROUTES.CAMPAIGNS, icon: Send, color: '#05A222', bgColor: '#E9F9EE', permissionKey: 'campaigns' },
