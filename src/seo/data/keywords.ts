@@ -6,16 +6,23 @@
 export const keywordClusters = {
   primaryBrand: [
     'WhatsAppMSG',
+    'whatsappmsg',
+    'WhatsApp MSG',
+    'whatsapp msg',
+    'whatsappmsg.com',
     'WhatsAppMSG platform',
+    'WhatsAppMSG Official',
     'WhatsAppMSG API',
     'WhatsAppMSG CRM',
   ],
   brandVariants: [
     'WhatsAppMSG',
+    'whatsappmsg',
     'WhatsapMSG',
     'WhatsAppMS',
     'WhatsAppMG',
     'WhatsAppMsg',
+    'WhatsApp MSG',
   ],
   corePlatform: [
     'WhatsApp API',

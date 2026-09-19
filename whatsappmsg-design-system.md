@@ -406,3 +406,97 @@ Developers and AI assistants working on this codebase **must adhere to the follo
 
 6. **Zero Build & Lint Errors:**
    - Run `npm run build` or `oxlint` to verify code compiles cleanly before committing any modifications.
+
+7. **Protected SEO, Favicon & Verification Invariant:**
+   - **Chahe kuch bhi ho jaye (No matter what), SEO-related content, meta tags, structured data, verification keys, and favicon assets must NEVER be deleted, emptied, or overwritten.**
+   - All SEO rules defined in [Section 16](#16-inviolable-seo-favicon--brand-identity-protection-guidelines) are strict, non-negotiable invariants.
+
+---
+
+## 16. Inviolable SEO, Favicon & Brand Identity Protection Guidelines
+
+> [!IMPORTANT]
+> **CRITICAL MANDATE: ZERO REMOVAL OF SEO OR BRAND ASSETS**
+> Chahe koi bhi naya feature add ho, layout change ho, refactor ho, ya code cleanup ho — **SEO se related kisi bhi file, meta tag, verification key, ya favicon asset ko remove ya modify nahi karna hai.**
+
+### 16.1 Favicon Specifications & Standard
+
+Google Search engine aur modern browsers ke liye favicon setup ekdam stable aur clear hona chahiye:
+
+1. **Favicon File Location:**
+   - `public/favicon.png`
+   - **Dimensions:** `512 × 512 px` (Strict 1:1 square ratio)
+   - **Format:** High-resolution RGBA PNG (~301 KB)
+   - **Visual Asset:** WhatsAppMSG ka actual brand logo ("WM" dynamic ribbon emblem inside WhatsApp-styled speech bubble with broadcast waves). **Old/generic WhatsApp phone receiver icon use karna strictly prohibited hai.**
+
+2. **Single Favicon Declaration Rule in `index.html`:**
+   - Google ek hostname ke liye ek primary favicon pick karta hai.
+   - `index.html` ke `<head>` mein **sirf aur sirf ek** clear declaration honi chahiye:
+     ```html
+     <!-- Favicon: Single clear declaration for Google Search & Browsers -->
+     <link rel="icon" type="image/png" href="/favicon.png" />
+     <link rel="apple-touch-icon" href="/favicon.png" />
+     <link rel="manifest" href="/site.webmanifest" />
+     ```
+   - **STRICTLY PROHIBITED:** Kabhi bhi multiple conflicting `<link rel="icon">` ya `<link rel="shortcut icon">` tags add na karein (jaise `.ico`, `.svg`, multiple sizes alag se). Aisa karne se Googlebot confuse hota hai aur Google Search mein purana ya default icon dikhata hai.
+
+### 16.2 Protected SEO Files & Assets (NEVER DELETE OR OVERWRITE)
+
+Niche di gayi files aur folders SEO, indexing aur crawler trust ke liye critical hain aur hamesha intact rehni chahiye:
+
+| File / Folder Path | Type | Purpose / Criticality |
+|---|---|---|
+| `public/favicon.png` | Asset | 512×512 Primary brand favicon (Google Search & Browser tab) |
+| `public/robots.txt` | Config | Googlebot/crawlers ke liye access rules aur sitemap directive |
+| `public/sitemap.xml` | Index | Search engines ke liye all public routes ka canonical index |
+| `public/site.webmanifest` | Manifest | PWA & modern browser app configuration |
+| `public/manifest.json` | Manifest | Web app manifest fallback |
+| `public/llms.txt` | AI SEO | LLM & AI search engines (ChatGPT, Gemini, Perplexity) ke liye context |
+| `public/images/seo/` | Assets | OpenGraph social preview cards (`whatsappmsg-og.png`, `whatsappmsg-twitter.png`, `main_logo.png`) |
+| `src/seo/` | Source | SEO configuration (`siteConfig.ts`), Schema generators (`structuredData.ts`), aur helper components |
+
+### 16.3 Mandatory `<head>` Elements in `index.html` (NEVER REMOVE)
+
+`index.html` file mein niche diye gaye blocks hamesha present rehne chahiye:
+
+1. **Third-Party Domain Verification Keys:**
+   - Gridinsoft Anti-Malware / Security verification:
+     ```html
+     <meta name="gridinsoft-key" content="ymsy29ua0pyvxt6w5cgl49dxs047xzom0lrld68ukikfvlffjzd8sn8a3majve0q" />
+     ```
+   - Google Search Console ya future verification tags — inhe kabhi remove na karein.
+
+2. **Core SEO Meta Directives:**
+   - Title: `WhatsAppMSG | WhatsApp Business API, Marketing Automation & AI Platform`
+   - Description, keywords, author, canonical URL (`https://whatsappmsg.com/`)
+   - Robots directive: `index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1`
+
+3. **Open Graph & Twitter Cards:**
+   - `og:type`, `og:site_name`, `og:url`, `og:title`, `og:description`, `og:image`, `og:logo`
+   - `twitter:card`, `twitter:site`, `twitter:title`, `twitter:description`, `twitter:image`
+
+4. **JSON-LD Schema Markup:**
+   - Schema.org structured data graph jisme `Organization`, `WebSite`, aur `SoftwareApplication` entities mapped hain.
+
+5. **Semantic Pre-hydration Fallback:**
+   - `<div id="root">` ke andar `<main class="sr-only">` fallback text jo JavaScript execute hone se pehle search engine bots ko brand context aur navigation links provide karta hai.
+
+### 16.4 Deployment & Testing Standard
+
+Kisi bhi release ya update ke baad yeh checks compulsory hain:
+
+1. **Build Check:**
+   ```bash
+   npm run build
+   ```
+   Check karein ki `dist/favicon.png` aur `dist/index.html` mein sabhi SEO tags maujood hain.
+
+2. **Deploy Hosting:**
+   ```bash
+   firebase deploy --only hosting
+   ```
+
+3. **Live URL Verification:**
+   - Direct favicon check: `https://whatsappmsg.com/favicon.png` (HTTP 200, Content-Type: `image/png`, 512×512 WM logo)
+   - Source code check: `https://whatsappmsg.com/` view source mein `gridinsoft-key` aur `favicon.png` check karein.
+

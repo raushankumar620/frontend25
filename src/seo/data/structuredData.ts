@@ -13,17 +13,23 @@ import { buildCanonical } from '../utils/buildCanonical';
  */
 export function generateOrganizationSchema() {
   const baseUrl = buildCanonical('/');
-  const logoUrl = siteConfig.assets.logo.startsWith('http')
-    ? siteConfig.assets.logo
-    : `${baseUrl}${siteConfig.assets.logo.replace(/^\//, '')}`;
+  const squareLogoUrl = `${baseUrl}web-app-manifest-512x512.png`;
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: siteConfig.name,
     legalName: siteConfig.legalName,
+    alternateName: [
+      'whatsappmsg',
+      'WhatsApp MSG',
+      'WhatsAppMsg',
+      'whatsappmsg.com',
+      'WhatsAppMSG Platform',
+    ],
     url: baseUrl,
-    logo: logoUrl,
+    logo: squareLogoUrl,
+    image: squareLogoUrl,
     email: siteConfig.officialEmail,
     sameAs: socialConfig.sameAs,
     description: siteConfig.description,
@@ -41,6 +47,12 @@ export function generateWebsiteSchema() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: siteConfig.name,
+    alternateName: [
+      'whatsappmsg',
+      'WhatsApp MSG',
+      'WhatsAppMsg',
+      'whatsappmsg.com',
+    ],
     url: baseUrl,
     description: siteConfig.description,
     inLanguage: siteConfig.locale,
@@ -58,6 +70,11 @@ export function generateSoftwareApplicationSchema() {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: siteConfig.name,
+    alternateName: [
+      'WhatsAppMSG API',
+      'WhatsAppMSG Software',
+      'whatsappmsg CRM',
+    ],
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'All (Cloud SaaS / Web Browser)',
     url: baseUrl,

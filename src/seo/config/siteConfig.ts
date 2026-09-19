@@ -11,7 +11,7 @@ export const siteConfig = {
   description:
     'WhatsAppMSG is an enterprise WhatsApp Business messaging and API platform that helps businesses connect WhatsApp, manage conversations, automate messaging, run campaigns, integrate APIs and deploy AI-powered WhatsApp customer support.',
   url: (import.meta.env.VITE_SITE_URL as string) || 'https://whatsappmsg.com',
-  officialEmail: 'whatsappmsgofficial@gmail.com',
+  officialEmail: 'support@whatsappmsg.com',
   locale: 'en_US',
   themeColor: '#006736',
   brandColors: {
@@ -30,7 +30,7 @@ export const siteConfig = {
     logoSquare: '/images/whatsapplogoshort.png',
     ogImage: '/images/seo/whatsappmsg-og.png',
     twitterImage: '/images/seo/whatsappmsg-twitter.png',
-    favicon: '/images/seo/favicon/favicon.ico',
+    favicon: '/favicon.png',
   },
 } as const;
 

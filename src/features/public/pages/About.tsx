@@ -83,19 +83,19 @@ export const About: React.FC = () => {
           ))}
         </div>
 
-        {/* Meta Cloud API Architecture */}
+        {/* Meta Partnership Story */}
         <div className="bg-linear-to-br from-[#E9F9EE] via-[#F6FAF8] to-white border border-[#C4EBD0] rounded-3xl p-8 sm:p-12 mb-24 relative overflow-hidden shadow-md">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-8 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E9F9EE] text-[#006736] text-xs font-bold border border-[#C4EBD0]">
                 <ShieldCheck className="w-4 h-4 text-[#05A222]" />
-                Direct Meta Cloud API Integration
+                Official Meta Business Solution Provider
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-[#14201C]">
-                Direct Meta Cloud API Integration with Zero Intermediaries
+                Direct Cloud API Partnership with Zero Intermediaries
               </h2>
               <p className="text-xs sm:text-sm text-[#5F7069] leading-relaxed">
-                Unlike legacy aggregators that route messages through unpredictable intermediary SMS gateways, {APP_NAME} connects your business directly to Meta's Cloud API infrastructure. This guarantees unmatched delivery speeds, automatic green tick verification pathways, and direct Meta pass-through pricing.
+                Unlike legacy aggregators that route messages through unpredictable intermediary SMS gateways, {APP_NAME} connects your business directly to Meta's Cloud API infrastructure. This guarantees unmatched delivery speeds, automatic green tick verification pathways, and official Meta pricing.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-[#1F2A26]">
@@ -104,11 +104,11 @@ export const About: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-[#1F2A26]">
                   <CheckCircle2 className="w-4 h-4 text-[#05A222] shrink-0" />
-                  <span>100k+ msg/day High Capacity</span>
+                  <span>Tier 3 100k msg/day Tier Status</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-[#1F2A26]">
                   <CheckCircle2 className="w-4 h-4 text-[#05A222] shrink-0" />
-                  <span>Green Tick Verification Assistance</span>
+                  <span>Official Green Tick Assistance</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-[#1F2A26]">
                   <CheckCircle2 className="w-4 h-4 text-[#05A222] shrink-0" />
