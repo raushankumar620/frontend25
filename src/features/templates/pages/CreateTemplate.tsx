@@ -836,7 +836,7 @@ export const CreateTemplate: React.FC = () => {
                   </>
                 ) : (
                   <div className="text-[10px] text-center text-[#5F7069] font-medium py-1">
-                    Verified Meta HSM Template
+                    WhatsApp HSM Template Preview
                   </div>
                 )}
                 {/* iOS Home Indicator Bar */}

@@ -30,11 +30,11 @@ export const Features: React.FC = () => {
   const deepDives = {
     api: {
       badge: 'Meta Cloud API Engine',
-      title: 'Native Meta Cloud API Tier 3 Direct Integration',
-      description: 'Zero third-party broker latency. Transmit over 100,000 marketing, transactional, and utility messages per day with official Meta green tick compliance.',
+      title: 'Native Meta WhatsApp Cloud API Direct Integration',
+      description: 'Zero third-party broker latency. Transmit over 100,000 marketing, transactional, and utility messages per day with Meta green tick compliance.',
       points: [
         'Direct Meta Graph API v20.0 with 99.99% uptime guarantee',
-        'Official Green Tick badge assistance and phone number verification',
+        'Green Tick badge assistance and phone number verification',
         'Interactive List, Quick-Reply, Call-To-Action, and Flow messages',
         'Automatic 24h messaging window detection and session recovery',
       ],

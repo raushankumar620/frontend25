@@ -91,7 +91,7 @@ export const TermsOfService: React.FC = () => {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-[#14201C]">Meta Policy Adherence</h4>
-                <p className="text-xs text-[#5F7069] mt-0.5">Strict compliance with official Meta WhatsApp Business Messaging guidelines.</p>
+                <p className="text-xs text-[#5F7069] mt-0.5">Strict compliance with Meta WhatsApp Business Messaging guidelines.</p>
               </div>
             </div>
 
@@ -196,7 +196,7 @@ export const TermsOfService: React.FC = () => {
                 3. Meta WhatsApp Business Compliance
               </h2>
               <p>
-                As an enterprise solution built on top of official Meta Cloud APIs, all users of {APP_NAME} must strictly abide by:
+                As an enterprise solution built on top of the Meta WhatsApp Cloud API, all users of {APP_NAME} must strictly abide by:
               </p>
               <ul className="list-disc pl-5 space-y-2 text-[#4A5D54]">
                 <li><strong>Meta WhatsApp Business Terms of Service:</strong> Guidelines on account verification and business profile transparency.</li>

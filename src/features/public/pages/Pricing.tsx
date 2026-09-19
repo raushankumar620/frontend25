@@ -41,11 +41,11 @@ export const Pricing: React.FC = () => {
   const faqs = [
     {
       q: 'How does WhatsApp Cloud API billing work with Meta?',
-      a: 'WhatsAppMSG connects directly to your Meta Business Manager. Meta charges for conversation sessions (Marketing, Utility, Authentication, Service) directly to your credit card at official Meta rates with zero markup or hidden broker fees.',
+      a: 'WhatsAppMSG connects directly to your Meta Business Manager. Meta charges for conversation sessions (Marketing, Utility, Authentication, Service) directly to your credit card at Meta standard rates with zero markup or hidden broker fees.',
     },
     {
       q: 'Can I keep my existing WhatsApp Business number?',
-      a: 'Yes! You can migrate your existing phone number or register a brand new landline or virtual number. We guide you step-by-step through official Meta Cloud API migration without losing your business identity.',
+      a: 'Yes! You can migrate your existing phone number or register a brand new landline or virtual number. We guide you step-by-step through Meta WhatsApp Cloud API migration without losing your business identity.',
     },
     {
       q: 'What happens if I exceed my monthly active contact limit?',

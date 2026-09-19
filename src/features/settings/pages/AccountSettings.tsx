@@ -182,7 +182,7 @@ export const AccountSettings: React.FC = () => {
     try {
       await whatsappService.sendMessage({
         to: testRecipientPhone,
-        text: 'Hello! This is an official WhatsApp test message from your connected WABA Cloud API channel.',
+        text: 'Hello! This is a test message from your connected WhatsApp Cloud API channel.',
         phoneNumberId: testModalNumber?.id,
       });
       setTestResult({
@@ -350,7 +350,7 @@ export const AccountSettings: React.FC = () => {
                 <div>
                   <h3 className="text-lg font-bold text-slate-900">No WhatsApp Business Number Connected Yet</h3>
                   <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mt-1 font-normal">
-                    Link your Meta WhatsApp Business Account (WABA) with official credentials to start sending campaigns and receiving live messages.
+                    Link your Meta WhatsApp Business Account (WABA) credentials to start sending campaigns and receiving live messages.
                   </p>
                 </div>
                 <Button
@@ -387,7 +387,7 @@ export const AccountSettings: React.FC = () => {
                             <div className="space-y-0.5">
                               <div className="flex flex-wrap items-center gap-2.5">
                                 <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-                                  {num.verifiedName || 'WhatsApp Official Channel'}
+                                  {num.verifiedName || 'WhatsApp Connected Channel'}
                                 </h3>
                                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
                                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>

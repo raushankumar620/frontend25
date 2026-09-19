@@ -64,7 +64,7 @@ export const ConnectWhatsApp: React.FC = () => {
           </div>
           <h2 className="text-2xl font-black text-[#14201C] tracking-tight">Connect WhatsApp Cloud API</h2>
           <p className="text-xs sm:text-sm text-[#5F7069] mt-1 font-medium">
-            Connect your Meta WhatsApp Business Account (WABA) with official System User tokens.
+            Connect your Meta WhatsApp Business Account (WABA) with your System User Access Token.
           </p>
         </div>
 

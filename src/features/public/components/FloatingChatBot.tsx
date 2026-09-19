@@ -25,8 +25,8 @@ const KNOWLEDGE_BASE: { keywords: string[]; answer: string; action?: { label: st
     action: { label: 'View Full Pricing', url: ROUTES.PUBLIC_PRICING, isInternal: true }
   },
   {
-    keywords: ['meta', 'cloud api', 'direct', 'broker', 'tier 3', 'api'],
-    answer: '⚡ We use the Official Direct Meta Cloud API v20.0 with Tier 3 certification. This means:\n\n1. Zero broker middleman markups (pay official Meta rates)\n2. Ultra-low 380ms latency\n3. High-throughput (100,000+ messages/day)\n4. 99.99% delivery guarantee directly from Meta servers.',
+    keywords: ['meta', 'cloud api', 'direct', 'broker', 'api'],
+    answer: '⚡ We connect directly with the Meta WhatsApp Cloud API. This means:\n\n1. Zero broker middleman markups (pay Meta standard rates)\n2. Ultra-low 380ms latency\n3. High-throughput (100,000+ messages/day capability)\n4. 99.99% delivery guarantee directly from Meta servers.',
     action: { label: 'Explore API Docs', url: ROUTES.DEVELOPERS_DOCS, isInternal: true }
   },
   {
@@ -140,7 +140,7 @@ export const FloatingChatBot: React.FC = () => {
         replyText = matched.answer;
         actionLink = matched.action;
       } else {
-        replyText = `⚡ Great question! ${APP_NAME} is built directly on Meta's official Cloud API for lightning-fast delivery, domain-trained AI customer support, and multi-agent inboxes.\n\nWould you like to start a 14-day free trial or talk to our solutions team?`;
+        replyText = `⚡ Great question! ${APP_NAME} is built directly on Meta's Cloud API for lightning-fast delivery, domain-trained AI customer support, and multi-agent inboxes.\n\nWould you like to start a 14-day free trial or talk to our solutions team?`;
         actionLink = { label: 'Start 14-Day Free Trial', url: ROUTES.REGISTER, isInternal: true };
       }
 
@@ -189,7 +189,7 @@ export const FloatingChatBot: React.FC = () => {
                 </div>
                 <span className="text-[11px] text-[#E9F9EE] flex items-center gap-1">
                   <Sparkles className="w-3 h-3 text-[#1CD72C]" />
-                  Official Meta Cloud Assistant
+                  Meta Cloud API Assistant
                 </span>
               </div>
             </div>

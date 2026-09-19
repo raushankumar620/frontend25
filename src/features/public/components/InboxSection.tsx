@@ -95,7 +95,7 @@ export const InboxSection: React.FC = () => {
                 {/* Messages & Notes */}
                 <div className="py-4 space-y-3 font-sans text-xs">
                   <div className="bg-[#F6FAF8] p-3 rounded-xl max-w-sm text-[#1F2A26] border border-[#E2EAE6]">
-                    "Hi, we need to transition 80 sales agents to WhatsAppMSG with Meta Cloud API Tier 3."
+                    "Hi, we need to transition 80 sales agents to WhatsAppMSG with high-volume Meta Cloud API messaging."
                   </div>
 
                   {/* Internal Private Note */}

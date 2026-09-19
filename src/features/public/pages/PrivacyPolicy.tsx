@@ -66,13 +66,13 @@ export const PrivacyPolicy: React.FC = () => {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/80 backdrop-blur-xs border border-[#C4EBD0] text-xs font-bold text-[#006736] mb-4 shadow-2xs">
               <ShieldCheck className="w-4 h-4 text-[#05A222]" />
-              <span>Meta Verified Cloud Solution Architecture</span>
+              <span>Direct Meta Cloud Solution Architecture</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-extrabold text-[#14201C] tracking-tight mb-4">
               Privacy Policy
             </h1>
             <p className="text-base sm:text-lg text-[#5F7069] leading-relaxed">
-              At {APP_NAME}, we uphold enterprise-grade confidentiality. This policy outlines how we handle your business credentials, contact lists, and message payloads across the official WhatsApp Business Cloud API.
+              At {APP_NAME}, we uphold enterprise-grade confidentiality. This policy outlines how we handle your business credentials, contact lists, and message payloads across the WhatsApp Business Cloud API.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-[#8A9993]">
               <span>Last updated: September 2026</span>
@@ -101,7 +101,7 @@ export const PrivacyPolicy: React.FC = () => {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-[#14201C]">Direct Meta Cloud API</h4>
-                <p className="text-xs text-[#5F7069] mt-0.5">Messages pass directly through official Meta Tier 3 data pipelines without third-party proxies.</p>
+                <p className="text-xs text-[#5F7069] mt-0.5">Messages pass directly through Meta Cloud API data pipelines without third-party proxies.</p>
               </div>
             </div>
 
@@ -170,7 +170,7 @@ export const PrivacyPolicy: React.FC = () => {
                 1. Overview & Scope
               </h2>
               <p>
-                This Privacy Policy governs your use of the {APP_NAME} SaaS platform, developer APIs, customer service dashboard, webhook listeners, and automation engines (collectively, the <strong>"Platform"</strong> or <strong>"Services"</strong>). {APP_NAME} operates as an enterprise communication provider enabling businesses to leverage the official Meta WhatsApp Business Cloud API.
+                This Privacy Policy governs your use of the {APP_NAME} SaaS platform, developer APIs, customer service dashboard, webhook listeners, and automation engines (collectively, the <strong>"Platform"</strong> or <strong>"Services"</strong>). {APP_NAME} operates as an enterprise communication provider enabling businesses to leverage the Meta WhatsApp Business Cloud API.
               </p>
               <p>
                 In the context of international data protection laws (such as GDPR Article 4 and CCPA regulations), {APP_NAME} primarily acts as a <strong>Data Processor</strong> (or Service Provider) for the customer message contents and phone numbers processed on your behalf, while acting as a <strong>Data Controller</strong> for your direct account registration, tenant administration, and billing telemetry.
@@ -207,7 +207,7 @@ export const PrivacyPolicy: React.FC = () => {
                 3. Meta WhatsApp Cloud API Processing
               </h2>
               <p>
-                Unlike legacy WhatsApp scraping tools or unverified gateway proxies, {APP_NAME} integrates exclusively with the <strong>Official Meta WhatsApp Business Cloud API</strong>. 
+                Unlike legacy WhatsApp scraping tools or unverified gateway proxies, {APP_NAME} integrates exclusively with the <strong>Meta WhatsApp Business Cloud API</strong>. 
               </p>
               <div className="p-4 rounded-2xl bg-[#E9F9EE] border border-[#C4EBD0] space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#006736]">
@@ -215,7 +215,7 @@ export const PrivacyPolicy: React.FC = () => {
                   <span>Meta Direct Pipeline Architecture</span>
                 </div>
                 <p className="text-xs text-[#4A5D54]">
-                  Outbound broadcasts, transactional notifications, and incoming replies travel directly between your {APP_NAME} tenant and Meta’s certified server infrastructure. Your payloads are not routed through third-party intermediaries or unvetted brokers.
+                  Outbound broadcasts, transactional notifications, and incoming replies travel directly between your {APP_NAME} tenant and Meta’s cloud server infrastructure. Your payloads are not routed through third-party intermediaries or unvetted brokers.
                 </p>
               </div>
             </section>
