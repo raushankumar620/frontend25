@@ -40,6 +40,7 @@ import {
   requestNotificationPermission,
   showBrowserNotification,
 } from '../../../utils/notificationSound';
+import { PageContainer } from '../../../components/layout/PageContainer';
 
 export const Notifications: React.FC = () => {
   const navigate = useNavigate();
@@ -349,131 +350,132 @@ export const Notifications: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#14201C] text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 text-sm font-medium">
-          <CheckCircle2 className="w-5 h-5 text-[#05A222]" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
+    <PageContainer>
+      <div className="space-y-4 sm:space-y-6 pb-8 sm:pb-12">
+        {/* Toast Notification */}
+        {toastMessage && (
+          <div className="fixed bottom-6 right-6 z-50 bg-[#14201C] text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 text-xs sm:text-sm font-medium max-w-[90vw]">
+            <CheckCircle2 className="w-5 h-5 text-[#05A222] shrink-0" />
+            <span className="truncate">{toastMessage}</span>
+          </div>
+        )}
 
-      {/* Top Banner & Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-[#E2EAE6] shadow-xs">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] text-[#006736] flex items-center justify-center border border-[#C4EBD0]">
-              <Bell className="w-5 h-5 text-[#05A222]" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-extrabold text-[#14201C]">Notification Center</h1>
-                {unreadCount > 0 && (
-                  <span className="bg-[#E9F9EE] text-[#006736] text-xs font-extrabold px-2.5 py-0.5 rounded-full border border-[#C4EBD0]">
-                    {unreadCount} unread
-                  </span>
-                )}
+        {/* Top Banner & Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 sm:p-6 rounded-2xl border border-[#E2EAE6] shadow-xs">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#E9F9EE] text-[#006736] flex items-center justify-center border border-[#C4EBD0] shrink-0">
+                <Bell className="w-5 h-5 text-[#05A222]" />
               </div>
-              <p className="text-xs text-[#5F7069] mt-0.5">
-                Real-time alert inbox for incoming messages, broadcasts, AI handoffs, and system events.
-              </p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-lg sm:text-xl font-black text-[#14201C] tracking-tight">Notification Center</h1>
+                  {unreadCount > 0 && (
+                    <span className="bg-[#E9F9EE] text-[#006736] text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full border border-[#C4EBD0]">
+                      {unreadCount} unread
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-[#5F7069] mt-0.5 line-clamp-1 sm:line-clamp-none">
+                  Real-time alert inbox for incoming messages, broadcasts, AI handoffs, and system events.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <button
-            onClick={() => fetchNotifications(true)}
-            disabled={refreshing}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-[#5F7069] bg-[#F6FAF8] hover:bg-[#E2EAE6] transition-colors cursor-pointer border border-[#E2EAE6]"
-          >
-            <RefreshCw className={clsx('w-3.5 h-3.5', refreshing && 'animate-spin')} />
-            <span>Refresh</span>
-          </button>
-
-          {unreadCount > 0 && (
+          {/* Action Controls */}
+          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap w-full md:w-auto justify-start md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-[#E2EAE6]">
             <button
-              onClick={handleMarkAllAsRead}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#006736] bg-[#E9F9EE] hover:bg-[#D9F3E2] transition-colors cursor-pointer border border-[#C4EBD0]"
+              onClick={() => fetchNotifications(true)}
+              disabled={refreshing}
+              className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-[#5F7069] bg-[#F6FAF8] hover:bg-[#E2EAE6] transition-colors cursor-pointer border border-[#E2EAE6]"
             >
-              <CheckCheck className="w-4 h-4 text-[#05A222]" />
-              <span>Mark All Read</span>
+              <RefreshCw className={clsx('w-3.5 h-3.5', refreshing && 'animate-spin')} />
+              <span>Refresh</span>
             </button>
-          )}
 
-          <button
-            onClick={() => setShowTestModal(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-[#05A222] hover:bg-[#006736] transition-colors cursor-pointer shadow-xs active:scale-95"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>Send Test Alert</span>
-          </button>
+            {unreadCount > 0 && (
+              <button
+                onClick={handleMarkAllAsRead}
+                className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-[#006736] bg-[#E9F9EE] hover:bg-[#D9F3E2] transition-colors cursor-pointer border border-[#C4EBD0]"
+              >
+                <CheckCheck className="w-4 h-4 text-[#05A222]" />
+                <span>Mark All Read</span>
+              </button>
+            )}
 
-          <button
-            onClick={() => setShowPreferencesModal(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#14201C] bg-white hover:bg-[#F6FAF8] transition-colors cursor-pointer border border-[#E2EAE6]"
-          >
-            <Settings2 className="w-4 h-4 text-[#5F7069]" />
-            <span>Settings</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Metrics Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[
-          {
-            label: 'Total Unread',
-            value: unreadCount,
-            icon: Bell,
-            color: '#05A222',
-            bg: '#E9F9EE',
-          },
-          {
-            label: 'Messages & WhatsApp',
-            value: (categoryStats['messages'] || 0) + (categoryStats['whatsapp'] || 0),
-            icon: MessageSquare,
-            color: '#0891B2',
-            bg: '#ECFEFF',
-          },
-          {
-            label: 'Campaign Updates',
-            value: categoryStats['campaigns'] || 0,
-            icon: Send,
-            color: '#E11D48',
-            bg: '#FFF1F2',
-          },
-          {
-            label: 'AI Handoffs & Alerts',
-            value: (categoryStats['ai'] || 0) + (categoryStats['system'] || 0),
-            icon: Bot,
-            color: '#9333EA',
-            bg: '#FAF5FF',
-          },
-        ].map((m, idx) => (
-          <div
-            key={idx}
-            className="bg-white p-4 rounded-2xl border border-[#E2EAE6] flex items-center justify-between"
-          >
-            <div>
-              <p className="text-xs font-medium text-[#8A9993]">{m.label}</p>
-              <h3 className="text-xl font-black text-[#14201C] mt-1">{m.value}</h3>
-            </div>
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-              style={{ backgroundColor: m.bg }}
+            <button
+              onClick={() => setShowTestModal(true)}
+              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-white bg-[#05A222] hover:bg-[#006736] transition-colors cursor-pointer shadow-xs active:scale-95"
             >
-              <m.icon className="w-5 h-5" style={{ color: m.color }} />
-            </div>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Test Alert</span>
+            </button>
+
+            <button
+              onClick={() => setShowPreferencesModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-[#14201C] bg-white hover:bg-[#F6FAF8] transition-colors cursor-pointer border border-[#E2EAE6]"
+            >
+              <Settings2 className="w-3.5 h-3.5 text-[#5F7069]" />
+              <span>Settings</span>
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
+
+        {/* Metrics Row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+          {[
+            {
+              label: 'Total Unread',
+              value: unreadCount,
+              icon: Bell,
+              color: '#05A222',
+              bg: '#E9F9EE',
+            },
+            {
+              label: 'Messages & WhatsApp',
+              value: (categoryStats['messages'] || 0) + (categoryStats['whatsapp'] || 0),
+              icon: MessageSquare,
+              color: '#0891B2',
+              bg: '#ECFEFF',
+            },
+            {
+              label: 'Campaign Updates',
+              value: categoryStats['campaigns'] || 0,
+              icon: Send,
+              color: '#E11D48',
+              bg: '#FFF1F2',
+            },
+            {
+              label: 'AI Alerts',
+              value: (categoryStats['ai'] || 0) + (categoryStats['system'] || 0),
+              icon: Bot,
+              color: '#9333EA',
+              bg: '#FAF5FF',
+            },
+          ].map((m, idx) => (
+            <div
+              key={idx}
+              className="bg-white p-3 sm:p-4 rounded-2xl border border-[#E2EAE6] flex items-center justify-between shadow-2xs"
+            >
+              <div className="min-w-0 pr-2">
+                <p className="text-[11px] sm:text-xs font-medium text-[#8A9993] truncate">{m.label}</p>
+                <h3 className="text-lg sm:text-xl font-black text-[#14201C] mt-0.5 sm:mt-1">{m.value}</h3>
+              </div>
+              <div
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0"
+                style={{ backgroundColor: m.bg }}
+              >
+                <m.icon className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: m.color }} />
+              </div>
+            </div>
+          ))}
+        </div>
 
       {/* Main Filter & Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-[#E2EAE6] space-y-4">
+      <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-[#E2EAE6] space-y-3 sm:space-y-4">
         {/* Category Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none">
           {[
             { id: 'all', label: 'All Categories' },
             { id: 'messages', label: 'Messages', count: categoryStats['messages'] },
@@ -490,7 +492,7 @@ export const Notifications: React.FC = () => {
                 setPage(1);
               }}
               className={clsx(
-                'flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap',
+                'flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap',
                 selectedCategory === cat.id
                   ? 'bg-[#05A222] text-white shadow-xs'
                   : 'bg-[#F6FAF8] text-[#5F7069] hover:bg-[#E2EAE6] hover:text-[#14201C] border border-[#E2EAE6]'
@@ -514,10 +516,10 @@ export const Notifications: React.FC = () => {
         </div>
 
         {/* Secondary Filter Row: Read Status, Priority, Search, Clear Read */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2 border-t border-[#E2EAE6]">
-          <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 pt-2 border-t border-[#E2EAE6]">
+          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
             {/* Read Filter */}
-            <div className="flex items-center bg-[#F6FAF8] p-1 rounded-xl border border-[#E2EAE6] text-xs">
+            <div className="flex items-center bg-[#F6FAF8] p-0.5 sm:p-1 rounded-xl border border-[#E2EAE6] text-xs">
               {[
                 { id: 'all', label: 'All' },
                 { id: 'unread', label: 'Unread' },
@@ -530,7 +532,7 @@ export const Notifications: React.FC = () => {
                     setPage(1);
                   }}
                   className={clsx(
-                    'px-3 py-1 rounded-lg font-bold transition-all cursor-pointer',
+                    'px-2.5 sm:px-3 py-1 rounded-lg font-bold transition-all cursor-pointer text-xs',
                     filterRead === rf.id
                       ? 'bg-white text-[#14201C] shadow-xs'
                       : 'text-[#5F7069] hover:text-[#14201C]'
@@ -548,7 +550,7 @@ export const Notifications: React.FC = () => {
                 setSelectedPriority(e.target.value);
                 setPage(1);
               }}
-              className="bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl px-3 py-1.5 text-xs font-bold text-[#14201C] focus:outline-none focus:border-[#05A222] cursor-pointer"
+              className="bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl px-2.5 sm:px-3 py-1.5 text-xs font-bold text-[#14201C] focus:outline-none focus:border-[#05A222] cursor-pointer"
             >
               <option value="all">All Priorities</option>
               <option value="urgent">Urgent</option>
@@ -594,16 +596,16 @@ export const Notifications: React.FC = () => {
       </div>
 
       {/* Notification Cards List */}
-      <div className="space-y-3">
+      <div className="space-y-2.5 sm:space-y-3">
         {loading ? (
-          <div className="bg-white rounded-2xl border border-[#E2EAE6] p-12 text-center flex flex-col items-center justify-center gap-3">
+          <div className="bg-white rounded-2xl border border-[#E2EAE6] p-12 text-center flex flex-col items-center justify-center gap-3 shadow-xs">
             <RefreshCw className="w-8 h-8 animate-spin text-[#05A222]" />
             <p className="text-sm font-semibold text-[#5F7069]">Loading notification stream...</p>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-[#E2EAE6] p-12 text-center flex flex-col items-center justify-center">
-            <div className="w-16 h-16 rounded-3xl bg-[#E9F9EE] text-[#05A222] flex items-center justify-center mb-4 border border-[#C4EBD0]">
-              <Bell className="w-8 h-8" />
+          <div className="bg-white rounded-2xl border border-[#E2EAE6] p-8 sm:p-12 text-center flex flex-col items-center justify-center shadow-xs">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-3xl bg-[#E9F9EE] text-[#05A222] flex items-center justify-center mb-4 border border-[#C4EBD0]">
+              <Bell className="w-7 h-7 sm:w-8 sm:h-8" />
             </div>
             <h3 className="text-base font-bold text-[#14201C]">No notifications found</h3>
             <p className="text-xs text-[#8A9993] max-w-sm mt-1">
@@ -624,17 +626,17 @@ export const Notifications: React.FC = () => {
               <div
                 key={id}
                 className={clsx(
-                  'bg-white rounded-2xl border transition-all hover:shadow-xs p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group',
+                  'bg-white rounded-2xl border transition-all hover:shadow-xs p-3.5 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 group shadow-2xs',
                   !item.isRead
-                    ? 'border-[#C4EBD0] bg-gradient-to-r from-[#F9FCFA] to-white shadow-[0_2px_12px_rgba(5,162,34,0.04)]'
+                    ? 'border-[#C4EBD0] bg-gradient-to-r from-[#F9FCFA] to-white'
                     : 'border-[#E2EAE6] opacity-90'
                 )}
               >
-                <div className="flex items-start gap-4 min-w-0 flex-1">
+                <div className="flex items-start gap-3 sm:gap-4 min-w-0 flex-1">
                   {/* Category Badge Icon */}
                   <div
                     className={clsx(
-                      'w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 border mt-0.5',
+                      'w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 border mt-0.5',
                       getCategoryBadgeColor(item.category)
                     )}
                   >
@@ -642,11 +644,11 @@ export const Notifications: React.FC = () => {
                   </div>
 
                   {/* Body Details */}
-                  <div className="space-y-1.5 min-w-0 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
+                  <div className="space-y-1 sm:space-y-1.5 min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                       <h4
                         className={clsx(
-                          'text-sm',
+                          'text-xs sm:text-sm',
                           !item.isRead ? 'font-black text-[#14201C]' : 'font-bold text-[#5F7069]'
                         )}
                       >
@@ -655,7 +657,7 @@ export const Notifications: React.FC = () => {
 
                       <span
                         className={clsx(
-                          'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md border',
+                          'text-[9px] sm:text-[10px] font-extrabold uppercase px-1.5 sm:px-2 py-0.5 rounded-md border',
                           getCategoryBadgeColor(item.category)
                         )}
                       >
@@ -673,7 +675,7 @@ export const Notifications: React.FC = () => {
                       {item.message}
                     </p>
 
-                    <div className="flex items-center gap-4 text-[11px] text-[#8A9993] pt-1">
+                    <div className="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-[11px] text-[#8A9993] pt-0.5 sm:pt-1">
                       <span className="flex items-center gap-1 font-medium">
                         <Clock className="w-3 h-3" />
                         {formatDate(item.createdAt)}
@@ -694,7 +696,7 @@ export const Notifications: React.FC = () => {
                   {item.actionUrl && (
                     <button
                       onClick={() => navigate(item.actionUrl!)}
-                      className="flex items-center gap-1 text-xs font-bold text-[#05A222] bg-[#E9F9EE] hover:bg-[#D9F3E2] px-3.5 py-2 rounded-xl transition-colors cursor-pointer border border-[#C4EBD0]"
+                      className="flex items-center gap-1 text-xs font-bold text-[#05A222] bg-[#E9F9EE] hover:bg-[#D9F3E2] px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition-colors cursor-pointer border border-[#C4EBD0]"
                     >
                       <span>Open Link</span>
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -705,7 +707,7 @@ export const Notifications: React.FC = () => {
                     <button
                       onClick={() => handleMarkAsRead(item)}
                       title="Mark as read"
-                      className="p-2 rounded-xl text-[#5F7069] hover:text-[#05A222] hover:bg-[#E9F9EE] transition-colors cursor-pointer"
+                      className="p-1.5 sm:p-2 rounded-xl text-[#5F7069] hover:text-[#05A222] hover:bg-[#E9F9EE] transition-colors cursor-pointer"
                     >
                       <CheckCheck className="w-4 h-4" />
                     </button>
@@ -714,7 +716,7 @@ export const Notifications: React.FC = () => {
                   <button
                     onClick={() => handleDelete(id)}
                     title="Delete notification"
-                    className="p-2 rounded-xl text-[#8A9993] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
+                    className="p-1.5 sm:p-2 rounded-xl text-[#8A9993] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -727,7 +729,7 @@ export const Notifications: React.FC = () => {
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="bg-white p-4 rounded-2xl border border-[#E2EAE6] flex items-center justify-between text-xs font-semibold text-[#5F7069]">
+        <div className="bg-white p-3 sm:p-4 rounded-2xl border border-[#E2EAE6] flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4 text-xs font-semibold text-[#5F7069] shadow-2xs">
           <div>
             Showing <span className="text-[#14201C] font-bold">{notifications.length}</span> of{' '}
             <span className="text-[#14201C] font-bold">{totalCount}</span> notifications
@@ -1123,6 +1125,7 @@ export const Notifications: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </PageContainer>
   );
 };

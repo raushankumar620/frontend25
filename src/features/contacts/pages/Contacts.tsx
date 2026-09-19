@@ -271,7 +271,7 @@ export const Contacts: React.FC = () => {
           )}
         </div>
 
-        <div className="flex items-center gap-2 shrink-0 self-end lg:self-auto">
+        <div className="flex items-center gap-2 shrink-0 flex-wrap w-full sm:w-auto justify-start sm:justify-end">
           <Button
             variant="outline"
             size="sm"

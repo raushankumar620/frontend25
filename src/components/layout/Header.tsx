@@ -10,6 +10,7 @@ import {
   Users2,
   LogOut,
   ChevronDown,
+  ShieldCheck,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../utils/constants';
@@ -242,15 +243,6 @@ export const Header: React.FC<HeaderProps> = ({
 
   const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
   const displayName = fullName || user?.name || (user?.email ? user.email.split('@')[0] : 'User');
-  const displayEmail = user?.email || '';
-  const formatRoleLabel = (role?: string) => {
-    if (!role) return 'ORGANIZATION HEAD';
-    const upper = role.toUpperCase();
-    if (upper === 'ORG_ADMIN' || upper === 'ADMIN') return 'ORGANIZATION HEAD';
-    if (upper === 'TEAM_LEAD') return 'TEAM LEAD';
-    return upper.replace(/_/g, ' ');
-  };
-  const displayRole = formatRoleLabel(user?.role);
   const orgName = organization?.name || user?.organizationName || 'WhatsApp Workspace';
 
   // Determine active header title
@@ -275,13 +267,13 @@ export const Header: React.FC<HeaderProps> = ({
   }
 
   return (
-    <header className="h-[72px] sm:h-20 bg-white border-b border-[#E2EAE6] px-4 sm:px-6 lg:px-8 flex items-center justify-between z-20 shrink-0 shadow-xs">
+    <header className="h-[64px] sm:h-20 bg-white border-b border-[#E2EAE6] px-3 sm:px-6 lg:px-8 flex items-center justify-between z-20 shrink-0 shadow-xs">
       {/* Left: Mobile trigger & Search Input or Page Title */}
-      <div className="flex items-center gap-3.5 min-w-0 flex-1 max-w-xl pr-4">
+      <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 flex-1 max-w-xl pr-2 sm:pr-4">
         {onToggleSidebar && (
           <button
             onClick={onToggleSidebar}
-            className="lg:hidden p-2 rounded-xl text-[#5F7069] hover:bg-[#F6FAF8] hover:text-[#14201C] transition-colors cursor-pointer shrink-0"
+            className="lg:hidden p-2 rounded-xl text-[#5F7069] hover:bg-[#F6FAF8] hover:text-[#14201C] transition-colors cursor-pointer shrink-0 -ml-1"
             aria-label="Toggle sidebar menu"
           >
             <Menu className="w-5 h-5" />
@@ -310,77 +302,96 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Mobile Page Title fallback when search is hidden on very small devices */}
+        {/* Mobile Page Title fallback when search is hidden on small devices */}
         <div className="sm:hidden min-w-0">
-          <h1 className="text-base font-black text-[#14201C] tracking-tight truncate">
+          <h1 className="text-sm font-black text-[#14201C] tracking-tight truncate">
             {activeTitle}
           </h1>
         </div>
       </div>
 
       {/* Right: Free Trial Badge, Quick Broadcast, Notification, User menu */}
-      <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-        {/* Free Trial Crown Badge */}
-        <div className="flex items-center gap-1.5 bg-[#E9F9EE] text-[#006736] px-3 py-1.5 rounded-full border border-[#C4EBD0] shadow-2xs">
-          <Crown className="w-3.5 h-3.5 text-[#05A222]" />
-          <div className="flex flex-col leading-none">
+      <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-4 shrink-0">
+        {/* Free Trial Crown Badge (Compact on mobile, full on desktop) */}
+        <div className="flex items-center gap-1 sm:gap-1.5 bg-[#E9F9EE] text-[#006736] px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-[#C4EBD0] shadow-2xs">
+          <Crown className="w-3.5 h-3.5 text-[#05A222] shrink-0" />
+          <div className="hidden sm:flex flex-col leading-none">
             <span className="text-[10px] font-black tracking-wide uppercase">FREE TRIAL</span>
             <span className="text-[9px] font-bold text-[#05A222]">7 days left</span>
           </div>
+          <span className="sm:hidden text-[10px] font-bold text-[#006736]">7d</span>
         </div>
 
         {/* Quick Broadcast Button */}
         <button
           onClick={() => navigate(ROUTES.CREATE_CAMPAIGN)}
-          className="flex items-center gap-2 bg-[#05A222] hover:bg-[#006736] text-white text-xs sm:text-sm font-bold px-3.5 sm:px-4 py-2 rounded-xl shadow-xs transition-all active:scale-[0.98] cursor-pointer"
+          className="flex items-center gap-1.5 bg-[#05A222] hover:bg-[#006736] text-white text-xs sm:text-sm font-bold p-2 sm:px-4 sm:py-2 rounded-xl shadow-xs transition-all active:scale-[0.98] cursor-pointer"
+          title="Quick Broadcast"
         >
           <Send className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Quick Broadcast</span>
+          <span className="hidden md:inline">Quick Broadcast</span>
         </button>
 
         {/* Notification Bell */}
         <NotificationDropdown />
 
-        <div className="h-7 w-px bg-[#E2EAE6]" />
+        <div className="h-6 sm:h-7 w-px bg-[#E2EAE6]" />
 
         {/* Dynamic User Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-[#F6FAF8] transition-colors cursor-pointer text-left focus:outline-none"
+            className="flex items-center gap-2 sm:gap-2.5 p-1 rounded-2xl hover:bg-[#F6FAF8] transition-all cursor-pointer text-left focus:outline-none group"
             aria-expanded={isDropdownOpen}
           >
-            <div className="relative">
-              <div className="w-9 h-9 rounded-full bg-[#013B23] text-white flex items-center justify-center font-black text-xs shadow-2xs border border-[#006736]">
+            {/* Animated 4-Color Pro Avatar Ring */}
+            <div className="relative p-[2.5px] rounded-full overflow-hidden pro-avatar-glow shrink-0">
+              <div className="absolute inset-[-100%] pro-avatar-ring" />
+              <div className="relative z-10 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#013B23] text-white flex items-center justify-center font-black text-xs shadow-inner">
                 {displayName.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase() || 'RK'}
               </div>
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#05A222] border-2 border-white rounded-full" />
+              <span className="absolute bottom-0.5 right-0.5 z-20 w-2 sm:w-2.5 h-2 sm:h-2.5 bg-[#05A222] border-2 border-white rounded-full shadow-2xs" />
             </div>
-            <div className="hidden md:flex flex-col text-left">
-              <span className="text-xs font-black text-[#14201C] truncate max-w-[140px] leading-tight">
+
+            <div className="hidden md:flex flex-col text-left min-w-0">
+              <span className="text-xs font-black text-[#14201C] truncate max-w-[130px] leading-tight group-hover:text-[#05A222] transition-colors">
+                {orgName}
+              </span>
+              <span className="text-[10px] text-[#5F7069] font-medium leading-tight truncate max-w-[130px] mt-0.5">
                 {displayName}
               </span>
-              <span className="text-[10px] text-[#5F7069] font-semibold leading-tight">
-                {displayRole}
-              </span>
             </div>
-            <ChevronDown className="hidden md:block w-3.5 h-3.5 text-[#8A9993]" />
+            <ChevronDown className="hidden md:block w-3.5 h-3.5 text-[#8A9993] group-hover:text-[#14201C] transition-colors" />
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white shadow-[0_16px_50px_rgba(1,59,35,0.12)] border border-[#E2EAE6] py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
-              {/* User Header Info */}
-              <div className="px-4 py-3 border-b border-[#E2EAE6] bg-[#F6FAF8]/60">
-                <p className="text-sm font-bold text-[#14201C] truncate">{displayName}</p>
-                {displayEmail && (
-                  <p className="text-xs text-[#5F7069] truncate mt-0.5">{displayEmail}</p>
-                )}
-                <div className="flex items-center gap-1.5 mt-2">
-                  <span className="text-[10px] bg-[#E9F9EE] text-[#006736] font-bold px-2 py-0.5 rounded-md border border-[#C4EBD0] uppercase">
-                    {displayRole}
-                  </span>
-                  <span className="text-[10px] text-[#8A9993] truncate max-w-[110px]">
-                    {orgName}
+            <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white shadow-[0_20px_60px_rgba(1,59,35,0.15)] border border-[#E2EAE6] py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              {/* Premium Organization Header Info */}
+              <div className="px-4 py-3.5 border-b border-[#E2EAE6] bg-gradient-to-b from-[#F6FAF8] to-white">
+                <div className="flex items-center gap-3">
+                  {/* Rotating Animated Avatar */}
+                  <div className="relative p-[2px] rounded-full overflow-hidden pro-avatar-glow shrink-0">
+                    <div className="absolute inset-[-100%] pro-avatar-ring-fast" />
+                    <div className="relative z-10 w-10 h-10 rounded-full bg-[#013B23] text-white flex items-center justify-center font-black text-sm shadow-inner">
+                      {displayName.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase() || 'RK'}
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm font-black text-[#14201C] tracking-tight truncate flex items-center gap-1.5">
+                      <span>{orgName}</span>
+                      <ShieldCheck className="w-4 h-4 text-[#05A222] shrink-0" />
+                    </h4>
+                    <p className="text-xs text-[#5F7069] font-semibold truncate mt-0.5">
+                      {displayName}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-2.5 flex items-center gap-1.5">
+                  <span className="text-[10px] bg-[#E9F9EE] text-[#006736] font-bold px-2 py-0.5 rounded-full border border-[#C4EBD0] flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#05A222] animate-pulse" />
+                    Official Workspace
                   </span>
                 </div>
               </div>

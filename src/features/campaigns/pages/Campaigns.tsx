@@ -356,70 +356,70 @@ export const Campaigns: React.FC = () => {
   return (
     <PageContainer>
       {/* 5-Card Spacious KPI Stat Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3.5 mb-6">
         {/* Card 1: Total Campaigns */}
-        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
-          <div>
-            <div className="text-xs font-semibold text-[#64748B]">Total Campaigns</div>
-            <div className="text-2xl font-black text-[#0F172A] mt-1 tracking-tight">{stats.totalCampaigns}</div>
-            <div className="text-[11px] text-[#64748B] mt-0.5">{stats.activeCampaigns} Active</div>
+        <div className="bg-white p-3 sm:p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
+          <div className="min-w-0">
+            <div className="text-[11px] sm:text-xs font-semibold text-[#64748B] truncate">Total Campaigns</div>
+            <div className="text-xl sm:text-2xl font-black text-[#0F172A] mt-0.5 sm:mt-1 tracking-tight">{stats.totalCampaigns}</div>
+            <div className="text-[10px] sm:text-[11px] text-[#64748B] mt-0.5 truncate">{stats.activeCampaigns} Active</div>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 shrink-0">
-            <MessageSquare className="w-5 h-5" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 shrink-0">
+            <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
 
         {/* Card 2: Total Recipients */}
-        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
-          <div>
-            <div className="text-xs font-semibold text-[#64748B]">Total Recipients</div>
-            <div className="text-2xl font-black text-[#0F172A] mt-1 tracking-tight">{stats.totalRecipients.toLocaleString()}</div>
-            <div className="text-[11px] text-[#64748B] mt-0.5">{stats.totalSent.toLocaleString()} Sent</div>
+        <div className="bg-white p-3 sm:p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
+          <div className="min-w-0">
+            <div className="text-[11px] sm:text-xs font-semibold text-[#64748B] truncate">Total Recipients</div>
+            <div className="text-xl sm:text-2xl font-black text-[#0F172A] mt-0.5 sm:mt-1 tracking-tight">{stats.totalRecipients.toLocaleString()}</div>
+            <div className="text-[10px] sm:text-[11px] text-[#64748B] mt-0.5 truncate">{stats.totalSent.toLocaleString()} Sent</div>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 shrink-0">
-            <Users className="w-5 h-5" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 shrink-0">
+            <Users className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
 
         {/* Card 3: Delivery Rate */}
-        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
-          <div>
-            <div className="text-xs font-semibold text-[#64748B]">Delivery Rate</div>
-            <div className="text-2xl font-black text-[#006736] mt-1 tracking-tight">{stats.deliveryRate}%</div>
-            <div className="text-[11px] text-[#64748B] mt-0.5">{stats.totalDelivered.toLocaleString()} Delivered</div>
+        <div className="bg-white p-3 sm:p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
+          <div className="min-w-0">
+            <div className="text-[11px] sm:text-xs font-semibold text-[#64748B] truncate">Delivery Rate</div>
+            <div className="text-xl sm:text-2xl font-black text-[#006736] mt-0.5 sm:mt-1 tracking-tight">{stats.deliveryRate}%</div>
+            <div className="text-[10px] sm:text-[11px] text-[#64748B] mt-0.5 truncate">{stats.totalDelivered.toLocaleString()} Delivered</div>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0">
-            <CheckCircle2 className="w-5 h-5" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#E9F9EE] border border-[#C4EBD0] flex items-center justify-center text-[#05A222] shrink-0">
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
 
         {/* Card 4: Read Rate */}
-        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
-          <div>
-            <div className="text-xs font-semibold text-[#64748B]">Read Rate</div>
-            <div className="text-2xl font-black text-[#0F172A] mt-1 tracking-tight">{stats.readRate}%</div>
-            <div className="text-[11px] text-[#64748B] mt-0.5">{stats.totalRead.toLocaleString()} Read</div>
+        <div className="bg-white p-3 sm:p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
+          <div className="min-w-0">
+            <div className="text-[11px] sm:text-xs font-semibold text-[#64748B] truncate">Read Rate</div>
+            <div className="text-xl sm:text-2xl font-black text-[#0F172A] mt-0.5 sm:mt-1 tracking-tight">{stats.readRate}%</div>
+            <div className="text-[10px] sm:text-[11px] text-[#64748B] mt-0.5 truncate">{stats.totalRead.toLocaleString()} Read</div>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-indigo-600 shrink-0">
-            <TrendingUp className="w-5 h-5" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-indigo-600 shrink-0">
+            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
 
         {/* Card 5: Failed Messages */}
-        <div className="bg-white p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
-          <div>
-            <div className="text-xs font-semibold text-[#64748B]">Failed Messages</div>
-            <div className="text-2xl font-black text-rose-600 mt-1 tracking-tight">{stats.totalFailed}</div>
-            <div className="text-[11px] text-rose-600/80 mt-0.5">{stats.failedRate}% Failed Rate</div>
+        <div className="col-span-2 sm:col-span-1 bg-white p-3 sm:p-4.5 rounded-2xl border border-[#E2EAE6] shadow-xs flex items-center justify-between">
+          <div className="min-w-0">
+            <div className="text-[11px] sm:text-xs font-semibold text-[#64748B] truncate">Failed Messages</div>
+            <div className="text-xl sm:text-2xl font-black text-rose-600 mt-0.5 sm:mt-1 tracking-tight">{stats.totalFailed}</div>
+            <div className="text-[10px] sm:text-[11px] text-rose-600/80 mt-0.5 truncate">{stats.failedRate}% Failed Rate</div>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
-            <AlertCircle className="w-5 h-5" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         </div>
       </div>
 
       {/* Main SaaS Card wrapping Filter Toolbar & Table */}
-      <div className="bg-white rounded-2xl border border-[#E2EAE6] shadow-xs p-5 mb-6 space-y-4">
+      <div className="bg-white rounded-2xl border border-[#E2EAE6] shadow-xs p-3.5 sm:p-5 mb-6 space-y-4">
         {/* Card Header & Controls */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-[#E2EAE6]">
           <div>

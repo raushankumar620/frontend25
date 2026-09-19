@@ -470,7 +470,7 @@ export const Templates: React.FC = () => {
         </div>
 
         {/* Action Buttons & View Switcher */}
-        <div className="flex items-center gap-2 shrink-0 self-end lg:self-auto">
+        <div className="flex items-center gap-2 shrink-0 flex-wrap w-full sm:w-auto justify-start sm:justify-end">
           {/* View Mode Switcher (Grid vs Table) */}
           <div className="flex items-center gap-1 bg-slate-100/80 p-0.5 rounded-xl border border-slate-200 shrink-0">
             <button

@@ -3,7 +3,7 @@ import { PageContainer } from '../../../components/layout/PageContainer';
 import { AgentCard } from '../components/AgentCard';
 import { AIChat } from '../components/AIChat';
 import { Button } from '../../../components/ui/Button';
-import { Sparkles, BookOpen, Plus, Zap, Users, MessageSquare, ShieldCheck, Cpu, Wrench } from 'lucide-react';
+import { Sparkles, BookOpen, Plus, Zap, Users, MessageSquare, Cpu, Wrench } from 'lucide-react';
 import type { AIAgent, AIMetrics } from '../types';
 import { aiService } from '../../../services/aiService';
 import { useNavigate } from 'react-router-dom';
@@ -70,97 +70,97 @@ export const AIDashboard: React.FC = () => {
 
   return (
     <PageContainer>
-      <div className="flex items-center justify-end gap-3 flex-wrap mb-6">
+      <div className="flex items-center justify-start sm:justify-end gap-2 sm:gap-3 flex-wrap mb-6">
         <Button
           variant="outline"
-          size="md"
+          size="sm"
           onClick={() => navigate(ROUTES.AI_HANDOFF)}
           leftIcon={<Users className="w-4 h-4" />}
-          className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
+          className="text-xs sm:text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
         >
           Human Handoff
         </Button>
         <Button
           variant="outline"
-          size="md"
+          size="sm"
           onClick={() => navigate(ROUTES.AI_TOOLS)}
           leftIcon={<Wrench className="w-4 h-4" />}
-          className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
+          className="text-xs sm:text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
         >
           Action Tools
         </Button>
         <Button
           variant="outline"
-          size="md"
+          size="sm"
           onClick={() => navigate(ROUTES.AI_KNOWLEDGE_BASE)}
           leftIcon={<BookOpen className="w-4 h-4" />}
-          className="text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
+          className="text-xs sm:text-sm font-semibold border-[#C4EBD0] text-[#006736] hover:bg-[#F6FAF8] rounded-xl"
         >
           Knowledge Base
         </Button>
         <Button
           variant="primary"
-          size="md"
+          size="sm"
           onClick={() => navigate(ROUTES.AI_AGENT)}
           leftIcon={<Plus className="w-4 h-4" />}
-          className="text-sm font-bold px-4.5 py-2.5 rounded-xl shadow-sm bg-[#05A222] hover:bg-[#006736] text-white"
+          className="text-xs sm:text-sm font-bold px-3.5 sm:px-4.5 py-2 sm:py-2.5 rounded-xl shadow-xs bg-[#05A222] hover:bg-[#006736] text-white"
         >
           Create AI Agent
         </Button>
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-xs">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-8">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 rounded-2xl shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Active Agents</span>
-            <div className="w-8 h-8 rounded-lg bg-[#E9F9EE] text-[#006736] flex items-center justify-center">
-              <Cpu className="w-4 h-4" />
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-500">Active Agents</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#E9F9EE] text-[#006736] flex items-center justify-center">
+              <Cpu className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white mt-2">
+          <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1 sm:mt-2">
             {metrics?.activeAgents ?? agents.filter((a) => a.isActive).length} / {agents.length}
           </div>
-          <span className="text-[11px] text-[#05A222] font-semibold mt-1 inline-block">Online & Ready</span>
+          <span className="text-[10px] sm:text-[11px] text-[#05A222] font-semibold mt-0.5 sm:mt-1 inline-block">Online & Ready</span>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-xs">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 rounded-2xl shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Total Inferences</span>
-            <div className="w-8 h-8 rounded-lg bg-[#E9F9EE] text-[#006736] flex items-center justify-center">
-              <MessageSquare className="w-4 h-4" />
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-500">Total Inferences</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#E9F9EE] text-[#006736] flex items-center justify-center">
+              <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white mt-2">
+          <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1 sm:mt-2 truncate">
             {(metrics?.totalInferences ?? agents.reduce((acc, a) => acc + (a.totalInferences || 0), 0)).toLocaleString()}
           </div>
-          <span className="text-[11px] text-slate-400 font-medium mt-1 inline-block">Autonomous replies</span>
+          <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5 sm:mt-1 inline-block">Autonomous replies</span>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-xs">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 rounded-2xl shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">AI Containment Rate</span>
-            <div className="w-8 h-8 rounded-lg bg-[#E9F9EE] text-[#006736] flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4" />
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-500">AI Containment</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#E9F9EE] text-[#006736] flex items-center justify-center">
+              <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white mt-2">
-            {metrics?.containmentRate ?? 88}%
+          <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1 sm:mt-2">
+            {metrics?.containmentRate ? `${metrics.containmentRate}%` : '94.2%'}
           </div>
-          <span className="text-[11px] text-emerald-600 font-semibold mt-1 inline-block">Resolved without agent</span>
+          <span className="text-[10px] sm:text-[11px] text-emerald-600 font-semibold mt-0.5 sm:mt-1 inline-block">Resolved without agent</span>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-xs">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 sm:p-5 rounded-2xl shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Memory Sessions</span>
-            <div className="w-8 h-8 rounded-lg bg-[#E9F9EE] text-[#006736] flex items-center justify-center">
-              <Users className="w-4 h-4" />
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-500">Memory Sessions</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#E9F9EE] text-[#006736] flex items-center justify-center">
+              <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white mt-2">
+          <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1 sm:mt-2 truncate">
             {metrics?.totalSessions ?? 0}
           </div>
-          <span className="text-[11px] text-slate-400 font-medium mt-1 inline-block">Contextual threads</span>
+          <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5 sm:mt-1 inline-block">Contextual threads</span>
         </div>
       </div>
 

@@ -29,10 +29,16 @@ import {
   Image as ImageIcon,
   Play,
   FileText,
+  Upload,
+  FolderUp,
+  Link2,
+  X,
+  Loader2,
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
 import { templatesApi } from '../api';
+import { uploadService } from '../../../services/uploadService';
 
 export const CreateTemplate: React.FC = () => {
   const navigate = useNavigate();
@@ -45,6 +51,12 @@ export const CreateTemplate: React.FC = () => {
   const [headerType, setHeaderType] = useState<'NONE' | 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT'>('NONE');
   const [headerText, setHeaderText] = useState('');
   const [headerMediaUrl, setHeaderMediaUrl] = useState('');
+  const [uploadedFileName, setUploadedFileName] = useState('');
+  const [uploadedFileSize, setUploadedFileSize] = useState<number | null>(null);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+  const [mediaTab, setMediaTab] = useState<'upload' | 'url'>('upload');
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [body, setBody] = useState('Hello {{1}}, your order #{{2}} has been confirmed and is scheduled for delivery on {{3}}!');
   const [footer, setFooter] = useState('Reply STOP to unsubscribe from automated notifications.');
   type ButtonType = 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER' | 'COPY_CODE' | 'OPT_OUT' | 'SUPPORT';
@@ -68,6 +80,66 @@ export const CreateTemplate: React.FC = () => {
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [draftSavedSuccess, setDraftSavedSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const formatBytes = (bytes: number): string => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+  };
+
+  const processFile = async (file: File, mediaKind: 'IMAGE' | 'VIDEO' | 'DOCUMENT') => {
+    const maxSizes = {
+      IMAGE: 5 * 1024 * 1024,     // 5MB
+      VIDEO: 16 * 1024 * 1024,    // 16MB
+      DOCUMENT: 100 * 1024 * 1024 // 100MB
+    };
+
+    if (file.size > maxSizes[mediaKind]) {
+      const maxMb = mediaKind === 'IMAGE' ? '5MB' : mediaKind === 'VIDEO' ? '16MB' : '100MB';
+      setErrorMessage(`Selected ${mediaKind.toLowerCase()} file (${formatBytes(file.size)}) exceeds maximum allowed size of ${maxMb}.`);
+      return;
+    }
+
+    setIsUploadingMedia(true);
+    setErrorMessage(null);
+    try {
+      const result = await uploadService.uploadFile(file);
+      setHeaderMediaUrl(result.url);
+      setUploadedFileName(file.name);
+      setUploadedFileSize(file.size);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to upload media file.');
+    } finally {
+      setIsUploadingMedia(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, mediaKind: 'IMAGE' | 'VIDEO' | 'DOCUMENT') => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processFile(file, mediaKind);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, mediaKind: 'IMAGE' | 'VIDEO' | 'DOCUMENT') => {
+    e.preventDefault();
+    setIsDraggingFile(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processFile(file, mediaKind);
+    }
+  };
+
+  const handleClearMedia = () => {
+    setHeaderMediaUrl('');
+    setUploadedFileName('');
+    setUploadedFileSize(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   // Load existing draft if draftId is present
   React.useEffect(() => {
@@ -299,9 +371,9 @@ export const CreateTemplate: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
         {/* Left Builder Form Card */}
-        <div className="lg:col-span-7 bg-white p-5 sm:p-7 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-6">
+        <div className="lg:col-span-7 bg-white p-4 sm:p-7 rounded-2xl border border-[#E2EAE6] shadow-[0_8px_30px_rgba(1,59,35,0.04)] space-y-5 sm:space-y-6">
           <div className="border-b border-[#E2EAE6] pb-4">
             <div className="flex items-center gap-2 text-xs font-bold text-[#05A222] uppercase tracking-wider mb-1">
               <Layers className="w-4 h-4" />
@@ -416,115 +488,457 @@ export const CreateTemplate: React.FC = () => {
 
             {/* Header Image Configuration */}
             {headerType === 'IMAGE' && (
-              <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#C4EBD0] space-y-3">
+              <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#C4EBD0] space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <ImageIcon className="w-4 h-4 text-[#05A222]" />
-                    <span className="text-xs font-bold text-[#14201C]">Header Sample Image</span>
+                    <span className="text-xs font-bold text-[#14201C]">Header Image Configuration</span>
                   </div>
-                  <span className="text-[11px] font-bold text-[#006736] bg-[#E9F9EE] px-2 py-0.5 rounded-md border border-[#C4EBD0]">
-                    JPG / PNG • Max 5MB
+                  <span className="text-[11px] font-bold text-[#006736] bg-[#E9F9EE] px-2.5 py-0.5 rounded-md border border-[#C4EBD0]">
+                    JPG / PNG / WEBP • Max 5MB
                   </span>
                 </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[#14201C] mb-1">
-                    Sample Image URL (Meta Compliance & Preview)
-                  </label>
-                  <Input
-                    value={headerMediaUrl}
-                    onChange={(e) => setHeaderMediaUrl(e.target.value)}
-                    placeholder="https://example.com/banner.jpg"
-                    className="text-sm font-medium bg-white"
-                  />
-                </div>
-                <div className="flex items-center gap-2 pt-1">
-                  <span className="text-[11px] text-[#5F7069] font-medium">Quick Presets:</span>
+
+                {/* Tab Switcher: Upload vs URL */}
+                <div className="flex items-center gap-1.5 p-1 bg-white rounded-xl border border-[#E2EAE6] w-fit">
                   <button
                     type="button"
-                    onClick={() => setHeaderMediaUrl('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=800&q=80')}
-                    className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                    onClick={() => setMediaTab('upload')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      mediaTab === 'upload'
+                        ? 'bg-[#006736] text-white shadow-2xs'
+                        : 'text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8]'
+                    }`}
                   >
-                    Sale Banner
+                    <Upload className="w-3.5 h-3.5" /> Upload Image File
                   </button>
-                  <span className="text-[#8A9993]">•</span>
                   <button
                     type="button"
-                    onClick={() => setHeaderMediaUrl('https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80')}
-                    className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                    onClick={() => setMediaTab('url')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      mediaTab === 'url'
+                        ? 'bg-[#006736] text-white shadow-2xs'
+                        : 'text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8]'
+                    }`}
                   >
-                    Product Showcase
+                    <Link2 className="w-3.5 h-3.5" /> Web Image URL
                   </button>
                 </div>
+
+                {mediaTab === 'upload' ? (
+                  <div>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
+                      onChange={(e) => handleFileChange(e, 'IMAGE')}
+                      className="hidden"
+                    />
+
+                    {isUploadingMedia ? (
+                      <div className="p-6 rounded-xl border-2 border-dashed border-[#05A222] bg-white text-center flex flex-col items-center justify-center gap-2">
+                        <Loader2 className="w-6 h-6 text-[#05A222] animate-spin" />
+                        <span className="text-xs font-bold text-[#006736]">Uploading and optimizing image...</span>
+                      </div>
+                    ) : headerMediaUrl ? (
+                      <div className="p-3 bg-white rounded-xl border border-[#C4EBD0] flex items-center justify-between gap-3 shadow-2xs">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-12 h-12 rounded-lg bg-[#E2EAE6] overflow-hidden shrink-0 border border-[#C4EBD0]">
+                            <img src={headerMediaUrl} alt="Preview" className="w-full h-full object-cover" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-[#14201C] truncate">
+                              {uploadedFileName || 'image_header.jpg'}
+                            </p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              {uploadedFileSize && (
+                                <span className="text-[10px] text-[#5F7069] font-medium">
+                                  {formatBytes(uploadedFileSize)}
+                                </span>
+                              )}
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#05A222] bg-[#E9F9EE] px-1.5 py-0.2 rounded">
+                                <CheckCircle2 className="w-3 h-3" /> Ready
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-[#006736] bg-[#E9F9EE] hover:bg-[#d8f5e0] border border-[#C4EBD0] transition-colors cursor-pointer"
+                          >
+                            Change
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleClearMedia}
+                            className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
+                            title="Remove image"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          setIsDraggingFile(true);
+                        }}
+                        onDragLeave={() => setIsDraggingFile(false)}
+                        onDrop={(e) => handleDrop(e, 'IMAGE')}
+                        onClick={() => fileInputRef.current?.click()}
+                        className={`p-6 rounded-xl border-2 border-dashed transition-all text-center flex flex-col items-center justify-center gap-2 cursor-pointer ${
+                          isDraggingFile
+                            ? 'border-[#05A222] bg-[#E9F9EE]'
+                            : 'border-[#C4EBD0] hover:border-[#05A222] bg-white hover:bg-[#F6FAF8]'
+                        }`}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-[#E9F9EE] text-[#05A222] flex items-center justify-center">
+                          <FolderUp className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-[#14201C]">
+                            Click to browse image or drag and drop here
+                          </p>
+                          <p className="text-[11px] text-[#5F7069] mt-0.5">
+                            Supports JPG, PNG, WEBP files up to 5MB
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#14201C] mb-1">
+                      Direct Image Web URL
+                    </label>
+                    <Input
+                      value={headerMediaUrl}
+                      onChange={(e) => setHeaderMediaUrl(e.target.value)}
+                      placeholder="https://example.com/banner.jpg"
+                      className="text-sm font-medium bg-white"
+                    />
+                    <div className="flex items-center gap-2 pt-2">
+                      <span className="text-[11px] text-[#5F7069] font-medium">Quick Presets:</span>
+                      <button
+                        type="button"
+                        onClick={() => setHeaderMediaUrl('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=800&q=80')}
+                        className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                      >
+                        Sale Banner
+                      </button>
+                      <span className="text-[#8A9993]">•</span>
+                      <button
+                        type="button"
+                        onClick={() => setHeaderMediaUrl('https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80')}
+                        className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                      >
+                        Product Showcase
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {/* Header Video Configuration */}
             {headerType === 'VIDEO' && (
-              <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#C4EBD0] space-y-3">
+              <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#C4EBD0] space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Video className="w-4 h-4 text-[#05A222]" />
-                    <span className="text-xs font-bold text-[#14201C]">Header Sample Video</span>
+                    <span className="text-xs font-bold text-[#14201C]">Header Video Configuration</span>
                   </div>
-                  <span className="text-[11px] font-bold text-[#006736] bg-[#E9F9EE] px-2 py-0.5 rounded-md border border-[#C4EBD0]">
-                    MP4 • Max 16MB
+                  <span className="text-[11px] font-bold text-[#006736] bg-[#E9F9EE] px-2.5 py-0.5 rounded-md border border-[#C4EBD0]">
+                    MP4 / MOV • Max 16MB
                   </span>
                 </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[#14201C] mb-1">
-                    Sample Video URL (Meta Compliance & Preview)
-                  </label>
-                  <Input
-                    value={headerMediaUrl}
-                    onChange={(e) => setHeaderMediaUrl(e.target.value)}
-                    placeholder="https://example.com/demo.mp4"
-                    className="text-sm font-medium bg-white"
-                  />
-                </div>
-                <div className="flex items-center gap-2 pt-1">
-                  <span className="text-[11px] text-[#5F7069] font-medium">Quick Presets:</span>
+
+                {/* Tab Switcher: Upload vs URL */}
+                <div className="flex items-center gap-1.5 p-1 bg-white rounded-xl border border-[#E2EAE6] w-fit">
                   <button
                     type="button"
-                    onClick={() => setHeaderMediaUrl('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')}
-                    className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                    onClick={() => setMediaTab('upload')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      mediaTab === 'upload'
+                        ? 'bg-[#006736] text-white shadow-2xs'
+                        : 'text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8]'
+                    }`}
                   >
-                    Product Video
+                    <Upload className="w-3.5 h-3.5" /> Upload Video File
                   </button>
-                  <span className="text-[#8A9993]">•</span>
                   <button
                     type="button"
-                    onClick={() => setHeaderMediaUrl('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')}
-                    className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                    onClick={() => setMediaTab('url')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      mediaTab === 'url'
+                        ? 'bg-[#006736] text-white shadow-2xs'
+                        : 'text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8]'
+                    }`}
                   >
-                    Teaser Video
+                    <Link2 className="w-3.5 h-3.5" /> Web Video URL
                   </button>
                 </div>
+
+                {mediaTab === 'upload' ? (
+                  <div>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      accept="video/mp4,video/quicktime,video/webm"
+                      onChange={(e) => handleFileChange(e, 'VIDEO')}
+                      className="hidden"
+                    />
+
+                    {isUploadingMedia ? (
+                      <div className="p-6 rounded-xl border-2 border-dashed border-[#05A222] bg-white text-center flex flex-col items-center justify-center gap-2">
+                        <Loader2 className="w-6 h-6 text-[#05A222] animate-spin" />
+                        <span className="text-xs font-bold text-[#006736]">Uploading and processing video...</span>
+                      </div>
+                    ) : headerMediaUrl ? (
+                      <div className="p-3 bg-white rounded-xl border border-[#C4EBD0] flex items-center justify-between gap-3 shadow-2xs">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-12 h-12 rounded-lg bg-slate-900 text-white flex items-center justify-center shrink-0 border border-[#C4EBD0]">
+                            <Video className="w-6 h-6" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-[#14201C] truncate">
+                              {uploadedFileName || 'demo_video.mp4'}
+                            </p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              {uploadedFileSize && (
+                                <span className="text-[10px] text-[#5F7069] font-medium">
+                                  {formatBytes(uploadedFileSize)}
+                                </span>
+                              )}
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#05A222] bg-[#E9F9EE] px-1.5 py-0.2 rounded">
+                                <CheckCircle2 className="w-3 h-3" /> Ready
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-[#006736] bg-[#E9F9EE] hover:bg-[#d8f5e0] border border-[#C4EBD0] transition-colors cursor-pointer"
+                          >
+                            Change
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleClearMedia}
+                            className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
+                            title="Remove video"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          setIsDraggingFile(true);
+                        }}
+                        onDragLeave={() => setIsDraggingFile(false)}
+                        onDrop={(e) => handleDrop(e, 'VIDEO')}
+                        onClick={() => fileInputRef.current?.click()}
+                        className={`p-6 rounded-xl border-2 border-dashed transition-all text-center flex flex-col items-center justify-center gap-2 cursor-pointer ${
+                          isDraggingFile
+                            ? 'border-[#05A222] bg-[#E9F9EE]'
+                            : 'border-[#C4EBD0] hover:border-[#05A222] bg-white hover:bg-[#F6FAF8]'
+                        }`}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-[#E9F9EE] text-[#05A222] flex items-center justify-center">
+                          <FolderUp className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-[#14201C]">
+                            Click to browse MP4 video or drag and drop here
+                          </p>
+                          <p className="text-[11px] text-[#5F7069] mt-0.5">
+                            Supports MP4 files up to 16MB
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#14201C] mb-1">
+                      Direct Video Web URL
+                    </label>
+                    <Input
+                      value={headerMediaUrl}
+                      onChange={(e) => setHeaderMediaUrl(e.target.value)}
+                      placeholder="https://example.com/demo.mp4"
+                      className="text-sm font-medium bg-white"
+                    />
+                    <div className="flex items-center gap-2 pt-2">
+                      <span className="text-[11px] text-[#5F7069] font-medium">Quick Presets:</span>
+                      <button
+                        type="button"
+                        onClick={() => setHeaderMediaUrl('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')}
+                        className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                      >
+                        Product Video
+                      </button>
+                      <span className="text-[#8A9993]">•</span>
+                      <button
+                        type="button"
+                        onClick={() => setHeaderMediaUrl('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')}
+                        className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                      >
+                        Teaser Video
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {/* Header Document Configuration */}
             {headerType === 'DOCUMENT' && (
-              <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#C4EBD0] space-y-3">
+              <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#C4EBD0] space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-[#05A222]" />
-                    <span className="text-xs font-bold text-[#14201C]">Header Document</span>
+                    <span className="text-xs font-bold text-[#14201C]">Header Document Configuration</span>
                   </div>
-                  <span className="text-[11px] font-bold text-[#006736] bg-[#E9F9EE] px-2 py-0.5 rounded-md border border-[#C4EBD0]">
+                  <span className="text-[11px] font-bold text-[#006736] bg-[#E9F9EE] px-2.5 py-0.5 rounded-md border border-[#C4EBD0]">
                     PDF • Max 100MB
                   </span>
                 </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[#14201C] mb-1">
-                    Sample Document URL (PDF Link)
-                  </label>
-                  <Input
-                    value={headerMediaUrl}
-                    onChange={(e) => setHeaderMediaUrl(e.target.value)}
-                    placeholder="https://example.com/brochure.pdf"
-                    className="text-sm font-medium bg-white"
-                  />
+
+                {/* Tab Switcher: Upload vs URL */}
+                <div className="flex items-center gap-1.5 p-1 bg-white rounded-xl border border-[#E2EAE6] w-fit">
+                  <button
+                    type="button"
+                    onClick={() => setMediaTab('upload')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      mediaTab === 'upload'
+                        ? 'bg-[#006736] text-white shadow-2xs'
+                        : 'text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8]'
+                    }`}
+                  >
+                    <Upload className="w-3.5 h-3.5" /> Upload PDF File
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMediaTab('url')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      mediaTab === 'url'
+                        ? 'bg-[#006736] text-white shadow-2xs'
+                        : 'text-[#5F7069] hover:text-[#14201C] hover:bg-[#F6FAF8]'
+                    }`}
+                  >
+                    <Link2 className="w-3.5 h-3.5" /> Web Document URL
+                  </button>
                 </div>
+
+                {mediaTab === 'upload' ? (
+                  <div>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      accept="application/pdf,.pdf"
+                      onChange={(e) => handleFileChange(e, 'DOCUMENT')}
+                      className="hidden"
+                    />
+
+                    {isUploadingMedia ? (
+                      <div className="p-6 rounded-xl border-2 border-dashed border-[#05A222] bg-white text-center flex flex-col items-center justify-center gap-2">
+                        <Loader2 className="w-6 h-6 text-[#05A222] animate-spin" />
+                        <span className="text-xs font-bold text-[#006736]">Uploading document...</span>
+                      </div>
+                    ) : headerMediaUrl ? (
+                      <div className="p-3 bg-white rounded-xl border border-[#C4EBD0] flex items-center justify-between gap-3 shadow-2xs">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-12 h-12 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-200">
+                            <FileText className="w-6 h-6" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-[#14201C] truncate">
+                              {uploadedFileName || 'document.pdf'}
+                            </p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              {uploadedFileSize && (
+                                <span className="text-[10px] text-[#5F7069] font-medium">
+                                  {formatBytes(uploadedFileSize)}
+                                </span>
+                              )}
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#05A222] bg-[#E9F9EE] px-1.5 py-0.2 rounded">
+                                <CheckCircle2 className="w-3 h-3" /> Ready
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-[#006736] bg-[#E9F9EE] hover:bg-[#d8f5e0] border border-[#C4EBD0] transition-colors cursor-pointer"
+                          >
+                            Change
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleClearMedia}
+                            className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
+                            title="Remove document"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          setIsDraggingFile(true);
+                        }}
+                        onDragLeave={() => setIsDraggingFile(false)}
+                        onDrop={(e) => handleDrop(e, 'DOCUMENT')}
+                        onClick={() => fileInputRef.current?.click()}
+                        className={`p-6 rounded-xl border-2 border-dashed transition-all text-center flex flex-col items-center justify-center gap-2 cursor-pointer ${
+                          isDraggingFile
+                            ? 'border-[#05A222] bg-[#E9F9EE]'
+                            : 'border-[#C4EBD0] hover:border-[#05A222] bg-white hover:bg-[#F6FAF8]'
+                        }`}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-[#E9F9EE] text-[#05A222] flex items-center justify-center">
+                          <FolderUp className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-[#14201C]">
+                            Click to browse PDF document or drag and drop here
+                          </p>
+                          <p className="text-[11px] text-[#5F7069] mt-0.5">
+                            Supports PDF files up to 100MB
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#14201C] mb-1">
+                      Direct Document Web URL (PDF Link)
+                    </label>
+                    <Input
+                      value={headerMediaUrl}
+                      onChange={(e) => setHeaderMediaUrl(e.target.value)}
+                      placeholder="https://example.com/brochure.pdf"
+                      className="text-sm font-medium bg-white"
+                    />
+                  </div>
+                )}
               </div>
             )}
 
@@ -858,7 +1272,7 @@ export const CreateTemplate: React.FC = () => {
         </div>
 
         {/* Right Ultra-Realistic Modern iPhone Mockup */}
-        <div className="lg:col-span-5 flex flex-col items-center sticky top-6">
+        <div className="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-6 w-full mt-6 lg:mt-0">
           <div className="text-xs font-bold text-[#5F7069] uppercase tracking-wider mb-3 flex items-center gap-2">
             <Smartphone className="w-4 h-4 text-[#05A222]" />
             <span>Live WhatsApp Rendering Preview</span>

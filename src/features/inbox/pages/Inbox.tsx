@@ -21,8 +21,12 @@ export const Inbox: React.FC = () => {
 
   return (
     <div className="h-full w-full flex overflow-hidden bg-white">
-      {/* Left Conversations List Sidebar */}
-      <div className="w-full sm:w-80 lg:w-92 shrink-0 h-full">
+      {/* Left Conversations List Sidebar (Full width on mobile when no chat active, hidden on mobile when chat active) */}
+      <div
+        className={`${
+          activeConversation ? 'hidden sm:block' : 'w-full'
+        } sm:w-80 lg:w-92 shrink-0 h-full border-r border-[#E2EAE6]`}
+      >
         <ConversationList
           conversations={conversations}
           activeId={activeConversationId}
@@ -31,7 +35,11 @@ export const Inbox: React.FC = () => {
       </div>
 
       {/* Middle Active Chat Window */}
-      <div className="flex-1 h-full min-w-0 flex flex-col">
+      <div
+        className={`${
+          !activeConversation ? 'hidden sm:flex' : 'flex'
+        } flex-1 h-full min-w-0 flex-col`}
+      >
         {activeConversation ? (
           <ChatWindow
             conversation={activeConversation}
@@ -41,6 +49,7 @@ export const Inbox: React.FC = () => {
             onAddNote={(txt) => addNote(activeConversation.id, txt)}
             onToggleCustomerPanel={() => setShowCustomerPanel(!showCustomerPanel)}
             isCustomerPanelOpen={showCustomerPanel}
+            onBack={() => setActiveConversation(null)}
           />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#F0F2F5]/40 select-none">

@@ -158,7 +158,7 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* 8 Primary KPI Metric Cards (4x2 Grid) - 100% Dynamic Real Data */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 min-[440px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <MetricCard
             title="Total Contacts"
             value={loading && !overview ? '...' : totalContacts.toLocaleString()}

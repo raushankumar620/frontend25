@@ -281,19 +281,19 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
       {/* Interactive Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2.5 w-[380px] sm:w-[420px] max-w-[90vw] bg-white rounded-2xl shadow-[0_20px_60px_rgba(1,59,35,0.16)] border border-[#E2EAE6] z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-x-2.5 top-[68px] sm:absolute sm:inset-auto sm:right-0 sm:top-auto sm:mt-2.5 w-auto sm:w-[420px] max-w-[calc(100vw-20px)] sm:max-w-[420px] bg-white rounded-2xl shadow-[0_20px_60px_rgba(1,59,35,0.18)] border border-[#E2EAE6] z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
           {/* Header */}
-          <div className="p-4 border-b border-[#E2EAE6] bg-[#F6FAF8]/80 flex items-center justify-between">
+          <div className="p-3 sm:p-4 border-b border-[#E2EAE6] bg-[#F6FAF8]/80 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-bold text-[#14201C]">Notifications</h3>
               {unreadCount > 0 && (
-                <span className="bg-[#E9F9EE] text-[#006736] text-xs font-bold px-2 py-0.5 rounded-full border border-[#C4EBD0]">
+                <span className="bg-[#E9F9EE] text-[#006736] text-[11px] sm:text-xs font-bold px-2 py-0.5 rounded-full border border-[#C4EBD0]">
                   {unreadCount} new
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 sm:gap-1.5">
               <button
                 onClick={toggleSound}
                 title={soundEnabled ? 'Mute notification sound' : 'Unmute notification sound'}
@@ -311,7 +311,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                   onClick={handleMarkAllAsRead}
                   disabled={isMarkingAll}
                   title="Mark all as read"
-                  className="flex items-center gap-1 text-xs font-bold text-[#05A222] hover:text-[#006736] hover:bg-[#E9F9EE] px-2 py-1 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                  className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-[#05A222] hover:text-[#006736] hover:bg-[#E9F9EE] px-2 py-1 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {isMarkingAll ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -336,7 +336,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           </div>
 
           {/* Quick Filter Tabs */}
-          <div className="flex items-center px-3 pt-2 pb-1 border-b border-[#E2EAE6] gap-1 overflow-x-auto bg-white">
+          <div className="flex items-center px-2.5 sm:px-3 pt-2 pb-1 border-b border-[#E2EAE6] gap-1 overflow-x-auto bg-white">
             {[
               { id: 'all', label: 'All' },
               { id: 'unread', label: 'Unread' },
@@ -348,7 +348,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={clsx(
-                  'px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer',
+                  'px-2.5 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all cursor-pointer',
                   activeTab === tab.id
                     ? 'bg-[#05A222] text-white shadow-xs'
                     : 'text-[#5F7069] hover:bg-[#F6FAF8] hover:text-[#14201C]'
@@ -360,7 +360,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           </div>
 
           {/* Notification List */}
-          <div className="max-h-[360px] overflow-y-auto divide-y divide-[#E2EAE6]/60">
+          <div className="max-h-[55vh] sm:max-h-[360px] overflow-y-auto divide-y divide-[#E2EAE6]/60">
             {loading && notifications.length === 0 ? (
               <div className="py-12 flex flex-col items-center justify-center text-[#8A9993] gap-2">
                 <Loader2 className="w-6 h-6 animate-spin text-[#05A222]" />
@@ -392,14 +392,14 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                     key={id}
                     onClick={() => handleItemClick(item)}
                     className={clsx(
-                      'p-3.5 flex items-start gap-3 hover:bg-[#F6FAF8] transition-colors cursor-pointer group relative',
+                      'p-3 sm:p-3.5 flex items-start gap-2.5 sm:gap-3 hover:bg-[#F6FAF8] transition-colors cursor-pointer group relative',
                       !item.isRead ? 'bg-[#F9FCFA]' : 'bg-white'
                     )}
                   >
                     {/* Category Icon Badge */}
                     <div
                       className={clsx(
-                        'w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border mt-0.5 transition-transform group-hover:scale-105',
+                        'w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center shrink-0 border mt-0.5 transition-transform group-hover:scale-105',
                         getCategoryBg(item.category)
                       )}
                     >
@@ -407,7 +407,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 min-w-0 pr-4">
+                    <div className="flex-1 min-w-0 pr-2 sm:pr-4">
                       <div className="flex items-center gap-1.5 justify-between">
                         <h5
                           className={clsx(
@@ -426,13 +426,13 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                         {item.message}
                       </p>
 
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <span className="text-[10px] font-bold text-[#8A9993] uppercase tracking-wider bg-[#F6FAF8] px-1.5 py-0.5 rounded border border-[#E2EAE6]">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mt-1.5">
+                        <span className="text-[9px] sm:text-[10px] font-bold text-[#8A9993] uppercase tracking-wider bg-[#F6FAF8] px-1.5 py-0.5 rounded border border-[#E2EAE6]">
                           {item.category}
                         </span>
 
                         {item.priority === 'urgent' && (
-                          <span className="text-[10px] font-bold text-[#DC2626] bg-[#FEF2F2] px-1.5 py-0.5 rounded border border-[#FEE2E2]">
+                          <span className="text-[9px] sm:text-[10px] font-bold text-[#DC2626] bg-[#FEF2F2] px-1.5 py-0.5 rounded border border-[#FEE2E2]">
                             URGENT
                           </span>
                         )}
@@ -458,7 +458,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                       <button
                         onClick={(e) => handleDelete(e, id)}
                         title="Delete notification"
-                        className="opacity-0 group-hover:opacity-100 p-1 text-[#8A9993] hover:text-[#DC2626] rounded-md transition-opacity cursor-pointer"
+                        className="opacity-70 sm:opacity-0 sm:group-hover:opacity-100 p-1 text-[#8A9993] hover:text-[#DC2626] rounded-md transition-opacity cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -470,10 +470,10 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="p-3 bg-[#F6FAF8] border-t border-[#E2EAE6] flex items-center justify-between text-xs">
+          <div className="p-2.5 sm:p-3 bg-[#F6FAF8] border-t border-[#E2EAE6] flex items-center justify-between text-xs">
             <button
               onClick={handleSendQuickTest}
-              className="text-[#5F7069] hover:text-[#05A222] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+              className="text-[#5F7069] hover:text-[#05A222] font-semibold flex items-center gap-1 transition-colors cursor-pointer text-[11px] sm:text-xs"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#05A222]" />
               <span>Test Alert</span>
@@ -484,7 +484,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                 setIsOpen(false);
                 navigate('/notifications');
               }}
-              className="font-bold text-[#05A222] hover:text-[#006736] flex items-center gap-1 transition-colors cursor-pointer"
+              className="font-bold text-[#05A222] hover:text-[#006736] flex items-center gap-1 transition-colors cursor-pointer text-[11px] sm:text-xs"
             >
               <span>View All Notifications</span>
               <ExternalLink className="w-3.5 h-3.5" />

@@ -73,13 +73,13 @@ export const DashboardLayout: React.FC = () => {
 
         {/* Mobile Drawer */}
         {isMobileOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden flex">
+          <div className="fixed inset-0 z-50 lg:hidden flex animate-in fade-in duration-200">
             <div
-              className="fixed inset-0 bg-black/40 backdrop-blur-xs"
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs"
               onClick={() => setIsMobileOpen(false)}
             />
-            <div className="relative z-10 w-72 bg-white h-full shadow-2xl border-r border-[#E2EAE6]">
-              <Sidebar />
+            <div className="relative z-10 w-72 max-w-[82vw] bg-white h-full shadow-2xl border-r border-[#E2EAE6] flex flex-col">
+              <Sidebar onToggleCollapse={() => setIsMobileOpen(false)} />
             </div>
           </div>
         )}
@@ -87,7 +87,7 @@ export const DashboardLayout: React.FC = () => {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#F6FAF8]">
           <Header onToggleSidebar={() => setIsMobileOpen(!isMobileOpen)} />
-          <main className="flex-1 overflow-y-auto pb-16 lg:pb-0">
+          <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">
             <Outlet />
           </main>
           <MobileNav />

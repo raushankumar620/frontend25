@@ -4,7 +4,7 @@ import { Avatar } from '../../../components/ui/Avatar';
 import { MessageBubble } from './MessageBubble';
 import { MessageInput } from './MessageInput';
 import { InternalNote } from './InternalNote';
-import { MoreVertical, CheckCircle2, UserCheck, StickyNote, Loader2, Bot, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { MoreVertical, CheckCircle2, UserCheck, StickyNote, Loader2, Bot, AlertTriangle, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { Dropdown } from '../../../components/ui/Dropdown';
 import { useChatStore } from '../../../store/chatStore';
 import { aiService } from '../../../services/aiService';
@@ -17,6 +17,7 @@ export interface ChatWindowProps {
   onAddNote: (content: string) => void;
   onToggleCustomerPanel?: () => void;
   isCustomerPanelOpen?: boolean;
+  onBack?: () => void;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({
@@ -27,6 +28,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   onAddNote,
   onToggleCustomerPanel,
   isCustomerPanelOpen = true,
+  onBack,
 }) => {
   const [showNotes, setShowNotes] = useState(false);
   const [handoffLoading, setHandoffLoading] = useState(false);
@@ -92,27 +94,37 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   return (
     <div className="w-full h-full flex flex-col bg-[#F0F2F5]/60 relative">
       {/* WhatsApp Chat Top Header */}
-      <div className="h-16 px-5 bg-white border-b border-[#E2EAE6] flex items-center justify-between z-10 shrink-0 shadow-2xs">
+      <div className="h-16 px-3 sm:px-5 bg-white border-b border-[#E2EAE6] flex items-center justify-between z-10 shrink-0 shadow-2xs gap-2">
         {/* Left: Contact Info - Single Sleek Row */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="sm:hidden p-1.5 -ml-1 rounded-xl text-[#5F7069] hover:bg-[#F6FAF8] hover:text-[#14201C] transition-colors cursor-pointer shrink-0"
+              title="Back to conversations"
+              aria-label="Back to conversations"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          )}
           <Avatar name={conversation.contactName || conversation.contactPhone} size="md" status="online" />
-          <div className="flex items-center gap-2.5 min-w-0 flex-wrap">
-            <h3 className="text-sm sm:text-base font-bold text-[#14201C] leading-none truncate">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-wrap">
+            <h3 className="text-sm sm:text-base font-bold text-[#14201C] leading-none truncate max-w-[120px] sm:max-w-none">
               {conversation.contactName || conversation.contactPhone}
             </h3>
 
             {conversation.contactPhone && (
-              <span className="text-xs text-[#5F7069] font-medium shrink-0 bg-[#F6FAF8] px-2 py-0.5 rounded-md border border-[#E2EAE6]">
+              <span className="hidden xs:inline-block text-[11px] sm:text-xs text-[#5F7069] font-medium shrink-0 bg-[#F6FAF8] px-1.5 sm:px-2 py-0.5 rounded-md border border-[#E2EAE6]">
                 +{conversation.contactPhone.replace(/^\+/, '')}
               </span>
             )}
 
-            <span className="text-[10px] text-[#006736] bg-[#E9F9EE] px-2 py-0.5 rounded-full font-bold border border-[#C4EBD0] flex items-center gap-1 shrink-0">
+            <span className="text-[10px] text-[#006736] bg-[#E9F9EE] px-1.5 sm:px-2 py-0.5 rounded-full font-bold border border-[#C4EBD0] flex items-center gap-1 shrink-0">
               <ShieldCheck className="w-3 h-3 text-[#05A222]" />
-              WhatsApp
+              <span className="hidden sm:inline">WhatsApp</span>
             </span>
 
-            <span className="flex items-center gap-1 text-[#05A222] text-[11px] font-bold shrink-0">
+            <span className="hidden md:flex items-center gap-1 text-[#05A222] text-[11px] font-bold shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-[#05A222] animate-pulse" />
               Online
             </span>

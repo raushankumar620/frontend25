@@ -20,13 +20,16 @@ class ApiClient {
     }
   }
 
-  private getHeaders(): HeadersInit {
+  private getHeaders(isFormData = false): HeadersInit {
     const token = this.getToken();
-    return {
-      'Content-Type': 'application/json',
+    const headers: Record<string, string> = {
       'X-Request-ID': `web_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return headers;
   }
 
   private async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
@@ -63,10 +66,11 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     try {
       const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
+      const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
       const response = await fetch(url, {
         ...options,
         headers: {
-          ...this.getHeaders(),
+          ...this.getHeaders(isFormData),
           ...options.headers,
         },
       });
@@ -112,6 +116,13 @@ class ApiClient {
     return this.requestWithRefresh<T>(endpoint, {
       method: 'POST',
       body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
+  async upload<T>(endpoint: string, formData: FormData): Promise<ApiResponse<T>> {
+    return this.requestWithRefresh<T>(endpoint, {
+      method: 'POST',
+      body: formData,
     });
   }
 
