@@ -24,7 +24,9 @@ import {
   Video,
   CheckCheck,
   Bookmark,
-  FileEdit
+  FileEdit,
+  Image as ImageIcon,
+  Play,
 } from 'lucide-react';
 import { ROUTES } from '../../../utils/constants';
 
@@ -237,12 +239,49 @@ export const TemplateDetails: React.FC = () => {
               Template Message Structure
             </h4>
 
-            {template.header?.text && (
+            {template.header && (
               <div>
-                <span className="text-[11px] font-bold text-[#5F7069] uppercase block mb-1">Header</span>
-                <div className="p-3.5 bg-[#F6FAF8] rounded-xl text-xs font-bold text-[#006736] border border-[#E2EAE6]">
-                  {template.header.text}
-                </div>
+                <span className="text-[11px] font-bold text-[#5F7069] uppercase block mb-1">
+                  Header ({template.header.type})
+                </span>
+                {template.header.type === 'TEXT' && template.header.text && (
+                  <div className="p-3.5 bg-[#F6FAF8] rounded-xl text-xs font-bold text-[#006736] border border-[#E2EAE6]">
+                    {template.header.text}
+                  </div>
+                )}
+                {template.header.type === 'IMAGE' && (
+                  <div className="p-3 bg-[#F6FAF8] rounded-xl text-xs border border-[#E2EAE6] flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-[#E9F9EE] text-[#05A222] flex items-center justify-center shrink-0">
+                      <ImageIcon className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-[#14201C] text-xs">Image Header (Photo / Banner)</p>
+                      <p className="text-[11px] text-[#5F7069] truncate">{template.header.mediaUrl || 'Standard Image Header'}</p>
+                    </div>
+                  </div>
+                )}
+                {template.header.type === 'VIDEO' && (
+                  <div className="p-3 bg-[#F6FAF8] rounded-xl text-xs border border-[#E2EAE6] flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-slate-900 text-white flex items-center justify-center shrink-0">
+                      <Video className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-[#14201C] text-xs">Video Header (MP4)</p>
+                      <p className="text-[11px] text-[#5F7069] truncate">{template.header.mediaUrl || 'Standard Video Header'}</p>
+                    </div>
+                  </div>
+                )}
+                {template.header.type === 'DOCUMENT' && (
+                  <div className="p-3 bg-[#F6FAF8] rounded-xl text-xs border border-[#E2EAE6] flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-[#14201C] text-xs">Document Header (PDF)</p>
+                      <p className="text-[11px] text-[#5F7069] truncate">{template.header.mediaUrl || 'document.pdf'}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -343,23 +382,83 @@ export const TemplateDetails: React.FC = () => {
                 </div>
 
                 {/* WhatsApp Incoming Chat Bubble */}
-                <div className="bg-white rounded-2xl rounded-tl-xs p-3 shadow-xs space-y-1.5 text-xs text-[#14201C]">
-                  {template.header?.text && (
-                    <div className="font-bold text-[#008069] text-[11px] border-b border-[#F0F2F5] pb-1">
-                      {template.header.text}
+                <div className="bg-white rounded-2xl rounded-tl-xs overflow-hidden shadow-xs space-y-1.5 text-xs text-[#14201C]">
+                  {/* Media Header (IMAGE) */}
+                  {template.header?.type === 'IMAGE' && (
+                    <div className="relative w-full aspect-video bg-[#E2EAE6] flex items-center justify-center overflow-hidden">
+                      {template.header.mediaUrl ? (
+                        <img
+                          src={template.header.mediaUrl}
+                          alt="Header Preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center gap-1 text-[#5F7069]">
+                          <ImageIcon className="w-8 h-8 text-[#8A9993]" />
+                          <span className="text-[10px] font-semibold">Image Header</span>
+                        </div>
+                      )}
                     </div>
                   )}
-                  <div className="text-[#1F2A26] whitespace-pre-wrap leading-relaxed font-sans text-xs">
-                    {previewBody}
-                  </div>
-                  {template.footer && (
-                    <div className="text-[10px] text-[#8A9993] pt-0.5">
-                      {template.footer}
+
+                  {/* Media Header (VIDEO) */}
+                  {template.header?.type === 'VIDEO' && (
+                    <div className="relative w-full aspect-video bg-slate-900 flex items-center justify-center overflow-hidden group">
+                      {template.header.mediaUrl ? (
+                        <video
+                          src={template.header.mediaUrl}
+                          className="w-full h-full object-cover opacity-80"
+                          muted
+                          playsInline
+                        />
+                      ) : null}
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full bg-white/90 text-[#008069] flex items-center justify-center shadow-lg">
+                          <Play className="w-5 h-5 fill-current ml-0.5" />
+                        </div>
+                      </div>
+                      <span className="absolute bottom-2 right-2 bg-black/70 text-white text-[9px] font-mono px-1.5 py-0.5 rounded font-bold">
+                        VIDEO
+                      </span>
                     </div>
                   )}
-                  <div className="text-[9px] text-right text-[#8A9993] font-medium flex items-center justify-end gap-1">
-                    <span>12:45 PM</span>
-                    <CheckCheck className="w-3.5 h-3.5 text-[#53BDEB]" />
+
+                  {/* Media Header (DOCUMENT) */}
+                  {template.header?.type === 'DOCUMENT' && (
+                    <div className="p-2.5 bg-[#F6FAF8] border-b border-[#E2EAE6] flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-bold text-[#14201C] truncate">
+                          {template.header.mediaUrl ? template.header.mediaUrl.split('/').pop() || 'document.pdf' : 'document.pdf'}
+                        </p>
+                        <p className="text-[9px] text-[#5F7069]">PDF Document</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="p-3 pt-1 space-y-1.5">
+                    {template.header?.type === 'TEXT' && template.header.text && (
+                      <div className="font-bold text-[#008069] text-[11px] border-b border-[#F0F2F5] pb-1">
+                        {template.header.text}
+                      </div>
+                    )}
+                    <div className="text-[#1F2A26] whitespace-pre-wrap leading-relaxed font-sans text-xs">
+                      {previewBody}
+                    </div>
+                    {template.footer && (
+                      <div className="text-[10px] text-[#8A9993] pt-0.5">
+                        {template.footer}
+                      </div>
+                    )}
+                    <div className="text-[9px] text-right text-[#8A9993] font-medium flex items-center justify-end gap-1">
+                      <span>12:45 PM</span>
+                      <CheckCheck className="w-3.5 h-3.5 text-[#53BDEB]" />
+                    </div>
                   </div>
                 </div>
 

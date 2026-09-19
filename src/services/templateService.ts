@@ -8,6 +8,8 @@ export interface CreateTemplatePayload {
   header?: {
     type: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
     text?: string;
+    mediaUrl?: string;
+    exampleUrl?: string;
   };
   body: string;
   footer?: string;
@@ -29,7 +31,7 @@ export interface SyncResponse {
 }
 
 export interface PreviewResponse {
-  header?: { format?: string; text?: string };
+  header?: { format?: string; text?: string; url?: string };
   body: string;
   footer?: string;
   buttons?: any[];
@@ -47,9 +49,16 @@ function normalizeTemplate(raw: any): WhatsAppTemplate {
   if (Array.isArray(raw.components)) {
     const headerComp = raw.components.find((c: any) => c.type === 'HEADER');
     if (headerComp) {
+      const mediaHandle =
+        headerComp.example?.header_handle?.[0] ||
+        headerComp.example?.header_url?.[0] ||
+        headerComp.mediaUrl ||
+        (Array.isArray(headerComp.example) ? headerComp.example[0] : undefined);
+
       header = {
         type: headerComp.format || 'TEXT',
         text: headerComp.text,
+        mediaUrl: mediaHandle,
       };
     }
 
@@ -135,12 +144,21 @@ export const templateService = {
     // Transform to Meta components format expected by backend
     const components: any[] = [];
 
-    if (payload.header && payload.header.text) {
-      components.push({
-        type: 'HEADER',
-        format: payload.header.type || 'TEXT',
-        text: payload.header.text,
-      });
+    if (payload.header) {
+      if (payload.header.type === 'TEXT' && payload.header.text) {
+        components.push({
+          type: 'HEADER',
+          format: 'TEXT',
+          text: payload.header.text,
+        });
+      } else if (['IMAGE', 'VIDEO', 'DOCUMENT'].includes(payload.header.type)) {
+        const mediaUrl = payload.header.mediaUrl || payload.header.exampleUrl;
+        components.push({
+          type: 'HEADER',
+          format: payload.header.type,
+          example: mediaUrl ? { header_handle: [mediaUrl] } : undefined,
+        });
+      }
     }
 
     if (payload.body) {

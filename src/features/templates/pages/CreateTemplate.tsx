@@ -26,6 +26,9 @@ import {
   Headphones,
   Bookmark,
   CheckCircle2,
+  Image as ImageIcon,
+  Play,
+  FileText,
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ROUTES } from '../../../utils/constants';
@@ -41,6 +44,7 @@ export const CreateTemplate: React.FC = () => {
   const [language, setLanguage] = useState('en_US');
   const [headerType, setHeaderType] = useState<'NONE' | 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT'>('NONE');
   const [headerText, setHeaderText] = useState('');
+  const [headerMediaUrl, setHeaderMediaUrl] = useState('');
   const [body, setBody] = useState('Hello {{1}}, your order #{{2}} has been confirmed and is scheduled for delivery on {{3}}!');
   const [footer, setFooter] = useState('Reply STOP to unsubscribe from automated notifications.');
   type ButtonType = 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER' | 'COPY_CODE' | 'OPT_OUT' | 'SUPPORT';
@@ -76,6 +80,7 @@ export const CreateTemplate: React.FC = () => {
           if (data.header) {
             setHeaderType((data.header.type as any) || 'NONE');
             setHeaderText(data.header.text || '');
+            setHeaderMediaUrl(data.header.mediaUrl || '');
           }
           if (data.body) setBody(data.body);
           if (data.footer) setFooter(data.footer);
@@ -164,11 +169,22 @@ export const CreateTemplate: React.FC = () => {
     try {
       const sanitizedName = name.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_') || `draft_template_${Date.now().toString().slice(-5)}`;
 
+      const buildHeaderPayload = () => {
+        if (headerType === 'NONE') return undefined;
+        if (headerType === 'TEXT') {
+          return headerText.trim() ? { type: 'TEXT' as const, text: headerText.trim() } : undefined;
+        }
+        return {
+          type: headerType,
+          mediaUrl: headerMediaUrl.trim() || undefined,
+        };
+      };
+
       await templatesApi.createTemplate({
         name: sanitizedName,
         category,
         language,
-        header: headerType === 'TEXT' && headerText.trim() ? { type: 'TEXT', text: headerText.trim() } : undefined,
+        header: buildHeaderPayload(),
         body: body.trim() || 'Draft template message body',
         footer: footer.trim() || undefined,
         buttons: buttons.length > 0 ? buttons.map(b => ({
@@ -205,11 +221,22 @@ export const CreateTemplate: React.FC = () => {
         throw new Error('Template name is required and must contain alphanumeric characters.');
       }
 
+      const buildHeaderPayload = () => {
+        if (headerType === 'NONE') return undefined;
+        if (headerType === 'TEXT') {
+          return headerText.trim() ? { type: 'TEXT' as const, text: headerText.trim() } : undefined;
+        }
+        return {
+          type: headerType,
+          mediaUrl: headerMediaUrl.trim() || undefined,
+        };
+      };
+
       await templatesApi.createTemplate({
         name: sanitizedName,
         category,
         language,
-        header: headerType === 'TEXT' && headerText.trim() ? { type: 'TEXT', text: headerText.trim() } : undefined,
+        header: buildHeaderPayload(),
         body: body.trim(),
         footer: footer.trim() || undefined,
         buttons: buttons.length > 0 ? buttons.map(b => ({
@@ -349,11 +376,24 @@ export const CreateTemplate: React.FC = () => {
                 </label>
                 <select
                   value={headerType}
-                  onChange={(e) => setHeaderType(e.target.value as 'NONE' | 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT')}
+                  onChange={(e) => {
+                    const newType = e.target.value as 'NONE' | 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
+                    setHeaderType(newType);
+                    if (newType === 'IMAGE' && !headerMediaUrl) {
+                      setHeaderMediaUrl('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=800&q=80');
+                    } else if (newType === 'VIDEO' && !headerMediaUrl) {
+                      setHeaderMediaUrl('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4');
+                    } else if (newType === 'DOCUMENT' && !headerMediaUrl) {
+                      setHeaderMediaUrl('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+                    }
+                  }}
                   className="w-full rounded-xl border border-[#E2EAE6] bg-white text-[#14201C] text-sm p-2.5 font-semibold focus:border-[#05A222] focus:outline-none"
                 >
                   <option value="NONE">None</option>
-                  <option value="TEXT">Text</option>
+                  <option value="TEXT">Text Header</option>
+                  <option value="IMAGE">📷 Image (Photo / Banner)</option>
+                  <option value="VIDEO">🎥 Video (MP4)</option>
+                  <option value="DOCUMENT">📄 Document (PDF)</option>
                 </select>
               </div>
             </div>
@@ -371,6 +411,120 @@ export const CreateTemplate: React.FC = () => {
                   className="text-sm font-medium"
                   maxLength={60}
                 />
+              </div>
+            )}
+
+            {/* Header Image Configuration */}
+            {headerType === 'IMAGE' && (
+              <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#C4EBD0] space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-[#05A222]" />
+                    <span className="text-xs font-bold text-[#14201C]">Header Sample Image</span>
+                  </div>
+                  <span className="text-[11px] font-bold text-[#006736] bg-[#E9F9EE] px-2 py-0.5 rounded-md border border-[#C4EBD0]">
+                    JPG / PNG • Max 5MB
+                  </span>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#14201C] mb-1">
+                    Sample Image URL (Meta Compliance & Preview)
+                  </label>
+                  <Input
+                    value={headerMediaUrl}
+                    onChange={(e) => setHeaderMediaUrl(e.target.value)}
+                    placeholder="https://example.com/banner.jpg"
+                    className="text-sm font-medium bg-white"
+                  />
+                </div>
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="text-[11px] text-[#5F7069] font-medium">Quick Presets:</span>
+                  <button
+                    type="button"
+                    onClick={() => setHeaderMediaUrl('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=800&q=80')}
+                    className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                  >
+                    Sale Banner
+                  </button>
+                  <span className="text-[#8A9993]">•</span>
+                  <button
+                    type="button"
+                    onClick={() => setHeaderMediaUrl('https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80')}
+                    className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                  >
+                    Product Showcase
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Header Video Configuration */}
+            {headerType === 'VIDEO' && (
+              <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#C4EBD0] space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Video className="w-4 h-4 text-[#05A222]" />
+                    <span className="text-xs font-bold text-[#14201C]">Header Sample Video</span>
+                  </div>
+                  <span className="text-[11px] font-bold text-[#006736] bg-[#E9F9EE] px-2 py-0.5 rounded-md border border-[#C4EBD0]">
+                    MP4 • Max 16MB
+                  </span>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#14201C] mb-1">
+                    Sample Video URL (Meta Compliance & Preview)
+                  </label>
+                  <Input
+                    value={headerMediaUrl}
+                    onChange={(e) => setHeaderMediaUrl(e.target.value)}
+                    placeholder="https://example.com/demo.mp4"
+                    className="text-sm font-medium bg-white"
+                  />
+                </div>
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="text-[11px] text-[#5F7069] font-medium">Quick Presets:</span>
+                  <button
+                    type="button"
+                    onClick={() => setHeaderMediaUrl('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')}
+                    className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                  >
+                    Product Video
+                  </button>
+                  <span className="text-[#8A9993]">•</span>
+                  <button
+                    type="button"
+                    onClick={() => setHeaderMediaUrl('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')}
+                    className="text-[11px] font-bold text-[#006736] hover:underline cursor-pointer"
+                  >
+                    Teaser Video
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Header Document Configuration */}
+            {headerType === 'DOCUMENT' && (
+              <div className="p-4 bg-[#F6FAF8] rounded-xl border border-[#C4EBD0] space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-[#05A222]" />
+                    <span className="text-xs font-bold text-[#14201C]">Header Document</span>
+                  </div>
+                  <span className="text-[11px] font-bold text-[#006736] bg-[#E9F9EE] px-2 py-0.5 rounded-md border border-[#C4EBD0]">
+                    PDF • Max 100MB
+                  </span>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#14201C] mb-1">
+                    Sample Document URL (PDF Link)
+                  </label>
+                  <Input
+                    value={headerMediaUrl}
+                    onChange={(e) => setHeaderMediaUrl(e.target.value)}
+                    placeholder="https://example.com/brochure.pdf"
+                    className="text-sm font-medium bg-white"
+                  />
+                </div>
               </div>
             )}
 
@@ -763,23 +917,84 @@ export const CreateTemplate: React.FC = () => {
                 </div>
 
                 {/* WhatsApp Incoming Chat Bubble */}
-                <div className="bg-white rounded-2xl rounded-tl-xs p-3 shadow-xs space-y-1.5 text-xs text-[#14201C]">
-                  {headerType === 'TEXT' && headerText && (
-                    <div className="font-bold text-[#008069] text-[11px] border-b border-[#F0F2F5] pb-1">
-                      {headerText}
+                <div className="bg-white rounded-2xl rounded-tl-xs overflow-hidden shadow-xs space-y-1.5 text-xs text-[#14201C]">
+                  {/* Media Header (IMAGE) */}
+                  {headerType === 'IMAGE' && (
+                    <div className="relative w-full aspect-video bg-[#E2EAE6] flex items-center justify-center overflow-hidden">
+                      {headerMediaUrl ? (
+                        <img
+                          src={headerMediaUrl}
+                          alt="Header Preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center gap-1 text-[#5F7069]">
+                          <ImageIcon className="w-8 h-8 text-[#8A9993]" />
+                          <span className="text-[10px] font-semibold">Image Header Sample</span>
+                        </div>
+                      )}
                     </div>
                   )}
-                  <div className="text-[#1F2A26] whitespace-pre-wrap leading-relaxed font-sans text-xs">
-                    {previewBody}
-                  </div>
-                  {footer && (
-                    <div className="text-[10px] text-[#8A9993] pt-0.5">
-                      {footer}
+
+                  {/* Media Header (VIDEO) */}
+                  {headerType === 'VIDEO' && (
+                    <div className="relative w-full aspect-video bg-slate-900 flex items-center justify-center overflow-hidden group">
+                      {headerMediaUrl ? (
+                        <video
+                          src={headerMediaUrl}
+                          className="w-full h-full object-cover opacity-80"
+                          muted
+                          playsInline
+                        />
+                      ) : null}
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full bg-white/90 text-[#008069] flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-transform">
+                          <Play className="w-5 h-5 fill-current ml-0.5" />
+                        </div>
+                      </div>
+                      <span className="absolute bottom-2 right-2 bg-black/70 text-white text-[9px] font-mono px-1.5 py-0.5 rounded font-bold">
+                        VIDEO
+                      </span>
                     </div>
                   )}
-                  <div className="text-[9px] text-right text-[#8A9993] font-medium flex items-center justify-end gap-1">
-                    <span>12:45 PM</span>
-                    <CheckCheck className="w-3.5 h-3.5 text-[#53BDEB]" />
+
+                  {/* Media Header (DOCUMENT) */}
+                  {headerType === 'DOCUMENT' && (
+                    <div className="p-2.5 bg-[#F6FAF8] border-b border-[#E2EAE6] flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-bold text-[#14201C] truncate">
+                          {headerMediaUrl ? headerMediaUrl.split('/').pop() || 'document.pdf' : 'document.pdf'}
+                        </p>
+                        <p className="text-[9px] text-[#5F7069]">PDF Document</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Content Container (padding for body and text) */}
+                  <div className="p-3 pt-1 space-y-1.5">
+                    {headerType === 'TEXT' && headerText && (
+                      <div className="font-bold text-[#008069] text-[11px] border-b border-[#F0F2F5] pb-1">
+                        {headerText}
+                      </div>
+                    )}
+                    <div className="text-[#1F2A26] whitespace-pre-wrap leading-relaxed font-sans text-xs">
+                      {previewBody}
+                    </div>
+                    {footer && (
+                      <div className="text-[10px] text-[#8A9993] pt-0.5">
+                        {footer}
+                      </div>
+                    )}
+                    <div className="text-[9px] text-right text-[#8A9993] font-medium flex items-center justify-end gap-1">
+                      <span>12:45 PM</span>
+                      <CheckCheck className="w-3.5 h-3.5 text-[#53BDEB]" />
+                    </div>
                   </div>
                 </div>
 

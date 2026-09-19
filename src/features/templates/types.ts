@@ -6,6 +6,7 @@ export interface TemplateDraft {
   language: string;
   headerType: 'NONE' | 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
   headerText: string;
+  headerMediaUrl?: string;
   body: string;
   footer: string;
   buttons: Array<{

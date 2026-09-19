@@ -27,7 +27,9 @@ import {
   Phone,
   Copy,
   Check,
-  Share2
+  Share2,
+  Image as ImageIcon,
+  Video as VideoIcon,
 } from 'lucide-react';
 import type { WhatsAppTemplate } from '../types';
 import { templatesApi } from '../api';
@@ -277,6 +279,35 @@ export const Templates: React.FC = () => {
     }
   };
 
+  const getHeaderTypeBadge = (header?: { type?: string; text?: string; mediaUrl?: string }) => {
+    if (!header || !header.type || header.type === 'NONE') return null;
+    switch (header.type) {
+      case 'IMAGE':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <ImageIcon className="w-3 h-3 text-emerald-600" />
+            Image
+          </span>
+        );
+      case 'VIDEO':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+            <VideoIcon className="w-3 h-3 text-purple-600" />
+            Video
+          </span>
+        );
+      case 'DOCUMENT':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+            <FileText className="w-3 h-3 text-rose-600" />
+            Document
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
+
   const renderButtonPill = (btn: any, idx: number) => {
     const type = btn.type?.toUpperCase() || 'QUICK_REPLY';
     let icon = <CornerDownLeft className="w-3 h-3 text-slate-500 shrink-0" />;
@@ -330,7 +361,12 @@ export const Templates: React.FC = () => {
     },
     {
       header: 'Category',
-      render: (t) => getCategoryPill(t.category),
+      render: (t) => (
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {getCategoryPill(t.category)}
+          {getHeaderTypeBadge(t.header)}
+        </div>
+      ),
     },
     {
       header: 'Language',
@@ -596,6 +632,7 @@ export const Templates: React.FC = () => {
                         </h4>
                         <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
                           {getCategoryPill(template.category)}
+                          {getHeaderTypeBadge(template.header)}
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-50 text-slate-600 border border-slate-200">
                             <Globe className="w-3 h-3 text-slate-400" />
                             {formatLanguage(template.language)}
