@@ -78,7 +78,7 @@ export const HeroSection: React.FC = () => {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#05A222]" />
             </span>
             <Sparkles className="w-3.5 h-3.5 text-[#05A222]" />
-            <span>Official Meta Cloud API • Tier 3 Certified</span>
+            <span>Direct Meta Cloud API Integration</span>
           </div>
 
           {/* Main Headline with Typewriter */}

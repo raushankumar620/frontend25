@@ -101,7 +101,7 @@ export const pageSeoData: Record<string, PageSeoItem> = {
     keywords: [
       ...keywordClusters.primaryBrand,
       'About WhatsAppMSG',
-      'Meta Business Solution Partner',
+      'WhatsApp Business Platform',
       'Enterprise WhatsApp messaging infrastructure',
     ],
     ogType: 'website',

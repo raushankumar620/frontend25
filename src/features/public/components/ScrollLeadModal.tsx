@@ -115,7 +115,7 @@ export const ScrollLeadModal: React.FC = () => {
 
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white border border-[#bce7cb] text-[10px] sm:text-[11px] font-bold text-[#007a3d] shadow-2xs">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#00a859]" />
-                <span>Meta Verified API</span>
+                <span>Direct Meta Cloud API</span>
               </div>
             </div>
 

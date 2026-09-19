@@ -261,7 +261,7 @@ export const Solutions: React.FC = () => {
 
                 <div className="bg-[#E9F9EE] border border-[#C4EBD0] p-4 rounded-xl text-xs text-[#006736] flex items-start gap-3">
                   <ShieldCheck className="w-5 h-5 text-[#05A222] shrink-0 mt-0.5" />
-                  <span>Includes official Meta Business solution onboarding and green tick verification priority.</span>
+                  <span>Includes Meta Cloud API onboarding and green tick verification guidance.</span>
                 </div>
               </div>
             </div>

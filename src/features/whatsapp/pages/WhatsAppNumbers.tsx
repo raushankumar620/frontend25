@@ -92,13 +92,13 @@ export const WhatsAppNumbers: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-[#0F172A]">Meta Cloud Business Account: Verified</h2>
+              <h2 className="text-sm font-bold text-[#0F172A]">Meta Cloud Business Account: Connected</h2>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0]">
-                TIER 3
+                HIGH CAPACITY
               </span>
             </div>
             <p className="text-xs text-[#64748B] mt-0.5">
-              Official WhatsApp Cloud API connected. Real-time webhooks active with 100k daily message limit.
+              WhatsApp Business Cloud API connected. Real-time webhooks active with 100k daily message limit.
             </p>
           </div>
         </div>

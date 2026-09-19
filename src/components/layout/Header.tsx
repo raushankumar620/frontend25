@@ -74,7 +74,7 @@ const ROUTE_HEADER_MAP: Array<{
   {
     pattern: '/templates',
     title: 'Message Templates',
-    subtitle: 'Sync and manage official Meta approved WhatsApp templates.',
+    subtitle: 'Sync and manage approved WhatsApp templates.',
   },
   {
     pattern: /^\/contacts\/[a-zA-Z0-9_-]+$/,

@@ -37,7 +37,7 @@ export const AIAgent: React.FC = () => {
   const [modelProvider, setModelProvider] = useState<'openai' | 'gemini' | 'anthropic'>('openai');
   const [modelName, setModelName] = useState('gpt-4o-mini');
   const [systemPrompt, setSystemPrompt] = useState(
-    'You are the official WhatsApp AI assistant for our company. Always remain professional, concise, and helpful. Format your responses with bullet points and emojis when appropriate.'
+    'You are the dedicated WhatsApp AI assistant for our company. Always remain professional, concise, and helpful. Format your responses with bullet points and emojis when appropriate.'
   );
   const [temperature, setTemperature] = useState(0.7);
   const [maxTokens, setMaxTokens] = useState(500);

@@ -126,7 +126,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ invoice, isOpen, onC
                   className="h-9 sm:h-11 object-contain mb-2"
                 />
                 <p className="text-xs text-[#5F7069] font-semibold">
-                  Official WhatsApp Business Solution Platform
+                  WhatsApp Business Cloud Messaging Platform
                 </p>
                 <p className="text-[11px] text-[#5F7069]">
                   https://whatsappmsg.com • support@whatsappmsg.com
@@ -300,7 +300,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ invoice, isOpen, onC
               />
               <div className="text-xs font-bold text-[#14201C]">WhatsAppMsg Technologies Pvt. Ltd.</div>
               <div className="text-[11px] text-[#5F7069] leading-relaxed">
-                Official WhatsApp Business Solution Provider (BSP)<br />
+                WhatsApp Business Messaging Platform<br />
                 CIN: U72900DL2024PTC123456 | GSTIN: 07AAACW1234F1Z5<br />
                 Support: support@whatsappmsg.com | Web: https://whatsappmsg.com
               </div>

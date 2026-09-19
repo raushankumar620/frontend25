@@ -65,11 +65,11 @@ console.log('Message delivered via Meta Cloud API:', result.messageId);`;
             <div className="space-y-3 pt-2">
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-[#05A222] shrink-0 mt-0.5" />
-                <span className="text-xs sm:text-sm text-[#1F2A26]">Official Green Tick verification guidance and assistance</span>
+                <span className="text-xs sm:text-sm text-[#1F2A26]">Green Tick verification guidance and assistance</span>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-[#05A222] shrink-0 mt-0.5" />
-                <span className="text-xs sm:text-sm text-[#1F2A26]">Tier 3 messaging limits (100,000+ conversations/day capability)</span>
+                <span className="text-xs sm:text-sm text-[#1F2A26]">High-volume messaging limits (100,000+ conversations/day capability)</span>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-[#05A222] shrink-0 mt-0.5" />
@@ -142,7 +142,7 @@ console.log('Message delivered via Meta Cloud API:', result.messageId);`;
               <div className="bg-[#013B23]/90 px-4 py-2.5 border-t border-[#2B3A34] flex items-center justify-between text-[11px] text-[#E2EAE6]">
                 <span className="flex items-center gap-1.5 text-[#1CD72C] font-sans font-semibold">
                   <ShieldCheck className="w-4 h-4" />
-                  Meta Verified Direct API Endpoint
+                  Direct Meta Cloud API Endpoint
                 </span>
                 <span className="font-mono text-[#E2EAE6]">200 OK • 18ms</span>
               </div>

@@ -182,7 +182,7 @@ export const AccountSettings: React.FC = () => {
     try {
       await whatsappService.sendMessage({
         to: testRecipientPhone,
-        text: 'Hello! This is an official WhatsApp test message from your connected WABA Cloud API channel.',
+        text: 'Hello! This is a test message from your connected WhatsApp Business Cloud API channel.',
         phoneNumberId: testModalNumber?.id,
       });
       setTestResult({
