@@ -20,7 +20,7 @@ export const SecurityPolicy: React.FC = () => {
   const sections = [
     { id: 'architecture', title: '1. Enterprise Security Overview' },
     { id: 'encryption', title: '2. Cryptography & Encryption Standards' },
-    { id: 'meta-cloud', title: '3. Meta WhatsApp Cloud Pipeline' },
+    { id: 'meta-cloud', title: '3. Meta Tier 3 Cloud Pipeline' },
     { id: 'webhooks', title: '4. Webhooks & HMAC SHA-256 Verification' },
     { id: 'rbac-isolation', title: '5. Multi-Tenant Data Isolation & RBAC' },
     { id: 'monitoring', title: '6. Penetration Testing & Telemetry' },
@@ -76,7 +76,7 @@ export const SecurityPolicy: React.FC = () => {
             <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-[#8A9993]">
               <span>Compliance Framework: SOC 2 & ISO 27001 Aligned</span>
               <span>•</span>
-              <span>Direct Meta Cloud API Integration</span>
+              <span>Direct Meta Cloud API Tier 3</span>
               <span>•</span>
               <span>Status: All Systems Operational</span>
             </div>
@@ -152,11 +152,11 @@ export const SecurityPolicy: React.FC = () => {
               <div className="pt-4 border-t border-[#E2EAE6] space-y-2">
                 <p className="text-xs text-[#8A9993]">Security emergency or bug report?</p>
                 <a
-                  href="mailto:support@whatsappmsg.com"
+                  href="mailto:whatsappmsgofficial@gmail.com"
                   className="inline-flex items-center gap-2 text-xs font-bold text-[#006736] hover:underline"
                 >
                   <Mail className="w-3.5 h-3.5" />
-                  <span>support@whatsappmsg.com</span>
+                  <span>whatsappmsgofficial@gmail.com</span>
                 </a>
               </div>
             </div>
@@ -209,10 +209,10 @@ export const SecurityPolicy: React.FC = () => {
             {/* Section 3 */}
             <section id="meta-cloud" className="scroll-mt-28 space-y-4">
               <h2 className="text-xl sm:text-2xl font-bold text-[#14201C] tracking-tight">
-                3. Meta WhatsApp Cloud Pipeline
+                3. Meta Tier 3 Cloud Pipeline
               </h2>
               <p>
-                Directly integrated with the Meta Cloud API, {APP_NAME} enables businesses to scale up to 100,000+ customer conversations per day per phone number with sub-second delivery latency.
+                As an official solution provider, {APP_NAME} leverages Meta’s high-throughput <strong>Tier 3 Cloud API</strong>, handling up to 100,000+ customer conversations per day per phone number with sub-second delivery latency.
               </p>
               <div className="p-4 rounded-2xl bg-[#E9F9EE] border border-[#C4EBD0] space-y-1.5">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#006736]">
@@ -293,8 +293,8 @@ export const SecurityPolicy: React.FC = () => {
                 </p>
                 <div className="flex items-center gap-2 text-sm text-[#006736] font-semibold">
                   <Mail className="w-4 h-4" />
-                  <a href="mailto:support@whatsappmsg.com" className="hover:underline">
-                    support@whatsappmsg.com
+                  <a href="mailto:whatsappmsgofficial@gmail.com" className="hover:underline">
+                    whatsappmsgofficial@gmail.com
                   </a>
                 </div>
               </div>

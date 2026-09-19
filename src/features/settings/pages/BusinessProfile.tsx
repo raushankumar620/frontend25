@@ -54,7 +54,7 @@ export const BusinessProfile: React.FC = () => {
       setTimezone(data.settings?.timezone || 'Asia/Kolkata');
       setDefaultLanguage(data.settings?.defaultLanguage || 'en');
       setAutoAssignment(!!data.settings?.autoAssignment);
-      setBusinessDescription(data.branding?.description || 'WhatsApp Customer Engagement Platform');
+      setBusinessDescription(data.branding?.description || 'Official WhatsApp Customer Engagement Platform');
       setBusinessAddress(data.branding?.address || 'Tower 4, Tech Park');
       setBusinessEmail(data.branding?.supportEmail || '');
       setBusinessIndustry(data.branding?.industry || 'RETAIL');

@@ -55,7 +55,7 @@ export const Inbox: React.FC = () => {
             </p>
             <div className="mt-4 flex items-center gap-2 text-[11px] font-bold text-[#006736] bg-[#E9F9EE] px-3 py-1 rounded-full border border-[#C4EBD0]">
               <ShieldCheck className="w-3.5 h-3.5 text-[#05A222]" />
-              Meta Cloud API Connected
+              Official Meta Cloud API Connected
             </div>
           </div>
         )}

@@ -6,7 +6,7 @@ WhatsAppMSG is an enterprise WhatsApp Business Cloud API platform that enables b
 
 ## Core Capabilities
 
-- **Direct Meta Cloud API Integration**: Direct Meta Cloud API connectivity with high-volume (100k+ messages/day) throughput, 0% middleman markups, and green tick badge assistance.
+- **Direct Meta Cloud API Integration**: Official Meta Cloud API v20.0 direct connectivity with Tier 3 (100k+ messages/day) throughput, 0% middleman markups, and green tick badge assistance.
 - **Autonomous AI WhatsApp Agents**: Domain-trained LLM agents powered by Retrieval-Augmented Generation (RAG) on custom PDFs, documents, catalogs, and websites to automate 80%+ of Tier-1 support tickets 24/7.
 - **Multi-Agent Shared Inbox**: Single verified WhatsApp number shared across multiple agents with collision detection, round-robin routing, and internal private notes.
 - **Visual Workflow Automation**: Drag-and-drop conversational journey builder for abandoned cart recovery, lead qualification, order tracking, and drip campaigns.
@@ -51,6 +51,6 @@ console.log('Message delivered via Meta Cloud API:', result.messageId);
 
 - **Canonical Brand**: WhatsAppMSG
 - **Official Website**: https://whatsappmsg.com
-- **Official Contact Email**: support@whatsappmsg.com
+- **Official Contact Email**: whatsappmsgofficial@gmail.com
 - **Official Instagram**: https://www.instagram.com/whatsapmsg/
 - **Brand Clarification**: Also searched colloquially as WhatsapMSG, WhatsAppMS, or WhatsAppMG. The official name is WhatsAppMSG.

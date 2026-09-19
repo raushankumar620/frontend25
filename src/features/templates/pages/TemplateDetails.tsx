@@ -287,7 +287,7 @@ export const TemplateDetails: React.FC = () => {
         <div className="lg:col-span-5 flex flex-col items-center sticky top-6">
           <div className="text-xs font-bold text-[#5F7069] uppercase tracking-wider mb-3 flex items-center gap-2">
             <Smartphone className="w-4 h-4 text-[#05A222]" />
-            <span>WhatsApp Device Preview</span>
+            <span>Official WhatsApp Device Preview</span>
           </div>
 
           {/* iPhone Chassis (Refined Slim Bezel) */}

@@ -78,7 +78,7 @@ export const HeroSection: React.FC = () => {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#05A222]" />
             </span>
             <Sparkles className="w-3.5 h-3.5 text-[#05A222]" />
-            <span>Powered by the Meta Cloud API</span>
+            <span>Official Meta Cloud API • Tier 3 Certified</span>
           </div>
 
           {/* Main Headline with Typewriter */}
@@ -147,7 +147,7 @@ export const HeroSection: React.FC = () => {
           <div className="pt-3 grid grid-cols-3 gap-3 sm:gap-4 max-w-lg mx-auto lg:mx-0 text-left">
             <div className="bg-white/85 backdrop-blur-md rounded-2xl border border-[#C4EBD0]/80 p-3 sm:p-4 shadow-xs">
               <div className="text-xl sm:text-2xl font-black text-[#14201C]">100k+</div>
-              <div className="text-[11px] sm:text-xs text-[#5F7069] font-medium leading-tight mt-0.5">Msgs / Day Capacity</div>
+              <div className="text-[11px] sm:text-xs text-[#5F7069] font-medium leading-tight mt-0.5">Msgs / Day Tier</div>
             </div>
             <div className="bg-white/85 backdrop-blur-md rounded-2xl border border-[#C4EBD0]/80 p-3 sm:p-4 shadow-xs">
               <div className="text-xl sm:text-2xl font-black text-[#05A222]">99.99%</div>
