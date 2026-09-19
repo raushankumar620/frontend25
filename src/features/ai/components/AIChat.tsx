@@ -23,7 +23,7 @@ export const AIChat: React.FC<AIChatProps> = ({ selectedAgent }) => {
       sender: 'ai',
       text: selectedAgent
         ? `Hello! I am connected to the "${selectedAgent.name}" persona (${selectedAgent.modelName}). How can I help you today?`
-        : 'Hello! I am your configured WhatsApp AI Agent. Ask me anything to test the reasoning, RAG context, and human handoff protocols.',
+        : 'Hello! I am your configured WhatsApp AI Agent. Ask me anything to test reasoning, RAG context, and human handoff protocols.',
     },
   ]);
   const [input, setInput] = useState('');
@@ -110,35 +110,37 @@ export const AIChat: React.FC<AIChatProps> = ({ selectedAgent }) => {
   };
 
   return (
-    <div className="flex flex-col h-[520px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-md">
-      <div className="p-3.5 bg-slate-800/90 border-b border-slate-700/80 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs font-bold text-white">
-          <Sparkles className="w-4 h-4 text-[#05A222]" />
-          <span>Agent Sandbox Live Simulator</span>
+    <div className="flex flex-col h-[460px] sm:h-[540px] bg-white border border-[#E2EAE6] rounded-2xl overflow-hidden shadow-xs">
+      <div className="p-3 sm:p-3.5 bg-[#F6FAF8] border-b border-[#E2EAE6] flex items-center justify-between">
+        <div className="flex items-center gap-2 text-xs font-bold text-[#14201C] min-w-0">
+          <div className="w-6 h-6 rounded-lg bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0] flex items-center justify-center shrink-0">
+            <Sparkles className="w-3.5 h-3.5 text-[#05A222]" />
+          </div>
+          <span className="truncate">Sandbox Live Simulator</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-[#05A222] bg-[#006736]/30 border border-[#05A222]/30 px-2 py-0.5 rounded font-mono">
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-[10px] text-[#006736] bg-[#E9F9EE] border border-[#C4EBD0] px-2 py-0.5 rounded-md font-mono font-bold">
             {selectedAgent ? selectedAgent.modelName : 'gpt-4o-mini'}
           </span>
           <button
             onClick={handleReset}
             title="Reset sandbox chat"
-            className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
+            className="p-1.5 rounded-lg text-[#5F7069] hover:text-[#14201C] hover:bg-white border border-transparent hover:border-[#E2EAE6] transition-colors cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      <div className="flex-1 p-4 overflow-y-auto space-y-3.5">
+      <div className="flex-1 p-3.5 sm:p-4 overflow-y-auto space-y-3 bg-[#F6FAF8]/50">
         {messages.map((m) => {
           if (m.sender === 'system') {
             return (
               <div
                 key={m.id}
-                className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-800/50 text-amber-300 text-xs flex items-center gap-2"
+                className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2 shadow-2xs"
               >
-                <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
+                <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
                 <span>{m.text}</span>
               </div>
             );
@@ -147,24 +149,24 @@ export const AIChat: React.FC<AIChatProps> = ({ selectedAgent }) => {
           return (
             <div
               key={m.id}
-              className={`flex gap-2.5 max-w-[85%] text-xs ${
+              className={`flex gap-2.5 max-w-[88%] sm:max-w-[85%] text-xs ${
                 m.sender === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
               }`}
             >
               <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 shadow-2xs ${
                   m.sender === 'user'
                     ? 'bg-[#006736] text-white'
-                    : 'bg-[#05A222] text-[#14201C] font-bold'
+                    : 'bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0] font-bold'
                 }`}
               >
-                {m.sender === 'user' ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
+                {m.sender === 'user' ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5 text-[#05A222]" />}
               </div>
               <div
-                className={`p-3 rounded-xl leading-relaxed whitespace-pre-wrap ${
+                className={`p-3 rounded-xl leading-relaxed whitespace-pre-wrap shadow-2xs ${
                   m.sender === 'user'
-                    ? 'bg-[#006736] text-white rounded-tr-none'
-                    : 'bg-slate-800 text-slate-100 border border-slate-700/80 rounded-tl-none'
+                    ? 'bg-[#05A222] text-white rounded-tr-none font-medium'
+                    : 'bg-white text-[#14201C] border border-[#E2EAE6] rounded-tl-none font-medium'
                 }`}
               >
                 {m.text}
@@ -174,28 +176,28 @@ export const AIChat: React.FC<AIChatProps> = ({ selectedAgent }) => {
         })}
 
         {isTyping && (
-          <div className="flex items-center gap-2 text-xs text-slate-400 italic">
+          <div className="flex items-center gap-2 text-xs text-[#5F7069] italic bg-white p-2.5 rounded-xl border border-[#E2EAE6] w-fit">
             <Bot className="w-3.5 h-3.5 text-[#05A222] animate-spin" />
             <span>AI Agent is retrieving context & reasoning...</span>
           </div>
         )}
       </div>
 
-      <div className="p-3 bg-slate-800/70 border-t border-slate-800 flex gap-2">
+      <div className="p-2.5 sm:p-3 bg-white border-t border-[#E2EAE6] flex gap-2">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          placeholder={selectedAgent ? `Message ${selectedAgent.name}...` : 'Test user message (e.g. "I want human agent")...'}
-          className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#05A222]"
+          placeholder={selectedAgent ? `Message ${selectedAgent.name}...` : 'Type a test message (e.g. "I want human agent")...'}
+          className="flex-1 bg-[#F6FAF8] border border-[#E2EAE6] rounded-xl px-3 sm:px-3.5 py-2 text-xs text-[#14201C] placeholder-[#8A9993] focus:outline-none focus:border-[#05A222] focus:bg-white transition-colors"
         />
         <Button
           size="sm"
           variant="primary"
           onClick={handleSend}
           disabled={!input.trim() || isTyping}
-          className="bg-[#05A222] hover:bg-[#006736] text-[#14201C] hover:text-white font-bold px-3.5"
+          className="bg-[#05A222] hover:bg-[#006736] text-white font-bold px-3.5 rounded-xl shrink-0"
         >
           <Send className="w-3.5 h-3.5" />
         </Button>

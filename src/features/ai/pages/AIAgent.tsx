@@ -143,43 +143,43 @@ export const AIAgent: React.FC = () => {
     <PageContainer>
       <button
         onClick={() => navigate(ROUTES.AI_DASHBOARD)}
-        className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white mb-5"
+        className="inline-flex items-center gap-2 text-xs font-semibold text-[#5F7069] hover:text-[#14201C] mb-5 transition-colors cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to AI Hub</span>
       </button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
         {/* Left Column: Form Builder */}
-        <div className="lg:col-span-7 bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-6 shadow-xs">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+        <div className="lg:col-span-7 bg-white p-5 sm:p-7 rounded-2xl border border-[#E2EAE6] space-y-6 shadow-xs">
+          <div className="flex items-center justify-between border-b border-[#E2EAE6] pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] dark:bg-[#006736]/20 text-[#006736] dark:text-[#05A222] flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-[#E9F9EE] text-[#006736] border border-[#C4EBD0] flex items-center justify-center font-bold shrink-0">
                 <Bot className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                <h2 className="text-base sm:text-lg font-bold text-[#14201C]">
                   {agentId ? 'Edit AI Agent Persona' : 'Create Autonomous AI Agent'}
                 </h2>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[#5F7069]">
                   Configure behavior, underlying LLM, and human handoff protocols.
                 </p>
               </div>
             </div>
             {agentId && (
-              <span className="text-[10px] font-mono text-[#006736] bg-[#E9F9EE] px-2 py-0.5 rounded">
+              <span className="text-[10px] font-bold font-mono text-[#006736] bg-[#E9F9EE] border border-[#C4EBD0] px-2 py-0.5 rounded">
                 Editing
               </span>
             )}
           </div>
 
           {loading ? (
-            <div className="py-12 text-center text-xs text-slate-400">Loading persona data...</div>
+            <div className="py-12 text-center text-xs text-[#5F7069]">Loading persona data...</div>
           ) : (
             <div className="space-y-5">
               {/* Presets Bar */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-1.5">
+                <label className="text-xs font-bold text-[#14201C] mb-2 flex items-center gap-1.5">
                   <Wand2 className="w-3.5 h-3.5 text-[#05A222]" />
                   Quick Persona Presets
                 </label>
@@ -189,10 +189,10 @@ export const AIAgent: React.FC = () => {
                       key={p.title}
                       type="button"
                       onClick={() => handleApplyPreset(p)}
-                      className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-left hover:border-[#05A222] hover:bg-[#E9F9EE]/40 dark:hover:bg-slate-800 transition-all text-xs"
+                      className="p-3 rounded-xl border border-[#E2EAE6] bg-[#F6FAF8] text-left hover:border-[#05A222] hover:bg-[#E9F9EE]/40 transition-all text-xs cursor-pointer"
                     >
-                      <div className="font-bold text-slate-800 dark:text-slate-200">{p.title}</div>
-                      <div className="text-[10px] text-slate-400 truncate mt-0.5">{p.role}</div>
+                      <div className="font-bold text-[#14201C]">{p.title}</div>
+                      <div className="text-[10px] text-[#5F7069] truncate mt-0.5">{p.role}</div>
                     </button>
                   ))}
                 </div>
@@ -217,7 +217,7 @@ export const AIAgent: React.FC = () => {
 
               {/* Model Selection */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-xs font-bold text-[#14201C] mb-2">
                   Underlying LLM Engine
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -234,14 +234,14 @@ export const AIAgent: React.FC = () => {
                         setModelName(m.id);
                         setModelProvider(m.provider as any);
                       }}
-                      className={`p-3 rounded-xl border text-xs font-semibold text-center transition-all ${
+                      className={`p-3 rounded-xl border text-xs font-bold text-center transition-all cursor-pointer ${
                         modelName === m.id
-                          ? 'border-[#05A222] bg-[#E9F9EE] dark:bg-[#006736]/20 text-[#006736] dark:text-[#05A222] shadow-xs'
-                          : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300'
+                          ? 'border-[#05A222] bg-[#E9F9EE] text-[#006736] shadow-2xs'
+                          : 'border-[#E2EAE6] bg-white text-[#5F7069] hover:border-[#C4EBD0] hover:bg-[#F6FAF8]'
                       }`}
                     >
                       <div>{m.label}</div>
-                      <div className="text-[10px] font-normal opacity-70 mt-0.5 capitalize">{m.provider}</div>
+                      <div className="text-[10px] font-medium text-[#8A9993] mt-0.5 capitalize">{m.provider}</div>
                     </button>
                   ))}
                 </div>
@@ -249,7 +249,7 @@ export const AIAgent: React.FC = () => {
 
               {/* System Prompt */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-[#14201C] mb-1.5">
                   System Instruction Prompt & Business Knowledge
                 </label>
                 <textarea
@@ -257,16 +257,16 @@ export const AIAgent: React.FC = () => {
                   onChange={(e) => setSystemPrompt(e.target.value)}
                   rows={6}
                   placeholder="Define your agent's persona, tone of voice, boundaries, and knowledge..."
-                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs p-3 focus:outline-none focus:ring-2 focus:ring-[#05A222]"
+                  className="w-full rounded-xl border border-[#E2EAE6] bg-[#F6FAF8] text-[#14201C] placeholder-[#8A9993] text-xs p-3 focus:outline-none focus:border-[#05A222] focus:bg-white transition-colors"
                 />
               </div>
 
               {/* Sliders */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <div className="flex justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <div className="p-3 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6]">
+                  <div className="flex justify-between text-xs font-bold text-[#14201C] mb-1.5">
                     <span>Temperature (Creativity)</span>
-                    <span className="font-mono text-[#006736] dark:text-[#05A222]">{temperature}</span>
+                    <span className="font-mono text-[#006736]">{temperature}</span>
                   </div>
                   <input
                     type="range"
@@ -277,16 +277,16 @@ export const AIAgent: React.FC = () => {
                     onChange={(e) => setTemperature(parseFloat(e.target.value))}
                     className="w-full accent-[#05A222]"
                   />
-                  <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
+                  <div className="flex justify-between text-[10px] text-[#5F7069] mt-1 font-medium">
                     <span>Precise (0.0)</span>
                     <span>Creative (1.0)</span>
                   </div>
                 </div>
 
-                <div>
-                  <div className="flex justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <div className="p-3 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6]">
+                  <div className="flex justify-between text-xs font-bold text-[#14201C] mb-1.5">
                     <span>Max Tokens</span>
-                    <span className="font-mono text-[#006736] dark:text-[#05A222]">{maxTokens}</span>
+                    <span className="font-mono text-[#006736]">{maxTokens}</span>
                   </div>
                   <input
                     type="number"
@@ -295,30 +295,33 @@ export const AIAgent: React.FC = () => {
                     step="50"
                     value={maxTokens}
                     onChange={(e) => setMaxTokens(parseInt(e.target.value) || 500)}
-                    className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs p-2 focus:outline-none focus:ring-2 focus:ring-[#05A222]"
+                    className="w-full rounded-lg border border-[#E2EAE6] bg-white text-[#14201C] text-xs p-2 focus:outline-none focus:border-[#05A222]"
                   />
+                  <div className="text-[10px] text-[#5F7069] mt-1 font-medium">
+                    Optimal range: 200 - 800 tokens
+                  </div>
                 </div>
               </div>
 
               {/* Human Handoff Keywords */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <div className="p-3.5 bg-[#F6FAF8] rounded-xl border border-[#E2EAE6]">
+                <label className="block text-xs font-bold text-[#14201C] mb-1">
                   Human Handoff Trigger Keywords
                 </label>
-                <p className="text-[11px] text-slate-500 mb-2">
-                  When a customer sends any of these words, the AI agent will stop answering and route the chat to your human agents.
+                <p className="text-[11px] text-[#5F7069] mb-2.5">
+                  When a customer sends any of these words, the AI agent will stop answering and route the chat to human support.
                 </p>
                 <div className="flex flex-wrap gap-1.5 mb-2.5">
                   {handoffKeywords.map((kw) => (
                     <span
                       key={kw}
-                      className="inline-flex items-center gap-1.5 bg-[#E9F9EE] dark:bg-[#006736]/30 text-[#006736] dark:text-[#05A222] text-xs font-semibold px-2.5 py-1 rounded-lg border border-[#C4EBD0] dark:border-[#006736]"
+                      className="inline-flex items-center gap-1.5 bg-[#E9F9EE] text-[#006736] text-xs font-semibold px-2.5 py-1 rounded-lg border border-[#C4EBD0]"
                     >
                       {kw}
                       <button
                         type="button"
                         onClick={() => handleRemoveKeyword(kw)}
-                        className="text-slate-400 hover:text-red-500"
+                        className="text-[#5F7069] hover:text-rose-600 cursor-pointer"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -332,7 +335,7 @@ export const AIAgent: React.FC = () => {
                     onChange={(e) => setNewKeyword(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddKeyword())}
                     placeholder="Add keyword (e.g. manager, live support)..."
-                    className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#05A222]"
+                    className="flex-1 rounded-xl border border-[#E2EAE6] bg-white text-[#14201C] placeholder-[#8A9993] text-xs px-3 py-2 focus:outline-none focus:border-[#05A222]"
                   />
                   <Button
                     type="button"
@@ -340,6 +343,7 @@ export const AIAgent: React.FC = () => {
                     variant="outline"
                     onClick={handleAddKeyword}
                     leftIcon={<Plus className="w-3.5 h-3.5" />}
+                    className="border-[#C4EBD0] text-[#006736] hover:bg-[#E9F9EE] rounded-xl"
                   >
                     Add
                   </Button>
@@ -347,23 +351,23 @@ export const AIAgent: React.FC = () => {
               </div>
 
               {/* Flags */}
-              <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-100 dark:border-slate-800">
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-[#E2EAE6]">
+                <label className="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-[#14201C]">
                   <input
                     type="checkbox"
                     checked={isDefault}
                     onChange={(e) => setIsDefault(e.target.checked)}
-                    className="rounded accent-[#05A222]"
+                    className="rounded accent-[#05A222] w-4 h-4 cursor-pointer"
                   />
                   <span>Set as Default Agent for Inbound WhatsApp Chats</span>
                 </label>
 
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label className="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-[#14201C]">
                   <input
                     type="checkbox"
                     checked={isActive}
                     onChange={(e) => setIsActive(e.target.checked)}
-                    className="rounded accent-[#05A222]"
+                    className="rounded accent-[#05A222] w-4 h-4 cursor-pointer"
                   />
                   <span>Agent is Active</span>
                 </label>
@@ -371,7 +375,7 @@ export const AIAgent: React.FC = () => {
 
               <Button
                 size="lg"
-                className="w-full mt-4 bg-[#05A222] hover:bg-[#006736] text-[#14201C] hover:text-white font-bold"
+                className="w-full mt-4 bg-[#05A222] hover:bg-[#006736] text-white font-bold rounded-xl shadow-xs py-3"
                 onClick={handleSave}
                 isLoading={isSaving}
                 leftIcon={<Save className="w-4 h-4" />}
@@ -383,8 +387,8 @@ export const AIAgent: React.FC = () => {
         </div>
 
         {/* Right Column: Live Testing Sandbox */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
+        <div className="lg:col-span-5 space-y-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#14201C]">
             <Sparkles className="w-4 h-4 text-[#05A222]" />
             <span>Interactive Persona Testing Sandbox</span>
           </div>
